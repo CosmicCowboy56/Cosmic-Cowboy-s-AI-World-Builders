@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Portrait &amp; Figure Generator v2.2</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Righteous&family=Rajdhani:wght@500;600&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{--bg-primary:rgba(255,255,255,0.9);--bg-secondary:rgba(255,255,255,0.85);--bg-tertiary:rgba(250,250,250,0.9);--accent:#d35400;--accent-dim:#a04000;--text-primary:#2c3e50;--text-secondary:#7f8c8d;--border:rgba(52,73,94,0.2);--shadow:0 4px 6px rgba(0,0,0,0.1)}
+body{font-family:'Rajdhani',sans-serif;background:linear-gradient(to bottom,#87CEEB 0%,#90EE90 100%);color:var(--text-primary);line-height:1.6;min-height:100vh}
+.container{max-width:1400px;margin:0 auto;padding:20px;display:grid;grid-template-columns:1fr 400px;gap:20px;min-height:100vh}
+@media(max-width:1200px){.container{grid-template-columns:1fr}.preview-panel{position:sticky;top:20px;max-height:calc(100vh - 40px)}}
+.header{grid-column:1/-1;text-align:center;padding:50px 20px 35px;margin-bottom:30px;background:transparent}
+.header .brand{font-family:'Righteous',sans-serif;font-size:0.8em;color:var(--accent);text-transform:uppercase;letter-spacing:2px;margin-bottom:8px;text-shadow:2px 2px 4px rgba(0,0,0,0.2)}
+.header h1{font-family:'Righteous',sans-serif;margin:0;color:#2c3e50;text-transform:uppercase;text-shadow:3px 3px 8px rgba(0,0,0,0.15)}
+.header h1 .title-main{font-size:2em;letter-spacing:3px;display:block}
+.header h1 .title-sub{font-size:1.2em;letter-spacing:2px;display:block}
+.form-panel{background:linear-gradient(to bottom,rgba(135,206,235,0.7) 0%,rgba(144,238,144,0.7) 100%);border-radius:16px;padding:25px;box-shadow:var(--shadow);backdrop-filter:blur(10px)}
+.preview-panel{background:var(--bg-secondary);border-radius:16px;padding:25px;box-shadow:var(--shadow);backdrop-filter:blur(10px)}
+.preview-panel{position:sticky;top:20px;max-height:calc(100vh - 40px);overflow-y:auto;display:flex;flex-direction:column;gap:15px}
+.preview-panel h2{color:var(--accent);font-size:1.4em;margin-bottom:10px;font-family:'Righteous',sans-serif}
+.preview-content{background:var(--bg-tertiary);padding:18px;border-radius:12px;font-size:.95em;line-height:1.8;flex-grow:1;overflow-y:auto;box-shadow:inset 0 2px 4px rgba(0,0,0,0.05)}
+.preview-item{margin-bottom:12px;padding-bottom:12px;border-bottom:1px solid var(--border)}
+.preview-item:last-child{border-bottom:none}
+.preview-label{color:var(--accent);font-weight:600;margin-bottom:4px;font-family:'Righteous',sans-serif}
+.preview-value{color:var(--text-primary)}
+.section{margin-bottom:20px;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--bg-tertiary);box-shadow:var(--shadow)}
+.section-header{background:rgba(211,84,0,0.08);padding:15px 20px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;user-select:none;transition:background .2s}
+.section-header:hover{background:rgba(211,84,0,0.15)}
+.section-header h3{color:var(--accent);font-size:1.15em;font-weight:600;font-family:'Righteous',sans-serif}
+.section-toggle{font-size:1.2em;color:var(--text-secondary);transition:transform .3s}
+.section.collapsed .section-toggle{transform:rotate(-90deg)}
+.section-content{padding:20px;display:block;background:var(--bg-primary)}
+.section.collapsed .section-content{display:none}
+.question{margin-bottom:25px}
+.question-label{display:block;margin-bottom:8px;font-weight:600;color:var(--text-primary);font-family:'Rajdhani',sans-serif;font-size:1.05em}
+.question-note{display:block;font-size:.85em;color:var(--text-secondary);margin-top:4px;font-style:italic}
+.input-group{display:block}
+select,input[type="text"],textarea{display:inline-block;width:calc(100% - 110px);padding:10px;background:rgba(255,255,255,0.95);border:1px solid var(--border);border-radius:8px;color:var(--text-primary);font-size:1em;font-family:inherit;box-shadow:inset 0 1px 3px rgba(0,0,0,0.05)}
+select:focus,input[type="text"]:focus,textarea:focus{outline:none;border-color:var(--accent);box-shadow:0 0 0 3px rgba(211,84,0,0.1)}
+textarea{display:block;width:100%;resize:vertical;min-height:80px}
+button{display:inline-block;padding:10px 20px;background:var(--accent);border:none;border-radius:8px;color:white;font-weight:600;cursor:pointer;transition:all .2s;font-size:1em;box-shadow:var(--shadow);font-family:'Rajdhani',sans-serif}
+button:hover{background:var(--accent-dim);transform:translateY(-1px);box-shadow:0 6px 12px rgba(0,0,0,0.15)}
+button.secondary{background:rgba(211,84,0,0.1);border:1px solid var(--accent);color:var(--accent)}
+button.secondary:hover{background:rgba(211,84,0,0.2)}
+.random-btn{padding:10px 15px;white-space:nowrap;margin-left:10px}
+.preset-section{margin-bottom:30px;padding:20px;background:var(--bg-tertiary);border-radius:12px;box-shadow:var(--shadow)}
+.preset-section h3{color:var(--accent);margin-bottom:15px;font-family:'Righteous',sans-serif}
+.preset-buttons{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px}
+.actions{display:flex;gap:10px;margin-top:20px}
+.actions button{flex:1}
+.generate-section{background:var(--bg-tertiary);padding:20px;border-radius:12px;margin-top:20px;box-shadow:var(--shadow)}
+.generate-section h3{color:var(--accent);margin-bottom:15px;font-family:'Righteous',sans-serif}
+.quality-notice{background:rgba(211,84,0,0.1);padding:15px;border-left:4px solid var(--accent);margin-bottom:20px;font-size:.9em;border-radius:8px}
+.quality-notice strong{color:var(--accent)}
+.info-box{background:rgba(255,255,255,0.8);padding:15px;border-radius:8px;margin-top:10px;margin-bottom:20px;font-size:.9em;line-height:1.6;box-shadow:inset 0 1px 3px rgba(0,0,0,0.05)}
+.info-box strong{color:var(--accent);display:block;margin-bottom:8px;font-family:'Righteous',sans-serif}
+.info-box ul{list-style:none;padding:0;margin:0}
+.info-box li{padding:4px 0;border-bottom:1px solid rgba(0,0,0,0.05)}
+.info-box li:last-child{border-bottom:none}
+.final-prompt-display{background:rgba(255,255,255,0.95);padding:20px;border-radius:12px;margin-top:20px;white-space:pre-wrap;font-family:'Consolas','Monaco',monospace;font-size:.9em;max-height:400px;overflow-y:auto;color:var(--text-primary);box-shadow:var(--shadow);border:1px solid var(--border)}
+</style></head><body>
+<div class="container">
+<div class="header">
+<div class="brand"><big><big><big>Cosmic Cowboy's AI World Builders</big></big></big></div>
+<h1><span class="title-main">Portrait &amp; Figure</span><span class="title-sub">Prompt Engine</span></h1>
+
+<h1><span class="title-sub"></span></h1>
+
+</div>
+<div class="form-panel">
+<div class="quality-notice">
+<strong>Global Quality Rule:</strong> All images are ultra-detailed by
+default with fine surface detail, sharp focus, cinematic lighting, and
+professional rendering unless explicitly overridden.
+</div>
+<div class="info-box">
+<strong>Important Notes:</strong> Models may introduce defaults unless
+explicitly constrained. Strong art styles may override traits.
+Hair/clothing details often need reinforcement.
+</div>
+<div class="preset-section">
+<h3>Quick Start Presets</h3>
+<div class="info-box" style="margin-bottom: 15px;">
+<strong>How to use presets:</strong> Click any preset to auto-fill the
+form. The filled values appear in the Live Preview panel on the right.
+To modify any values, expand the sections below. When ready, scroll
+down and click 'Generate Final Prompt' to create your image prompt,
+then use the 'Copy to Clipboard' button.
+</div>
+<div class="preset-buttons">
+<button onclick="loadPreset('modern_professional')">Modern Professional</button>
+<button onclick="loadPreset('fantasy_warrior')">Fantasy Warrior</button>
+<button onclick="loadPreset('royal_portrait')">Royal Portrait</button>
+<button onclick="loadPreset('cyberpunk')">Cyberpunk</button>
+<button onclick="loadPreset('fantasy_mage')">Fantasy Mage</button>
+<button onclick="loadPreset('medieval_knight')">Medieval Knight</button>
+</div>
+<div class="actions">
+<button class="secondary" onclick="saveConfiguration()">Save Current</button>
+<button class="secondary" onclick="loadConfiguration()">Load Saved</button>
+<button class="secondary" onclick="clearAll()">Clear All</button>
+</div>
+</div>
+<form id="generatorForm">
+<div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Generation Mode</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Generation Mode</label><div class="input-group"><select id="q1" onchange="handleModeChange()"><option value="">Select...</option><option value="Step-by-step">Step-by-step</option><option value="Random (Auto-fill)">Random (Auto-fill)</option>
+</select><button type="button" class="random-btn" onclick="randomizeQuestion('q1')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Age Group</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Age Group</label><span class="question-note">Full-body realistic images of minors may not generate</span><div class="input-group"><select id="q2" onchange="updatePreview()"><option value="">Select...</option><option value="Infant">Infant</option><option value="Child">Child</option><option value="Teen">Teen</option><option value="Adult">Adult</option><option value="Elder">Elder</option>
+</select><button type="button" class="random-btn" onclick="randomizeQuestion('q2')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Gender</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Gender</label><div class="input-group"><select id="q3" onchange="updatePreview()"><option value="">Select...</option><option value="Male">Male</option><option value="Female">Female</option><option value="Neutral">Neutral</option>
+</select><button type="button" class="random-btn" onclick="randomizeQuestion('q3')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Eye Shape</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Eye Shape (up to 3 traits, comma-separated, or custom text)</label><div class="input-group"><input id="q4a" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong>
+Almond, Round, Hooded lids, Monolid, Heavy upper lid crease, Prominent
+lower lid, Deep-set, Prominent or bulging, Upturned corners, Downturned
+corners, Wide-set, Close-set, Large, Small, Narrow</div><button type="button" class="random-btn" onclick="randomizeQuestion('q4a')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Eye Color</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Eye Color</label><div class="input-group"><input id="q4b" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong> Brown, Hazel, Blue, Green, Gray, Amber, Mixed tones, Heterochromia</div><button type="button" class="random-btn" onclick="randomizeQuestion('q4b')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Nose Shape</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Nose Shape (up to 3 traits, comma-separated, or custom text)</label><div class="input-group"><input id="q4c" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong>
+Straight, Aquiline, Roman/high bridge, Low bridge, Crooked, Hooked,
+Upturned, Downturned, Wide base, Narrow base, Rounded tip, Pointed tip,
+Bulbous, Flat, Button</div><button type="button" class="random-btn" onclick="randomizeQuestion('q4c')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Mouth and Lips</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Mouth and Lips (up to 3 traits, comma-separated, or custom text)</label><div class="input-group"><input id="q4d" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong>
+Thin upper lip, Thin lower lip, Full upper lip, Full lower lip, Pouty,
+Bow-shaped, Upturned corners, Downturned corners, Asymmetrical, Wide
+mouth, Narrow mouth, Small, Large</div><button type="button" class="random-btn" onclick="randomizeQuestion('q4d')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Jawline and Chin</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Jawline and Chin (up to 2 traits, comma-separated, or custom text)</label><div class="input-group"><input id="q4e" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong>
+Strong jawline, Weak jawline, Soft jawline, Rounded jawline, Angular
+jawline, Broad jaw, Narrow jaw, Square chin, Pointed chin, Receded
+chin, Protruding chin, Cleft chin, Double chin</div><button type="button" class="random-btn" onclick="randomizeQuestion('q4e')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Brows</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Brows (up to 2 traits, comma-separated, or custom text)</label><div class="input-group"><input id="q4f" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong> Straight, Arched, Soft arch, Angled, Thick, Thin, Bushy, Sparse, Wide-set, Close-set, Unibrow</div><button type="button" class="random-btn" onclick="randomizeQuestion('q4f')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Hair</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><span class="question-note">If hair appearance is critical, restate it in Clarifications to prevent stylistic restyling.</span>
+<div class="question"><label class="question-label">Hair Length</label><div class="input-group"><input id="q4g_length" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong> Short, Medium, Long, Very long, Shaved, Bald</div><button type="button" class="random-btn" onclick="randomizeQuestion('q4g_length')">Random</button></div></div>
+<div class="question"><label class="question-label">Hair Texture</label><div class="input-group"><input id="q4g_texture" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong> Straight, Wavy, Curly, Coiled, Thick, Fine</div><button type="button" class="random-btn" onclick="randomizeQuestion('q4g_texture')">Random</button></div></div>
+<div class="question"><label class="question-label">Hair Style</label><div class="input-group"><input id="q4g_style" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong> Loose, Ponytail, Bun, Topknot, Braided, Tied back, Bangs, Fringe, Shaved sides, Afro, Pixie cut, Mohawk</div><button type="button" class="random-btn" onclick="randomizeQuestion('q4g_style')">Random</button></div></div>
+<div class="question"><label class="question-label">Hair Color</label><div class="input-group"><input id="q4g_color" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong> Black, Brown, Blonde, Red, Gray, White, Dyed color, Highlights, Streaks, Gradient, Ombre, Two tone, Fantasy colors</div><button type="button" class="random-btn" onclick="randomizeQuestion('q4g_color')">Random</button></div></div>
+</div></div>
+<div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Skin/Body Palette</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Skin/Body Palette</label><div class="input-group"><input id="q5" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong>
+Natural Palette, European, East Asian, African, Fantasy Arcane Palette,
+Jewel Palette, Fire Palette, Chromatic Shift Palette, Obsidian Palette,
+Verdantflame Palette, Crystalfire Palette, Mirage Palette</div><button type="button" class="random-btn" onclick="randomizeQuestion('q5')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Physical Build</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Physical Build</label><div class="input-group"><input id="q6" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong> Emaciated, Thin, Average build, Muscular, Heavyset, Obese, Extremely obese, Bodybuilder, Petite, Broad, Thick-bodied</div><button type="button" class="random-btn" onclick="randomizeQuestion('q6')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Clothing/Adornment</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Clothing/Adornment (up to 3, comma-separated, or custom text)</label><span class="question-note">Symbolic attire may trigger defaults</span><div class="input-group"><input id="q7" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong>
+Casual modern, Formal, Professional, Outdoor, Utilitarian, Athletic,
+Swimwear, Cultural, Traditional, Fantasy, Magical, Armor, Protective,
+Minimal, Undergarment, Ornate, Decorative, Organic, Improvised</div><button type="button" class="random-btn" onclick="randomizeQuestion('q7')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Background Environment</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Background Environment (up to 3, comma-separated, or custom text)</label><div class="input-group"><input id="q8" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong>
+Forest, Grassland, Savanna, Desert, Mountain, Coastal shore, Open
+ocean, Tundra, Wetland, Swamp, Temperate woodland, Urban, Indoor,
+Agricultural, Prehistoric, Low orbit, Space station, Deep space, None
+(neutral)</div><button type="button" class="random-btn" onclick="randomizeQuestion('q8')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Lighting/Atmosphere</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Lighting/Atmosphere (up to 3, comma-separated, or custom text)</label><div class="input-group"><input id="q9" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong>
+Bright daylight, Sunset, Overcast, Mountain light, Fog, Stormy, Harsh
+desert sun, Underwater, Soft dawn, Low evening, Cold blue overcast,
+Interior ambient, Candlelit, Firelit, None (neutral)</div><button type="button" class="random-btn" onclick="randomizeQuestion('q9')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Environmental Detail Layer</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Environmental Detail Layer (up to 3, comma-separated, or custom text)</label><div class="input-group"><input id="q10" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong>
+Rocks, Boulders, Grasses, Brush, Trees, Branches, Flowing water, Snow,
+Rain, Mist, Dust, Fallen leaves, Ice sheets, Prehistoric flora, Animal
+tracks, Human footprints, None</div><button type="button" class="random-btn" onclick="randomizeQuestion('q10')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Pose Selection</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Pose Selection (up to 2, comma-separated, or custom text)</label><div class="input-group"><input id="q11" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong>
+Standing, Playing, Walking, Crawling, Running, Working, Task, Carrying,
+Holding, Turning, Twisting, Resting, Reclining, Speaking, Vocalizing,
+Swimming, Defensive, Wary, Hunting, Stalking, Sitting, Kneeling,
+Crouching</div><button type="button" class="random-btn" onclick="randomizeQuestion('q11')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Expression/Emotional State</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Expression/Emotional State (up to 2, comma-separated, or custom text)</label><div class="input-group"><input id="q12" placeholder="Enter custom text or copy/paste from examples below" oninput="updatePreview()" type="text"><div class="info-box"><strong>Examples:</strong> Neutral, Calm, Focused, Curious, Determined, Joyful, Sorrowful, Angry, Concerned, Worried, None (expressionless)</div><button type="button" class="random-btn" onclick="randomizeQuestion('q12')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Clarification and Revision</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Clarification and Revision</label><span class="question-note">All text entered here is authoritative and supersedes earlier selections</span><div class="input-group"><textarea id="q13" placeholder="Enter clarifications or type none" oninput="updatePreview()"></textarea><button type="button" class="random-btn" onclick="randomizeQuestion('q13')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Art Style</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Art Style</label><span class="question-note">Strong art styles may override traits</span><div class="input-group"><input id="q14" list="q14Options" placeholder="Select or enter custom" oninput="updatePreview()" type="text"><datalist id="q14Options"></datalist><button type="button" class="random-btn" onclick="randomizeQuestion('q14')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Image Style</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Image Style</label><div class="input-group"><select id="q15" onchange="updatePreview()"><option value="">Select...</option><option value="Portrait (from shoulders up)">Portrait (from shoulders up)</option><option value="Full body">Full body</option>
+</select><button type="button" class="random-btn" onclick="randomizeQuestion('q15')">Random</button>
+</div></div>
+</div></div><div class="section collapsed"><div class="section-header" onclick="toggleSection(this)"><h3>Image Size</h3><span class="section-toggle">▼</span>
+</div><div class="section-content"><div class="question"><label class="question-label">Image Size</label><div class="input-group"><select id="q16" onchange="updatePreview()"><option value="">Select...</option><option value="Square">Square</option><option value="Portrait - tall">Portrait - tall</option><option value="Landscape - wide">Landscape - wide</option>
+</select><button type="button" class="random-btn" onclick="randomizeQuestion('q16')">Random</button>
+</div></div>
+</div></div>
+</form>
+</div>
+<div class="preview-panel">
+<h2>Live Preview</h2>
+<div class="preview-content" id="previewContent">
+<div style="padding: 40px 20px; text-align: center;">Fill in the form to see a live preview</div>
+</div>
+
+<div class="generate-section">
+<h3>Final Actions</h3>
+<div class="actions">
+<button onclick="generateFinalPrompt()" style="">Generate Final Prompt</button>
+<button class="secondary" onclick="copyPromptToClipboard()">Copy to Clipboard</button>
+</div>
+<div id="finalPromptDisplay" class="final-prompt-display" style="display: none;">
+</div>
+</div>
+
+<script>
+const qData={q2:['Infant','Child','Teen','Adult','Elder'],q3:['Male','Female','Neutral'],q4a:{options:['Almond','Round','Hooded lids','Monolid','Heavy upper lid crease','Prominent lower lid','Deep-set','Prominent or bulging','Upturned outer corners','Downturned outer corners','Wide-set','Close-set','Large','Small','Narrow'],max:3},q4b:['Brown','Hazel','Blue','Green','Gray','Amber','Mixed tones','Heterochromia'],q4c:{options:['Straight','Aquiline','Roman or high bridge','Low bridge','Crooked or asymmetrical','Hooked','Upturned','Downturned','Wide base','Narrow base','Rounded tip','Pointed tip','Bulbous','Flat','Button'],max:3},q4d:{options:['Thin upper lip','Thin lower lip','Full upper lip','Full lower lip','Pouty','Bow-shaped','Upturned corners','Downturned corners','Asymmetrical','Wide mouth','Narrow mouth','Small','Large'],max:3},q4e:{options:['Strong jawline','Weak jawline','Soft or rounded jawline','Angular jawline','Broad jaw','Narrow jaw','Square chin','Pointed chin','Receded chin','Protruding chin','Cleft chin','Double chin'],max:2},q4f:{options:['Straight','Arched','Soft arch','Angled','Thick','Thin','Bushy','Sparse','Wide-set brows','Close-set brows','Unibrow'],max:2},q4g_length:['Short','Medium','Long','Very long','Shaved or bald'],q4g_texture:['Straight','Wavy','Curly','Coiled','Thick','Fine'],q4g_style:['Loose','Ponytail','Bun or topknot','Braided','Tied back','Bangs or fringe','Shaved sides','Afro','Pixie cut','Mohawk'],q4g_color:['Black','Brown','Blonde','Red','Gray or white','Dyed color','Highlights','Streaks','Gradient or ombre','Two tone','Fantasy colors'],q5:['Natural Palette','European','East Asian','African','Fantasy Arcane Palette','Jewel Palette','Fire Palette','Chromatic Shift Palette','Obsidian Palette','Verdantflame Palette','Crystalfire Palette','Mirage Palette'],q6:['Emaciated','Thin','Average build','Muscular','Heavyset','Obese','Extremely obese','Bodybuilder','Petite','Broad or thick-bodied'],q7:{options:['Casual modern','Formal or professional','Outdoor or utilitarian','Athletic or swimwear','Cultural or traditional attire','Fantasy or magical attire','Armor or protective gear','Minimal or undergarment coverage','Ornate or decorative','Organic or improvised materials'],max:3},q8:{options:['Forest','Grassland or savanna','Desert','Mountain terrain','Coastal shore','Open ocean','Tundra','Wetland or swamp','Temperate woodland','Urban environment','Indoor environment','Agricultural environment','Prehistoric landscape','Low orbit or space station environment','Deep space exterior','None'],max:3},q9:{options:['Bright daylight','Sunset','Overcast sky','Mountain light','Fog','Stormy weather','Harsh desert sun','Underwater light','Soft dawn','Low evening light','Cold blue overcast','Interior ambient light','Candlelit or firelit atmosphere','None'],max:3},q10:{options:['Rocks or boulders','Grasses or brush','Trees or branches','Flowing or rippling water','Snow','Rain','Mist','Dust','Fallen leaves','Ice sheets','Prehistoric flora','Animal tracks','Human footprints','None'],max:3},q11:{options:['Standing','Playing','Walking or crawling','Running','Working or performing a task','Carrying or holding an object','Turning or twisting the body','Resting or reclining','Speaking or vocalizing','Swimming','Defensive or wary posture','Hunting or stalking posture','Sitting','Kneeling','Crouching'],max:2},q12:{options:['Neutral','Calm','Focused','Curious','Determined','Joyful','Sorrowful','Angry','Concerned or worried','None'],max:2},q14:['Photorealism','Hyper realism','Cinematic realism','Surrealism','Fantasy realism','Digital painting / concept art','Impressionistic realism','Classical oil painting','Anime','Low-poly stylized'],q15:['Portrait (from shoulders up)','Full body'],q16:['Square','Portrait - tall','Landscape - wide']};
+const presets={modern_professional:{q2:'Adult',q3:'Neutral',q4a:'Almond',q4b:'Brown',q4c:'Straight',q4d:'Neutral',q4e:'Strong jawline',q4f:'Arched',q4g_length:'Short',q4g_texture:'Straight',q4g_style:'Loose',q4g_color:'Black',q5:'Natural Palette',q6:'Average build',q7:'Formal or professional',q8:'Indoor environment',q9:'Interior ambient light',q10:'None',q11:'Standing',q12:'Focused',q14:'Cinematic realism',q15:'Portrait (from shoulders up)',q16:'Portrait - tall'},fantasy_warrior:{q2:'Adult',q3:'Male',q4a:'Deep-set, intense',q4b:'Blue',q4c:'Strong, aquiline',q4d:'Determined',q4e:'Strong jawline, square chin',q4f:'Thick, angled',q4g_length:'Medium',q4g_texture:'Wavy',q4g_style:'Tied back',q4g_color:'Brown',q5:'Natural Palette',q6:'Muscular',q7:'Armor or protective gear',q8:'Mountain terrain',q9:'Mountain light',q10:'Rocks or boulders',q11:'Standing, defensive',q12:'Determined',q14:'Fantasy realism',q15:'Full body',q16:'Portrait - tall'},royal_portrait:{q2:'Adult',q3:'Female',q4a:'Almond, large',q4b:'Green',q4c:'Straight, refined',q4d:'Full lips, bow-shaped',q4e:'Soft jawline, elegant',q4f:'Arched, refined',q4g_length:'Long',q4g_texture:'Wavy',q4g_style:'Loose',q4g_color:'Blonde',q5:'European',q6:'Average build',q7:'Ornate or decorative',q8:'Indoor environment',q9:'Interior ambient light',q10:'None',q11:'Standing, regal',q12:'Calm, dignified',q14:'Classical oil painting',q15:'Portrait (from shoulders up)',q16:'Portrait - tall'},cyberpunk:{q2:'Adult',q3:'Neutral',q4a:'Narrow, intense',q4b:'Heterochromia',q4c:'Sharp, angular',q4d:'Thin, asymmetrical',q4e:'Angular jawline',q4f:'Thin, sharp',q4g_length:'Short',q4g_texture:'Straight',q4g_style:'Shaved sides',q4g_color:'Fantasy colors',q5:'Chromatic Shift Palette',q6:'Thin',q7:'Fantasy or magical attire',q8:'Urban environment',q9:'Interior ambient light',q10:'None',q11:'Standing',q12:'Focused',q14:'Hyper realism',q15:'Portrait (from shoulders up)',q16:'Square'},fantasy_mage:{q2:'Adult',q3:'Female',q4a:'Large, mystical',q4b:'Amber',q4c:'Delicate, upturned',q4d:'Full lips',q4e:'Soft jawline',q4f:'Arched, elegant',q4g_length:'Very long',q4g_texture:'Wavy',q4g_style:'Loose',q4g_color:'Gray or white',q5:'Fantasy Arcane Palette',q6:'Average build',q7:'Fantasy or magical attire',q8:'Forest',q9:'Soft dawn, mystical glow',q10:'Mist, ancient trees',q11:'Standing, casting spell',q12:'Focused, mystical',q14:'Fantasy realism',q15:'Full body',q16:'Portrait - tall'},medieval_knight:{q2:'Adult',q3:'Male',q4a:'Deep-set, determined',q4b:'Brown',q4c:'Strong, straight',q4d:'Firm, serious',q4e:'Strong jawline, square chin',q4f:'Thick, straight',q4g_length:'Short',q4g_texture:'Straight',q4g_style:'Loose',q4g_color:'Brown',q5:'European',q6:'Muscular',q7:'Armor or protective gear',q8:'Grassland or savanna',q9:'Bright daylight',q10:'Grasses',q11:'Standing, ready for battle',q12:'Determined',q14:'Cinematic realism',q15:'Full body',q16:'Portrait - tall'}};
+function toggleSection(h){h.parentElement.classList.toggle('collapsed')}
+function handleModeChange(){if(document.getElementById('q1').value==='Random (Auto-fill)')randomizeAll()}
+function randomizeAll(){['q2','q3','q4a','q4b','q4c','q4d','q4e','q4f','q4g_length','q4g_texture','q4g_style','q4g_color','q5','q6','q7','q8','q9','q10','q11','q12','q14','q15','q16'].forEach(q=>randomizeQuestion(q));updatePreview()}
+function randomizeQuestion(qid){const d=qData[qid],e=document.getElementById(qid);if(!d||!e)return;if(Array.isArray(d)){e.value=d[Math.floor(Math.random()*d.length)]}else if(d.options){const n=Math.floor(Math.random()*d.max)+1,s=[...d.options].sort(()=>0.5-Math.random()).slice(0,n);e.value=s.join(', ')}updatePreview()}
+function updatePreview(){const p=document.getElementById('previewContent'),v=gatherAllValues();let h='';if(v.age)h+=`<div class="preview-item"><div class="preview-label">Age:</div><div class="preview-value">${v.age}</div>
+</div>`;if(v.gender)h+=`<div class="preview-item"><div class="preview-label">Gender:</div><div class="preview-value">${v.gender}</div>
+</div>`;if(v.eyeShape)h+=`<div class="preview-item"><div class="preview-label">Eye Shape:</div><div class="preview-value">${v.eyeShape}</div>
+</div>`;if(v.eyeColor)h+=`<div class="preview-item"><div class="preview-label">Eye Color:</div><div class="preview-value">${v.eyeColor}</div>
+</div>`;if(v.noseShape)h+=`<div class="preview-item"><div class="preview-label">Nose:</div><div class="preview-value">${v.noseShape}</div>
+</div>`;if(v.mouthLips)h+=`<div class="preview-item"><div class="preview-label">Mouth & Lips:</div><div class="preview-value">${v.mouthLips}</div>
+</div>`;if(v.jawChin)h+=`<div class="preview-item"><div class="preview-label">Jaw & Chin:</div><div class="preview-value">${v.jawChin}</div>
+</div>`;if(v.brows)h+=`<div class="preview-item"><div class="preview-label">Brows:</div><div class="preview-value">${v.brows}</div>
+</div>`;if(v.hair)h+=`<div class="preview-item"><div class="preview-label">Hair:</div><div class="preview-value">${v.hair}</div>
+</div>`;if(v.skinPalette)h+=`<div class="preview-item"><div class="preview-label">Skin Palette:</div><div class="preview-value">${v.skinPalette}</div>
+</div>`;if(v.physicalBuild)h+=`<div class="preview-item"><div class="preview-label">Build:</div><div class="preview-value">${v.physicalBuild}</div>
+</div>`;if(v.clothing)h+=`<div class="preview-item"><div class="preview-label">Clothing:</div><div class="preview-value">${v.clothing}</div>
+</div>`;if(v.background)h+=`<div class="preview-item"><div class="preview-label">Background:</div><div class="preview-value">${v.background}</div>
+</div>`;if(v.lighting)h+=`<div class="preview-item"><div class="preview-label">Lighting:</div><div class="preview-value">${v.lighting}</div>
+</div>`;if(v.envDetails)h+=`<div class="preview-item"><div class="preview-label">Env Details:</div><div class="preview-value">${v.envDetails}</div>
+</div>`;if(v.pose)h+=`<div class="preview-item"><div class="preview-label">Pose:</div><div class="preview-value">${v.pose}</div>
+</div>`;if(v.expression)h+=`<div class="preview-item"><div class="preview-label">Expression:</div><div class="preview-value">${v.expression}</div>
+</div>`;if(v.clarification)h+=`<div class="preview-item"><div class="preview-label">Clarifications:</div><div class="preview-value">${v.clarification}</div>
+</div>`;if(v.artStyle)h+=`<div class="preview-item"><div class="preview-label">Art Style:</div><div class="preview-value">${v.artStyle}</div>
+</div>`;if(v.imageStyle)h+=`<div class="preview-item"><div class="preview-label">Image Style:</div><div class="preview-value">${v.imageStyle}</div>
+</div>`;if(v.imageSize)h+=`<div class="preview-item"><div class="preview-label">Size:</div><div class="preview-value">${v.imageSize}</div>
+</div>`;if(h==='')h='<div style="color:var(--text-secondary);text-align:center;padding:40px 20px">Fill in the form</div>';p.innerHTML=h}
+function generateFinalPrompt(){const v=gatherAllValues();const p=generateDescription(v);const d=document.getElementById('finalPromptDisplay');d.textContent=p;d.style.display='block';d.scrollIntoView({behavior:'smooth',block:'nearest'})}
+function generateDescription(v){let d='';if(v.age&&v.gender)d+=`A ${v.age.toLowerCase()} ${v.gender.toLowerCase()} human`;else if(v.age)d+=`A ${v.age.toLowerCase()} human`;else if(v.gender)d+=`A ${v.gender.toLowerCase()} human`;else d='A human';if(v.eyeShape||v.eyeColor)d+=' with';if(v.eyeShape)d+=` ${v.eyeShape.toLowerCase()} eyes`;if(v.eyeColor)d+=` that are ${v.eyeColor.toLowerCase()}`;if(v.noseShape)d+=`, ${v.noseShape.toLowerCase()} nose`;if(v.mouthLips)d+=`, ${v.mouthLips.toLowerCase()} mouth`;if(v.jawChin)d+=`, ${v.jawChin.toLowerCase()} jawline and chin`;if(v.brows)d+=`, ${v.brows.toLowerCase()} brows`;if(v.hair)d+=`. Hair: ${v.hair.toLowerCase()}`;if(v.skinPalette)d+=`. ${v.skinPalette} skin/body palette`;if(v.physicalBuild)d+=`, ${v.physicalBuild.toLowerCase()} build`;if(v.clothing)d+=`. Wearing ${v.clothing.toLowerCase()}`;if(v.pose)d+=`. The figure is ${v.pose.toLowerCase()}`;if(v.expression)d+=` with ${v.expression.toLowerCase()} expression`;if(v.background)d+=`, in ${v.background.toLowerCase()}`;if(v.lighting)d+=` under ${v.lighting.toLowerCase()}`;if(v.envDetails&&v.envDetails.toLowerCase()!=='none')d+=` with ${v.envDetails.toLowerCase()}`;if(v.artStyle)d+=`. Rendered in ${v.artStyle.toLowerCase()} style`;if(v.imageStyle){const fr=v.imageStyle.toLowerCase();if(fr.includes('portrait'))d+=', portrait framing (shoulders up)';else if(fr.includes('full'))d+=', full body'}if(v.imageSize){const sz=v.imageSize.toLowerCase();if(sz.includes('square'))d+=', square composition';else if(sz.includes('tall'))d+=', vertical composition';else if(sz.includes('wide'))d+=', horizontal composition'}d+='. Ultra-fine detail, cinematic lighting, professional rendering';if(v.clarification&&v.clarification.toLowerCase()!=='none')d+=`. CRITICAL OVERRIDES: ${v.clarification}`;d+='.';return d}
+function gatherAllValues(){const hairParts=[document.getElementById('q4g_length').value,document.getElementById('q4g_texture').value,document.getElementById('q4g_style').value,document.getElementById('q4g_color').value].filter(v=>v);const hair=hairParts.length>0?hairParts.join(', '):'';return{age:document.getElementById('q2').value,gender:document.getElementById('q3').value,eyeShape:document.getElementById('q4a').value,eyeColor:document.getElementById('q4b').value,noseShape:document.getElementById('q4c').value,mouthLips:document.getElementById('q4d').value,jawChin:document.getElementById('q4e').value,brows:document.getElementById('q4f').value,hair:hair,skinPalette:document.getElementById('q5').value,physicalBuild:document.getElementById('q6').value,clothing:document.getElementById('q7').value,background:document.getElementById('q8').value,lighting:document.getElementById('q9').value,envDetails:document.getElementById('q10').value,pose:document.getElementById('q11').value,expression:document.getElementById('q12').value,clarification:document.getElementById('q13').value,artStyle:document.getElementById('q14').value,imageStyle:document.getElementById('q15').value,imageSize:document.getElementById('q16').value}}
+function copyPromptToClipboard(){const d=document.getElementById('finalPromptDisplay');if(d.style.display==='none'){alert('Please generate the final prompt first.');return}navigator.clipboard.writeText(d.textContent).then(()=>alert('Prompt copied to clipboard!')).catch(()=>alert('Failed to copy to clipboard'))}
+function loadPreset(n){const p=presets[n];if(!p)return;clearAll();Object.keys(p).forEach(k=>{const e=document.getElementById(k);if(e)e.value=p[k]});updatePreview()}
+function saveConfiguration(){const c=gatherAllValues(),j=JSON.stringify(c,null,2),b=new Blob([j],{type:'application/json'}),u=URL.createObjectURL(b),a=document.createElement('a');a.href=u;a.download='portrait_config.json';a.click();URL.revokeObjectURL(u)}
+function loadConfiguration(){const i=document.createElement('input');i.type='file';i.accept='.json';i.onchange=(e)=>{const f=e.target.files[0],r=new FileReader();r.onload=(ev)=>{try{const c=JSON.parse(ev.target.result);Object.keys(c).forEach(k=>{const el=document.getElementById(k);if(el)el.value=c[k]});updatePreview();alert('Configuration loaded!')}catch{alert('Error loading configuration file')}};r.readAsText(f)};i.click()}
+function clearAll(){document.getElementById('generatorForm').reset();document.getElementById('finalPromptDisplay').style.display='none';updatePreview()}
+document.addEventListener('DOMContentLoaded',()=>updatePreview());
+</script>
+</body></html>
