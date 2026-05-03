@@ -1,0 +1,839 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Battle Card Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+<script src="https://html2canvas.hertzen.com/dist/html2canvas.min.js"></script>
+<style>
+  :root {
+    --amber: #c4872a;
+    --amber-light: #dfa94e;
+    --amber-dark: #7a5010;
+    --green: #2d6b42;
+    --green-light: #4a9962;
+    --green-dark: #1a4529;
+    --navy-dark: #0a0d14;
+    --navy-mid: #0f1520;
+    --navy-light: #182030;
+    --text-light: #e8e4d8;
+    --text-dim: #7a8898;
+    --border: rgba(196,135,42,0.3);
+    --border-green: rgba(45,107,66,0.45);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--navy-dark);
+    color: var(--text-light);
+    font-family: 'Crimson Text', serif;
+    min-height: 100vh;
+    padding: 2rem;
+  }
+
+  .container { max-width: 960px; margin: 0 auto; }
+
+  header {
+    text-align: center;
+    margin-bottom: 2rem;
+    padding-bottom: 1.25rem;
+    border-bottom: 1px solid var(--border-green);
+  }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 2.5rem;
+    color: var(--amber);
+    text-shadow: 0 0 24px rgba(196,135,42,0.35);
+  }
+
+  .subtitle {
+    font-family: 'Cinzel', serif;
+    color: var(--text-dim);
+    letter-spacing: 0.3em;
+    font-size: 0.8rem;
+    margin-top: 0.5rem;
+  }
+
+  .editor-section {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+  }
+
+  .section-title {
+    font-family: 'Cinzel', serif;
+    font-size: 0.8rem;
+    letter-spacing: 0.3em;
+    color: var(--green-light);
+    margin-bottom: 1rem;
+    text-transform: uppercase;
+  }
+
+  .upload-area {
+    border: 2px dashed var(--border);
+    border-radius: 4px;
+    padding: 2rem;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    margin-bottom: 0.75rem;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .upload-area:hover { border-color: var(--amber); background: rgba(196,135,42,0.05); }
+  .upload-area.has-image { border-style: solid; border-color: var(--amber-dark); padding: 0; }
+  .upload-area img { width: 100%; max-height: 300px; object-fit: contain; display: block; }
+
+  .upload-area.paste-highlight {
+    border-color: var(--amber);
+    background: rgba(196,135,42,0.08);
+    box-shadow: 0 0 16px rgba(196,135,42,0.2);
+  }
+
+  .upload-placeholder { color: var(--text-dim); font-family: 'Cinzel', serif; }
+  .upload-placeholder .icon { font-size: 3rem; display: block; margin-bottom: 1rem; }
+  .upload-area input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  .paste-hint {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.15em;
+    color: var(--text-dim);
+    text-align: center;
+    margin-bottom: 1rem;
+    padding: 0.5rem;
+    border: 1px dashed rgba(45,107,66,0.25);
+    border-radius: 2px;
+  }
+
+  .narrative-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+
+  .btn-load-txt {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.15em;
+    color: var(--amber);
+    background: var(--navy-dark);
+    border: 1px solid var(--border);
+    border-radius: 2px;
+    padding: 0.35rem 0.9rem;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.2s;
+  }
+  .btn-load-txt:hover { border-color: var(--amber); background: var(--navy-light); }
+  .btn-load-txt input[type="file"] { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+
+  textarea {
+    width: 100%;
+    min-height: 280px;
+    background: var(--navy-dark);
+    border: 1px solid var(--border);
+    color: var(--text-light);
+    padding: 1.5rem;
+    font-family: 'Crimson Text', serif;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    border-radius: 2px;
+    resize: vertical;
+    outline: none;
+  }
+  textarea:focus { border-color: var(--amber); }
+  textarea::placeholder { color: var(--text-dim); }
+
+  input[type="text"] {
+    background: var(--navy-dark);
+    border: 1px solid var(--border);
+    color: var(--text-light);
+    border-radius: 2px;
+    outline: none;
+    font-family: 'Crimson Text', serif;
+    transition: border-color 0.2s;
+  }
+  input[type="text"]:focus { border-color: var(--amber); }
+
+  .btn-row {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+  }
+
+  button {
+    flex: 1;
+    padding: 1rem 2rem;
+    font-family: 'Cinzel', serif;
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    border: none;
+    border-radius: 2px;
+    transition: all 0.3s;
+  }
+
+  .btn-primary {
+    background: linear-gradient(180deg, var(--green-light), var(--green));
+    color: var(--text-light);
+    border: 1px solid rgba(45,107,66,0.8);
+  }
+  .btn-primary:hover {
+    background: linear-gradient(180deg, #5ab576, var(--green-light));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 14px rgba(45,107,66,0.4);
+  }
+
+  .btn-secondary {
+    background: var(--navy-dark);
+    color: var(--amber);
+    border: 1px solid var(--border);
+  }
+  .btn-secondary:hover { background: var(--navy-light); border-color: var(--amber); }
+
+  #roundCardsContainer { display: none; }
+
+  .round-card-wrapper { margin-bottom: 3rem; }
+
+  .round-card-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.25em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 0.75rem;
+    text-align: center;
+  }
+
+  /* STACKED / PORTRAIT CARD */
+  .battle-card {
+    background: var(--navy-mid);
+    border: 2px solid var(--amber);
+    border-radius: 6px;
+    overflow: hidden;
+    box-shadow:
+      0 0 40px rgba(196,135,42,0.12),
+      0 0 80px rgba(45,107,66,0.06),
+      inset 0 0 60px rgba(10,13,20,0.4);
+    display: flex;
+    flex-direction: column;
+    max-width: 780px;
+    margin: 0 auto;
+  }
+
+  .card-image-panel {
+    position: relative;
+    overflow: hidden;
+    background: var(--navy-dark);
+    height: 380px;
+    flex-shrink: 0;
+  }
+
+  .card-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center top;
+    display: block;
+  }
+
+  /* Horizontal decorative divider below image */
+  .card-image-panel::after {
+    content: '';
+    position: absolute;
+    bottom: 0; left: 0;
+    width: 100%; height: 3px;
+    background: linear-gradient(90deg,
+      transparent 0%,
+      var(--amber) 20%,
+      var(--green-light) 50%,
+      var(--amber) 80%,
+      transparent 100%
+    );
+  }
+
+  .card-content {
+    padding: 1.75rem 2.25rem 2rem;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .card-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.55rem;
+    color: var(--amber);
+    text-align: center;
+    margin-bottom: 0.3rem;
+    text-shadow: 0 0 20px rgba(196,135,42,0.3);
+    letter-spacing: 0.03em;
+    line-height: 1.3;
+  }
+
+  .card-subtitle {
+    font-family: 'Cinzel', serif;
+    text-align: center;
+    color: var(--text-dim);
+    letter-spacing: 0.3em;
+    font-size: 0.7rem;
+    margin-bottom: 1.4rem;
+    text-transform: uppercase;
+  }
+
+  .round-header {
+    font-family: 'Cinzel', serif;
+    color: var(--green-light);
+    font-size: 0.9rem;
+    letter-spacing: 0.25em;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--border-green);
+    text-transform: uppercase;
+  }
+
+  .card-narrative {
+    font-family: 'Crimson Text', serif;
+    font-size: 1.05rem;
+    line-height: 1.82;
+    color: var(--text-light);
+  }
+
+  .card-narrative p { margin-bottom: 0.85rem; }
+  .card-narrative p:last-child { margin-bottom: 0; }
+
+  .winner-box {
+    background: linear-gradient(135deg, rgba(45,107,66,0.18), rgba(196,135,42,0.06));
+    border: 2px solid var(--amber);
+    border-radius: 4px;
+    padding: 1.75rem 2rem;
+    text-align: center;
+  }
+
+  .winner-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.75rem;
+    letter-spacing: 0.3em;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    margin-bottom: 0.5rem;
+  }
+
+  .winner-name {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 1.75rem;
+    color: var(--amber);
+    text-shadow: 0 0 24px rgba(196,135,42,0.5);
+  }
+
+  .winner-text {
+    margin-top: 0.85rem;
+    font-style: italic;
+    font-size: 1.1rem;
+    font-family: 'Crimson Text', serif;
+    color: var(--text-light);
+    line-height: 1.7;
+  }
+
+  .opening-box {
+    background: linear-gradient(135deg, rgba(45,107,66,0.08), rgba(10,13,20,0.5));
+    border: 1px solid var(--border-green);
+    border-radius: 4px;
+    padding: 1.5rem 2rem;
+    font-style: italic;
+    font-size: 1.05rem;
+    line-height: 1.85;
+    color: var(--text-light);
+    font-family: 'Crimson Text', serif;
+  }
+
+  .opening-box p { margin-bottom: 1rem; }
+  .opening-box p:last-child { margin-bottom: 0; }
+
+  .card-download-row {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1rem;
+    max-width: 780px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .card-download-row button {
+    font-size: 0.75rem;
+    padding: 0.6rem 1rem;
+    letter-spacing: 0.15em;
+  }
+
+  .instructions {
+    background: rgba(45,107,66,0.07);
+    border-left: 3px solid var(--green-light);
+    padding: 1rem 1.5rem;
+    margin-bottom: 2rem;
+    font-size: 0.95rem;
+    color: var(--text-dim);
+  }
+  .instructions strong { color: var(--amber); }
+
+  .all-download-section {
+    background: var(--navy-mid);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 1.5rem 2rem;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    display: none;
+  }
+
+  .all-download-section .section-title { margin-bottom: 0.75rem; }
+
+  .reddit-tip {
+    margin-top: 1rem;
+    color: var(--text-dim);
+    font-size: 0.88rem;
+    text-align: center;
+    line-height: 1.6;
+  }
+
+  .round-image-panel { margin-top: 1.5rem; }
+
+  .round-image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+    gap: 1rem;
+    margin-top: 0.75rem;
+  }
+
+  .round-image-slot-label {
+    font-family: 'Cinzel', serif;
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    color: var(--amber);
+    text-transform: uppercase;
+    margin-bottom: 0.4rem;
+  }
+
+  .round-image-slot .upload-area {
+    margin-bottom: 0;
+    padding: 0.75rem;
+    min-height: 70px;
+  }
+
+  .round-image-slot .upload-placeholder { font-size: 0.7rem; }
+  .round-image-slot .upload-placeholder .icon { font-size: 1.4rem; margin-bottom: 0.25rem; }
+  .round-image-slot .upload-area img { max-height: 100px; width: auto; object-fit: contain; }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .editor-section, header, .btn-row, .instructions, .card-download-row, .all-download-section { display: none !important; }
+    #roundCardsContainer { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header>
+    <h1>Battle Card Generator</h1>
+    <p class="subtitle">&#10022; Cosmic Cowboy's AI Worldbuilders &#10022;</p>
+  </header>
+
+  <div class="instructions">
+    <strong>How to use:</strong> Upload or paste your arena image, load or paste your battle narrative, then click <strong>Generate Round Cards</strong>. Each round becomes its own card -- download individually and post as a Reddit image gallery.
+  </div>
+
+  <div class="editor-section">
+    <div class="section-title">&#9876; Fighter Names</div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.2em;color:var(--text-dim);margin-bottom:0.4rem;">FIGHTER A</div>
+        <input type="text" id="fighterAName" placeholder="Enter Fighter A name..." style="width:100%;padding:0.75rem 1rem;font-size:1rem;">
+      </div>
+      <div>
+        <div style="font-family:'Cinzel',serif;font-size:0.7rem;letter-spacing:0.2em;color:var(--text-dim);margin-bottom:0.4rem;">FIGHTER B</div>
+        <input type="text" id="fighterBName" placeholder="Enter Fighter B name..." style="width:100%;padding:0.75rem 1rem;font-size:1rem;">
+      </div>
+    </div>
+
+    <div class="section-title">&#9876; Battle Image (default for all cards)</div>
+
+    <div class="upload-area" id="uploadArea" onclick="setActiveSlot('arena')" tabindex="0">
+      <input type="file" id="imageInput" accept="image/*" onchange="handleImageFile(event,'arena')">
+      <div class="upload-placeholder" id="placeholder">
+        <span class="icon">&#128444;</span>
+        Click to upload arena face-off image
+      </div>
+    </div>
+
+    <div class="paste-hint">-- click any slot to select it, then press <strong>Ctrl+V</strong> / <strong>Cmd+V</strong> to paste into it --</div>
+
+    <div class="round-image-panel" id="roundImagePanel" style="display:none;">
+      <div class="section-title">&#128444; Per-Card Images <span style="font-size:0.7rem;color:var(--text-dim);letter-spacing:0.1em;">(optional -- overrides default image for that card)</span></div>
+      <div class="round-image-grid" id="roundImageGrid"></div>
+    </div>
+
+    <div class="section-title" style="margin-top: 1.5rem;">&#128220; Battle Narrative</div>
+
+    <div class="narrative-toolbar">
+      <span style="font-family:'Cinzel',serif;font-size:0.72rem;letter-spacing:0.15em;color:var(--text-dim);">PASTE BELOW OR LOAD A .TXT FILE</span>
+      <label class="btn-load-txt">
+        &#128194; Load .txt File
+        <input type="file" accept=".txt,text/plain" onchange="handleTxtFile(event)">
+      </label>
+    </div>
+
+    <textarea id="narrativeInput" placeholder="Paste your arena battle narrative here..."></textarea>
+
+    <div class="btn-row">
+      <button class="btn-secondary" onclick="loadExample()">Load Example</button>
+      <button class="btn-primary" onclick="generateCards()">&#9876; Generate Round Cards &#9876;</button>
+    </div>
+  </div>
+
+  <div id="roundCardsContainer"></div>
+
+  <div class="all-download-section" id="allDownloadSection">
+    <div class="section-title">&#128190; Download All Cards</div>
+    <div class="btn-row" style="margin-top:0;">
+      <button class="btn-primary" onclick="downloadAll('png')">&#128229; All as PNG</button>
+      <button class="btn-secondary" onclick="downloadAll('jpg')">&#128229; All as JPG</button>
+    </div>
+    <p class="reddit-tip">Post all cards as a <strong>Reddit image gallery</strong> -- readers swipe through round by round.</p>
+  </div>
+</div>
+
+<script>
+let uploadedImage = null;
+let activeSlot = 'arena';
+let generatedCardIds = [];
+let roundImages = {};
+
+function setActiveSlot(slot) {
+  activeSlot = slot;
+  document.getElementById('uploadArea').style.outline =
+    slot === 'arena' ? '2px solid var(--amber)' : 'none';
+  document.querySelectorAll('.round-image-slot .upload-area').forEach(a => {
+    a.style.outline = 'none';
+  });
+}
+
+function setActiveRoundSlot(key) {
+  activeSlot = 'round_' + key;
+  document.getElementById('uploadArea').style.outline = 'none';
+  document.querySelectorAll('.round-image-slot .upload-area').forEach(a => {
+    a.style.outline = a.id === 'roundSlotArea_' + key ? '2px solid var(--amber)' : 'none';
+  });
+}
+
+function handleImageFile(event, slot) {
+  const file = event.target.files[0];
+  if (file) readImageFile(file, slot);
+}
+
+function readImageFile(file, slot) {
+  const reader = new FileReader();
+  reader.onload = e => setImage(e.target.result, slot);
+  reader.readAsDataURL(file);
+}
+
+function setImage(dataUrl, slot) {
+  if (slot.startsWith('round_')) {
+    const key = slot.substring(6);
+    roundImages[key] = dataUrl;
+    const area = document.getElementById('roundSlotArea_' + key);
+    const ph = document.getElementById('roundSlotPh_' + key);
+    if (ph) ph.style.display = 'none';
+    if (area) {
+      let img = area.querySelector('img');
+      if (!img) { img = document.createElement('img'); area.appendChild(img); }
+      img.src = dataUrl;
+      area.classList.add('has-image');
+      area.style.outline = '2px solid var(--amber-dark)';
+    }
+    const cardImg = document.querySelector('#battleCard_' + key + ' .card-image');
+    if (cardImg) cardImg.src = dataUrl;
+  } else {
+    uploadedImage = dataUrl;
+    const area = document.getElementById('uploadArea');
+    document.getElementById('placeholder').style.display = 'none';
+    let img = area.querySelector('img');
+    if (!img) { img = document.createElement('img'); area.appendChild(img); }
+    img.src = dataUrl;
+    area.classList.add('has-image');
+    area.style.outline = '2px solid var(--amber-dark)';
+  }
+}
+
+document.addEventListener('paste', e => {
+  const items = e.clipboardData && e.clipboardData.items;
+  if (!items) return;
+  for (const item of items) {
+    if (item.type.startsWith('image/')) {
+      e.preventDefault();
+      readImageFile(item.getAsFile(), activeSlot);
+      let areaEl;
+      if (activeSlot.startsWith('round_')) {
+        const key = activeSlot.substring(6);
+        areaEl = document.getElementById('roundSlotArea_' + key);
+      } else {
+        areaEl = document.getElementById('uploadArea');
+      }
+      if (areaEl) {
+        areaEl.classList.add('paste-highlight');
+        setTimeout(() => areaEl.classList.remove('paste-highlight'), 600);
+      }
+      return;
+    }
+  }
+});
+
+function handleTxtFile(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    document.getElementById('narrativeInput').value = e.target.result;
+    updateRoundImageSlots();
+  };
+  reader.readAsText(file);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+  document.getElementById('narrativeInput').addEventListener('input', updateRoundImageSlots);
+});
+
+function updateRoundImageSlots() {
+  const text = document.getElementById('narrativeInput').value;
+  const tags = [];
+  const seenTags = new Set();
+  const tagRegex = /\[(OPENING|ROUND\s*\d+|WINNER[^\]]*)\]/gi;
+  let m;
+  while ((m = tagRegex.exec(text)) !== null) {
+    const tagName = m[1].trim().toUpperCase();
+    if (tagName === 'OPENING' || seenTags.has(tagName)) continue;
+    seenTags.add(tagName);
+    tags.push({ tag: m[1].trim(), key: tagName.replace(/[^A-Z0-9]+/g, '_') });
+  }
+
+  if (tags.length === 0) {
+    document.getElementById('roundImagePanel').style.display = 'none';
+    return;
+  }
+
+  document.getElementById('roundImagePanel').style.display = 'block';
+  const grid = document.getElementById('roundImageGrid');
+  grid.innerHTML = '';
+  roundImages = {};
+
+  tags.forEach(({ tag, key }) => {
+    const slot = document.createElement('div');
+    slot.className = 'round-image-slot';
+    slot.innerHTML = `
+      <div class="round-image-slot-label">${tag}</div>
+      <div class="upload-area" id="roundSlotArea_${key}" onclick="setActiveRoundSlot('${key}')" tabindex="0">
+        <input type="file" accept="image/*" onchange="handleImageFile(event,'round_${key}')">
+        <div class="upload-placeholder" id="roundSlotPh_${key}">
+          <span class="icon">&#128444;</span>
+          Click or paste
+        </div>
+      </div>
+    `;
+    grid.appendChild(slot);
+  });
+}
+
+function parseNarrativeIntoRounds(text) {
+  const parts = text.split(/(\[(?:OPENING|ROUND\s*\d+|WINNER[^\]]*)\])/gi);
+  const rounds = [];
+  let currentTag = null;
+  let currentContent = '';
+
+  for (const part of parts) {
+    if (/^\[(?:OPENING|ROUND\s*\d+|WINNER[^\]]*)\]$/i.test(part)) {
+      if (currentTag !== null) {
+        rounds.push({ tag: currentTag, content: currentContent.trim() });
+      }
+      currentTag = part.replace(/[\[\]]/g, '').trim();
+      currentContent = '';
+    } else {
+      currentContent += part;
+    }
+  }
+  if (currentTag !== null && currentContent.trim()) {
+    rounds.push({ tag: currentTag, content: currentContent.trim() });
+  }
+
+  if (rounds.length === 0 && text.trim()) {
+    rounds.push({ tag: 'BATTLE REPORT', content: text.trim() });
+  }
+
+  return rounds;
+}
+
+function contentToHtml(content, isWinner, tag) {
+  const isOpening = /opening|intro|ceremony/i.test(tag || '');
+  if (isOpening) {
+    const paragraphs = content.split(/\n\n+/).filter(p => p.trim());
+    return `<div class="opening-box">${paragraphs.map(p => `<p>${p.trim()}</p>`).join('')}</div>`;
+  }
+  if (isWinner) {
+    const nameMatch = content.trim().match(/^(.+?)\s+wins/i);
+    const name = nameMatch ? nameMatch[1] : 'Victor';
+    return `
+      <div class="winner-box">
+        <div class="winner-label">&#9876; Victor of the Arena &#9876;</div>
+        <div class="winner-name">${name}</div>
+        <p class="winner-text">${content}</p>
+      </div>`;
+  }
+  const paragraphs = content.split(/\n\n+/).filter(p => p.trim());
+  return paragraphs.map(p => `<p>${p.trim()}</p>`).join('');
+}
+
+function extractTitle() {
+  const a = document.getElementById('fighterAName').value.trim();
+  const b = document.getElementById('fighterBName').value.trim();
+  if (a && b) return `${a} vs ${b}`;
+  if (a) return a;
+  if (b) return b;
+  return 'Arena Battle';
+}
+
+function generateCards() {
+  const narrative = document.getElementById('narrativeInput').value;
+  if (!uploadedImage) { alert('Please upload or paste an arena image first!'); return; }
+  if (!narrative.trim()) { alert('Please enter a battle narrative!'); return; }
+
+  const rounds = parseNarrativeIntoRounds(narrative);
+  const title = extractTitle();
+  const container = document.getElementById('roundCardsContainer');
+  container.innerHTML = '';
+  generatedCardIds = [];
+  container.style.display = 'block';
+
+  rounds.forEach((round, idx) => {
+    const isWinner = /winner/i.test(round.tag);
+    const key = round.tag.trim().toUpperCase().replace(/[^A-Z0-9]+/g, '_');
+    const perRoundImg = roundImages[key];
+    const cardImg = perRoundImg || uploadedImage;
+    const cardId = 'battleCard_' + key;
+    generatedCardIds.push(cardId);
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'round-card-wrapper';
+
+    const label = document.createElement('div');
+    label.className = 'round-card-label';
+    label.textContent = `Card ${idx + 1} of ${rounds.length} — ${round.tag}`;
+    wrapper.appendChild(label);
+
+    const card = document.createElement('div');
+    card.className = 'battle-card';
+    card.id = cardId;
+    card.innerHTML = `
+      <div class="card-image-panel">
+        <img class="card-image" src="${cardImg}" alt="Battle Arena">
+      </div>
+      <div class="card-content">
+        <h2 class="card-title">${title}</h2>
+        <p class="card-subtitle">&#10022; Combat Chronicle &#10022;</p>
+        <div class="round-header">${round.tag}</div>
+        <div class="card-narrative">${contentToHtml(round.content, isWinner, round.tag)}</div>
+      </div>
+    `;
+
+    wrapper.appendChild(card);
+
+    const dlRow = document.createElement('div');
+    dlRow.className = 'card-download-row';
+    dlRow.innerHTML = `
+      <button class="btn-primary" onclick="downloadCard('${cardId}','png')">&#128229; PNG — ${round.tag}</button>
+      <button class="btn-secondary" onclick="downloadCard('${cardId}','jpg')">&#128229; JPG — ${round.tag}</button>
+    `;
+    wrapper.appendChild(dlRow);
+    container.appendChild(wrapper);
+  });
+
+  document.getElementById('allDownloadSection').style.display = 'block';
+  container.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+function downloadCard(cardId, format) {
+  const card = document.getElementById(cardId);
+  html2canvas(card, {
+    scale: 2,
+    backgroundColor: '#0f1520',
+    logging: false,
+    useCORS: true,
+    allowTaint: true
+  }).then(canvas => {
+    canvas.toBlob(blob => {
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `${cardId}.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    }, `image/${format === 'jpg' ? 'jpeg' : 'png'}`, 0.92);
+  });
+}
+
+async function downloadAll(format) {
+  for (let i = 0; i < generatedCardIds.length; i++) {
+    await new Promise(resolve => setTimeout(resolve, 300 * i));
+    downloadCard(generatedCardIds[i], format);
+  }
+}
+
+function loadExample() {
+  document.getElementById('narrativeInput').value = `[OPENING]
+The arena is packed to the rafters -- every seat taken, every voice ready. Two fighters step onto the sand under the roar of the crowd.
+
+In the east corner, a coiled spring of pure aggression -- LANNY THE SWIFT, the speedster who hits like a freight train and never stops moving!
+
+In the west, the calculating counter-puncher -- CALLIOPE SHADOWDANCER, composed as a surgeon, waiting for the moment to strike!
+
+The referee steps back. The bell is raised. This is happening.
+
+[ROUND 1]
+The bell clangs and Lanny EXPLODES off the mark! He winds up for a brutal opener -- but Calliope is already gone! She pivots on a dime and Lanny's strike whistles through empty air!
+
+Calliope answers with SECOND WIND -- the fatigue melts away as she tops up her stamina!
+
+ROUND ONE SCORE:
+Lanny: 14 HP -- swinging at shadows!
+Calliope: 15 HP -- refreshed and waiting!
+
+[ROUND 2]
+Lanny closes and LANDS CLEAN -- TWELVE points of damage! Calliope staggers!
+
+Calliope fires back -- TEN points of damage rips through Lanny's frame!
+
+ROUND TWO SCORE:
+Lanny: 4 HP -- running on fumes!
+Calliope: 3 HP -- still standing!
+
+[ROUND 3]
+Lanny brings both hands up for the EAR CLAP -- FOURTEEN points of damage! Calliope crashes to the canvas! IT'S OVER!
+
+[WINNER] Lanny the Swift wins in 3 brutal rounds! A hard-fought victory for the speedster!`;
+  updateRoundImageSlots();
+}
+
+document.addEventListener('keydown', e => {
+  if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') generateCards();
+});
+</script>
+
+</body>
+</html>
