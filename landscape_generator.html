@@ -30,8 +30,6 @@
   --red:         #f87171;
   --glow:        0 0 12px rgba(144,224,239,0.30);
   --accent:      #FFD166;
-  --xai-purple:  #9B59B6;
-  --xai-glow:    0 0 14px rgba(155,89,182,0.45);
 }
 
 /* ============================================================
@@ -190,16 +188,15 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .btn-small { font-size: 0.66rem; padding: 5px 12px; }
 
 .btn-xai {
-  background: linear-gradient(135deg, #6B21A8, #4C1D95);
-  border-color: rgba(155,89,182,0.6);
-  color: #E9D5FF;
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
   font-size: 0.80rem;
   padding: 9px 20px;
 }
 .btn-xai:hover:not(:disabled) {
-  background: linear-gradient(135deg, #7C3AED, #6B21A8);
-  box-shadow: var(--xai-glow);
-  border-color: rgba(167,139,250,0.8);
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: var(--glow);
 }
 .btn-xai:disabled { opacity: 0.4; }
 
@@ -464,12 +461,12 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .preview-actions .btn { flex: 1; }
 
 /* ============================================================
-   CSS: xAI PANEL
+   CSS: xAI NARRATIVE PROMPT PANEL
    ============================================================ */
 .xai-panel {
   margin-top: 16px;
-  background: rgba(76,29,149,0.08);
-  border: 1px solid rgba(155,89,182,0.35);
+  background: var(--surface);
+  border: 1px solid var(--border);
   border-radius: 6px;
   overflow: hidden;
 }
@@ -480,10 +477,10 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  color: #C4B5FD;
+  color: var(--accent);
   text-transform: uppercase;
-  border-bottom: 1px solid rgba(155,89,182,0.30);
-  background: rgba(76,29,149,0.15);
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.20);
   display: flex;
   align-items: center;
   gap: 8px;
@@ -499,7 +496,7 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 }
 .xai-row label {
   font-size: 0.74rem;
-  color: #C4B5FD;
+  color: var(--soft-cyan);
   white-space: nowrap;
   min-width: 68px;
   font-weight: 500;
@@ -510,18 +507,18 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
   flex: 1;
 }
 .xai-key-wrap input {
-  border-color: rgba(155,89,182,0.45);
+  border-color: var(--border);
   padding-right: 60px;
 }
-.xai-key-wrap input:focus { border-color: rgba(167,139,250,0.8); box-shadow: var(--xai-glow); }
+.xai-key-wrap input:focus { border-color: var(--soft-cyan); box-shadow: var(--glow); }
 
 .xai-toggle {
   position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
   background: none; border: none; cursor: pointer;
-  color: rgba(155,89,182,0.7); font-size: 0.70rem; font-family: 'Exo 2', sans-serif;
+  color: var(--dim); font-size: 0.70rem; font-family: 'Exo 2', sans-serif;
   font-weight: 600; letter-spacing: 0.05em; padding: 2px 4px;
 }
-.xai-toggle:hover { color: #C4B5FD; }
+.xai-toggle:hover { color: var(--soft-cyan); }
 
 .xai-gen-btn-row {
   display: flex;
@@ -537,37 +534,52 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 }
 .xai-status.ok  { color: var(--green); }
 .xai-status.err { color: var(--red); }
-.xai-status.run { color: #C4B5FD; }
+.xai-status.run { color: var(--soft-cyan); }
 
-/* Generated image output */
-.xai-image-wrap {
+/* Narrative output */
+.narrative-output {
   margin-top: 12px;
-  border: 1px solid rgba(155,89,182,0.30);
+  border: 1px solid var(--border);
   border-radius: 5px;
   overflow: hidden;
   display: none;
-  background: rgba(0,0,0,0.30);
+  background: rgba(0,0,0,0.25);
 }
-.xai-image-wrap.visible { display: block; }
-.xai-image-wrap img {
-  width: 100%;
-  height: auto;
-  display: block;
+.narrative-output.visible { display: block; }
+.narrative-text {
+  padding: 12px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--pale-blue);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 260px;
+  overflow-y: auto;
 }
-.xai-image-actions {
+.narrative-actions {
   display: flex;
   gap: 8px;
   padding: 8px 10px;
-  border-top: 1px solid rgba(155,89,182,0.20);
+  border-top: 1px solid var(--border);
+  align-items: center;
 }
-.xai-image-actions .btn { flex: 1; font-size: 0.64rem; }
+.narrative-copy-confirm {
+  font-size: 0.72rem;
+  color: var(--green);
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
+.narrative-copy-confirm.show { opacity: 1; }
 
 /* Spinner */
 .spinner {
   display: inline-block;
   width: 12px; height: 12px;
-  border: 2px solid rgba(167,139,250,0.25);
-  border-top-color: #A78BFA;
+  border: 2px solid rgba(144,224,239,0.20);
+  border-top-color: var(--soft-cyan);
   border-radius: 50%;
   animation: spin 0.7s linear infinite;
   vertical-align: middle;
@@ -1113,68 +1125,49 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
         </div>
         <div class="preview-actions">
           <button class="btn btn-small" onclick="copyPrompt()">&#128203; Copy Prompt</button>
+          <span class="narrative-copy-confirm" id="copyNoticeInline"></span>
         </div>
-        <div class="notice" id="copyNotice" style="margin:0 14px 10px;"></div>
+        <div class="notice" id="copyNotice" style="display:none;"></div>
       </div>
 
-      <!-- xAI Image Generation panel -->
+      <!-- xAI Narrative Prompt panel -->
       <div class="xai-panel">
         <div class="xai-head">
-          &#9889; xAI Image Generation
+          &#9889; xAI Narrative Prompt
         </div>
         <div class="xai-body">
 
           <div class="xai-row">
             <label>API Key</label>
             <div class="xai-key-wrap">
-              <input type="password" id="xaiApiKey" placeholder="xai-..." autocomplete="off">
+              <input type="password" id="xaiApiKey" autocomplete="off">
               <button class="xai-toggle" onclick="toggleKeyVis()">SHOW</button>
             </div>
           </div>
 
-          <div class="xai-row">
-            <label>Model</label>
-            <select id="xaiModel">
-              <option value="grok-2-image-1212">grok-2-image-1212</option>
-              <option value="aurora">aurora</option>
-            </select>
-          </div>
-
-          <div class="xai-row">
-            <label>Images</label>
-            <select id="xaiCount">
-              <option value="1">1</option>
-              <option value="2">2</option>
-              <option value="4">4</option>
-            </select>
-          </div>
-
           <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
-            <input type="checkbox" id="xaiSaveKey" style="width:auto;accent-color:#A78BFA;">
+            <input type="checkbox" id="xaiSaveKey" style="width:auto;accent-color:var(--soft-cyan);">
             <label for="xaiSaveKey" style="font-size:0.74rem;color:var(--dim);margin:0;cursor:pointer;">
               Save API key in browser (localStorage)
             </label>
           </div>
 
           <div class="xai-gen-btn-row" style="margin-top:12px;">
-            <button class="btn btn-xai" id="xaiGenBtn" onclick="generateImage()" disabled>
-              &#9889; Generate Image
+            <button class="btn btn-xai" id="xaiGenBtn" onclick="generateNarrativePrompt()" disabled>
+              &#9889; Generate Narrative Prompt
             </button>
           </div>
 
           <div class="xai-status" id="xaiStatus">Enter an API key above to enable generation.</div>
 
-          <!-- Generated image output -->
-          <div class="xai-image-wrap" id="xaiImageWrap">
-            <img id="xaiGeneratedImg" src="" alt="Generated landscape">
-            <div class="xai-image-actions">
-              <button class="btn btn-small" onclick="downloadImage()">&#8659; Download</button>
-              <button class="btn btn-small" onclick="openImageNewTab()">&#8663; Open Full</button>
+          <!-- Narrative output -->
+          <div class="narrative-output" id="narrativeOutput">
+            <div class="narrative-text" id="narrativeText"></div>
+            <div class="narrative-actions">
+              <button class="btn btn-small" onclick="copyNarrative()">&#128203; Copy</button>
+              <span class="narrative-copy-confirm" id="narrativeCopyConfirm">&#10003; Copied!</span>
             </div>
           </div>
-
-          <!-- Multi-image grid -->
-          <div id="xaiMultiGrid" style="display:none;margin-top:12px;display:none;gap:8px;flex-wrap:wrap;"></div>
 
         </div>
       </div>
@@ -2138,8 +2131,10 @@ function copyPrompt() {
   const text = document.getElementById('livePreview').textContent;
   if (!text || text.includes('Select a World Type')) return;
   navigator.clipboard.writeText(text).then(() => {
-    showNotice('Prompt copied to clipboard.', 'ok', 'copyNotice');
-    setTimeout(() => hideNotice('copyNotice'), 2000);
+    const confirm = document.getElementById('copyNoticeInline');
+    confirm.textContent = '✓ Copied!';
+    confirm.classList.add('show');
+    setTimeout(() => confirm.classList.remove('show'), 2000);
   });
 }
 
@@ -2185,10 +2180,9 @@ function resetApp() {
   document.getElementById('alien-body').classList.remove('open');
   document.querySelector('#earth-accordion .accordion-header').classList.remove('open');
   document.querySelector('#alien-accordion .accordion-header').classList.remove('open');
-  /* Clear any generated images */
-  document.getElementById('xaiImageWrap').classList.remove('visible');
-  const mg = document.getElementById('xaiMultiGrid');
-  mg.innerHTML = ''; mg.style.display = 'none';
+  /* Clear narrative output */
+  document.getElementById('narrativeOutput').classList.remove('visible');
+  document.getElementById('narrativeText').textContent = '';
   setXaiStatus('', '');
 }
 
@@ -2199,23 +2193,15 @@ function resetApp() {
 function toggleKeyVis() {
   const inp = document.getElementById('xaiApiKey');
   const btn = document.querySelector('.xai-toggle');
-  if (inp.type === 'password') {
-    inp.type = 'text';
-    btn.textContent = 'HIDE';
-  } else {
-    inp.type = 'password';
-    btn.textContent = 'SHOW';
-  }
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = 'HIDE'; }
+  else                         { inp.type = 'password'; btn.textContent = 'SHOW'; }
 }
 
 function updateGenBtn() {
   const key = document.getElementById('xaiApiKey').value.trim();
   document.getElementById('xaiGenBtn').disabled = !key;
-  if (!key) {
-    setXaiStatus('Enter an API key above to enable generation.', '');
-  } else {
-    setXaiStatus('Ready — build your prompt above then click Generate.', 'ok');
-  }
+  if (!key) setXaiStatus('Enter an API key above to enable generation.', '');
+  else      setXaiStatus('Ready — build your prompt above then click Generate.', 'ok');
 }
 
 function setXaiStatus(msg, type) {
@@ -2226,71 +2212,53 @@ function setXaiStatus(msg, type) {
 
 
 /* ============================================================
-   JS: xAI — IMAGE GENERATION
+   JS: xAI — NARRATIVE PROMPT GENERATION
    ============================================================ */
-async function generateImage() {
-  const key   = document.getElementById('xaiApiKey').value.trim();
-  const model = document.getElementById('xaiModel').value;
-  const n     = parseInt(document.getElementById('xaiCount').value, 10);
-  const save  = document.getElementById('xaiSaveKey').checked;
+async function generateNarrativePrompt() {
+  const key  = document.getElementById('xaiApiKey').value.trim();
+  const save = document.getElementById('xaiSaveKey').checked;
 
   if (!key) { setXaiStatus('No API key entered.', 'err'); return; }
 
-  const prompt = document.getElementById('livePreview').textContent;
-  if (!prompt || prompt.includes('Select a World Type')) {
+  const rawPrompt = document.getElementById('livePreview').textContent;
+  if (!rawPrompt || rawPrompt.includes('Select a World Type')) {
     setXaiStatus('Build a prompt first by selecting options above.', 'err');
     return;
   }
 
-  if (save) {
-    localStorage.setItem('xaiApiKey', key);
-  } else {
-    localStorage.removeItem('xaiApiKey');
-  }
-
-  /* Map aspect ratio from Q24 to xAI size string */
-  const sizeKey = ST.answers.Q24 || '';
-  const sizeMap = {
-    '1':'1024x1024',
-    '2':'768x1024',
-    '3':'1024x768',
-    '4':'1024x576',
-    '5':'1344x576',
-    '6':'576x1024',
-    '7':'819x1024',
-  };
-  const imageSize = sizeMap[sizeKey] || '1024x1024';
+  if (save) localStorage.setItem('xaiApiKey', key);
+  else      localStorage.removeItem('xaiApiKey');
 
   const genBtn = document.getElementById('xaiGenBtn');
   genBtn.disabled = true;
   genBtn.innerHTML = '<span class="spinner"></span>Generating…';
 
-  /* Hide previous outputs */
-  document.getElementById('xaiImageWrap').classList.remove('visible');
-  const mg = document.getElementById('xaiMultiGrid');
-  mg.innerHTML = ''; mg.style.display = 'none';
-
-  setXaiStatus('<span class="spinner"></span>Sending request to xAI…', 'run');
+  document.getElementById('narrativeOutput').classList.remove('visible');
   document.getElementById('xaiStatus').innerHTML =
-    '<span class="spinner"></span>Sending request to xAI Aurora…';
+    '<span class="spinner"></span>Sending request to xAI…';
   document.getElementById('xaiStatus').className = 'xai-status run';
 
   try {
-    const body = {
-      model,
-      prompt,
-      n,
-      response_format: 'url',
-    };
-    if (model === 'aurora') body.size = imageSize;
-
-    const res = await fetch('https://api.x.ai/v1/images/generations', {
+    const res = await fetch('https://api.x.ai/v1/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${key}`,
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify(body),
+      body: JSON.stringify({
+        model: 'grok-4.3',
+        max_completion_tokens: 600,
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert AI image-prompt writer. You receive a structured list of landscape attributes and transform them into a single, richly evocative image-generation prompt. Write in vivid, painterly language. Output only the prompt itself — no preamble, no explanation, no quotation marks.',
+          },
+          {
+            role: 'user',
+            content: `Convert these landscape attributes into one rich, evocative image-generation prompt:\n\n${rawPrompt}`,
+          },
+        ],
+      }),
     });
 
     const data = await res.json();
@@ -2301,62 +2269,33 @@ async function generateImage() {
       return;
     }
 
-    const images = data.data || [];
-    if (!images.length) { setXaiStatus('No images returned.', 'err'); return; }
+    const text = data?.choices?.[0]?.message?.content?.trim() || '';
+    if (!text) { setXaiStatus('No response returned.', 'err'); return; }
 
-    if (images.length === 1) {
-      const url = images[0].url;
-      document.getElementById('xaiGeneratedImg').src = url;
-      document.getElementById('xaiImageWrap').classList.add('visible');
-      document.getElementById('xaiImageWrap').dataset.url = url;
-      setXaiStatus('Image generated successfully!', 'ok');
-    } else {
-      /* Multi-image grid */
-      mg.style.display = 'flex';
-      images.forEach((img, i) => {
-        const wrap = document.createElement('div');
-        wrap.style.cssText = 'flex:1;min-width:calc(50% - 4px);border:1px solid rgba(155,89,182,0.3);border-radius:4px;overflow:hidden;background:rgba(0,0,0,0.3);';
-        wrap.innerHTML = `<img src="${img.url}" alt="Result ${i+1}" style="width:100%;height:auto;display:block;">
-          <div style="display:flex;gap:6px;padding:6px;">
-            <button class="btn btn-small" style="flex:1;font-size:0.60rem;" onclick="downloadUrl('${img.url}','landscape_${i+1}.png')">&#8659;</button>
-            <button class="btn btn-small" style="flex:1;font-size:0.60rem;" onclick="window.open('${img.url}','_blank')">&#8663;</button>
-          </div>`;
-        mg.appendChild(wrap);
-      });
-      setXaiStatus(`${images.length} images generated successfully!`, 'ok');
-    }
+    document.getElementById('narrativeText').textContent = text;
+    document.getElementById('narrativeOutput').classList.add('visible');
+    setXaiStatus('Narrative prompt generated.', 'ok');
 
   } catch (err) {
     setXaiStatus(`Network error: ${err.message}`, 'err');
   } finally {
     genBtn.disabled = false;
-    genBtn.innerHTML = '&#9889; Generate Image';
+    genBtn.innerHTML = '&#9889; Generate Narrative Prompt';
   }
 }
 
 
 /* ============================================================
-   JS: IMAGE DOWNLOAD HELPERS
+   JS: COPY NARRATIVE
    ============================================================ */
-function downloadImage() {
-  const url = document.getElementById('xaiImageWrap').dataset.url;
-  if (!url) return;
-  downloadUrl(url, 'landscape.png');
-}
-
-function downloadUrl(url, filename) {
-  const a    = document.createElement('a');
-  a.href     = url;
-  a.download = filename;
-  a.target   = '_blank';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-}
-
-function openImageNewTab() {
-  const url = document.getElementById('xaiImageWrap').dataset.url;
-  if (url) window.open(url, '_blank');
+function copyNarrative() {
+  const text = document.getElementById('narrativeText').textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById('narrativeCopyConfirm');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  });
 }
 
 
