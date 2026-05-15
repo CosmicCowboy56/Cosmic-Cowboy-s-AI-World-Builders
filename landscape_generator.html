@@ -1135,8 +1135,8 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
           <div class="xai-row">
             <label>Model</label>
             <select id="xaiModel">
-              <option value="aurora">aurora (Image Gen)</option>
               <option value="grok-2-image-1212">grok-2-image-1212</option>
+              <option value="aurora">aurora</option>
             </select>
           </div>
 
@@ -2282,7 +2282,6 @@ async function generateImage() {
       n,
       response_format: 'url',
     };
-    /* aurora supports size param */
     if (model === 'aurora') body.size = imageSize;
 
     const res = await fetch('https://api.x.ai/v1/images/generations', {
