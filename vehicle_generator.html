@@ -1,0 +1,2041 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- ============================================================
+     HEAD: Page metadata and Google Fonts import
+     ============================================================ -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Vehicle Generator v2.0 — Cosmic Cowboy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* ============================================================
+   CSS: VARIABLES
+   ============================================================ */
+:root {
+  --dark-blue:   #023E8A;
+  --ocean-blue:  #0077B6;
+  --soft-cyan:   #90E0EF;
+  --pale-blue:   #CAF0F8;
+  --deepest:     #010E1F;
+  --surface:     rgba(0,119,182,0.09);
+  --surface2:    rgba(0,119,182,0.17);
+  --border:      rgba(144,224,239,0.22);
+  --border-hi:   rgba(144,224,239,0.50);
+  --dim:         rgba(202,240,248,0.45);
+  --green:       #4ade80;
+  --red:         #f87171;
+  --glow:        0 0 12px rgba(144,224,239,0.30);
+  --accent:      #FFD166;
+}
+
+/* ============================================================
+   CSS: RESET AND BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  background: var(--deepest);
+  color: var(--pale-blue);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
+/* ============================================================
+   CSS: SCROLLBARS
+   ============================================================ */
+::-webkit-scrollbar              { width: 8px; height: 8px; }
+::-webkit-scrollbar-track        { background: rgba(0,0,0,0.15); border-radius: 4px; }
+::-webkit-scrollbar-thumb        { background: rgba(144,224,239,0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(144,224,239,0.6); }
+
+/* ============================================================
+   CSS: HEADER
+   ============================================================ */
+.header {
+  flex-shrink: 0;
+  height: 52px;
+  background: rgba(0,0,0,0.40);
+  border-bottom: 1px solid var(--border-hi);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 10;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
+  opacity: 0.5;
+}
+
+.hdr-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.10rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--pale-blue);
+  text-shadow: 0 0 18px rgba(144,224,239,0.4);
+}
+
+.hdr-sub {
+  font-size: 0.60rem;
+  color: var(--soft-cyan);
+  letter-spacing: 0.2em;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   CSS: SHARED FORM INPUTS
+   ============================================================ */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 300;
+  border-radius: 4px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  width: 100%;
+}
+
+input[type="number"] {
+  width: 70px;
+  text-align: center;
+  -moz-appearance: textfield;
+}
+input[type="number"]::-webkit-outer-spin-button,
+input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2390E0EF' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+
+select option { background: #011830; color: var(--pale-blue); }
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--soft-cyan);
+  box-shadow: var(--glow);
+}
+
+input::placeholder, textarea::placeholder { color: var(--dim); }
+
+/* ============================================================
+   CSS: SHARED BUTTONS
+   ============================================================ */
+.btn {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  padding: 6px 15px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--soft-cyan);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.btn:hover:not(:disabled) { border-color: var(--soft-cyan); background: rgba(144,224,239,0.10); }
+.btn:disabled              { opacity: 0.30; cursor: not-allowed; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: 0 3px 14px rgba(0,119,182,0.40);
+}
+
+.btn-rand {
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  color: var(--accent);
+  border-color: rgba(255,209,102,0.3);
+}
+.btn-rand:hover:not(:disabled) {
+  background: rgba(255,209,102,0.08);
+  border-color: var(--accent);
+}
+
+.btn-small { font-size: 0.66rem; padding: 5px 12px; }
+
+.btn-xai {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
+  font-size: 0.80rem;
+  padding: 9px 20px;
+}
+.btn-xai:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: var(--glow);
+}
+.btn-xai:disabled { opacity: 0.4; }
+
+/* ============================================================
+   CSS: PAGE BODY
+   ============================================================ */
+.page-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  max-width: 1300px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   CSS: SECTION HEADING
+   ============================================================ */
+.section-head {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ============================================================
+   CSS: PRESETS BAR
+   ============================================================ */
+.presets-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.preset-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  padding: 5px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  transition: all 0.15s;
+}
+.preset-btn:hover { border-color: var(--soft-cyan); background: rgba(0,119,182,0.18); }
+
+/* ============================================================
+   CSS: MAIN TWO-COLUMN LAYOUT
+   ============================================================ */
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+  align-items: start;
+}
+
+.preview-col { position: sticky; top: 20px; }
+
+/* ============================================================
+   CSS: ACCORDION SECTIONS
+   ============================================================ */
+.accordion {
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.accordion-header {
+  background: rgba(0,0,0,0.20);
+  padding: 11px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.84rem;
+  user-select: none;
+  gap: 10px;
+  color: var(--pale-blue);
+}
+.accordion-header:hover { background: rgba(0,0,0,0.30); }
+
+.accordion-chevron {
+  font-size: 0.70rem;
+  color: var(--dim);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.accordion-header.open .accordion-chevron { transform: rotate(180deg); }
+
+.accordion-body {
+  padding: 14px 16px;
+  background: var(--surface);
+  display: none;
+}
+.accordion-body.open     { display: block; }
+.accordion-body.disabled { opacity: 0.35; pointer-events: none; }
+
+/* ============================================================
+   CSS: QUESTION BLOCKS
+   ============================================================ */
+.q-block { margin-bottom: 18px; }
+.q-block:last-child { margin-bottom: 0; }
+
+.q-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.q-title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--soft-cyan);
+  letter-spacing: 0.06em;
+}
+
+.multi-note {
+  font-size: 0.70rem;
+  color: var(--dim);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.world-notice {
+  font-size: 0.76rem;
+  color: rgba(144,224,239,0.6);
+  font-style: italic;
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-left: 2px solid rgba(144,224,239,0.3);
+}
+
+/* ============================================================
+   CSS: OPTION BUTTONS
+   ============================================================ */
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 5px;
+}
+
+.option-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  padding: 6px 9px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 300;
+  transition: all 0.15s;
+  position: relative;
+  line-height: 1.30;
+}
+.option-btn:hover  { border-color: var(--soft-cyan); background: rgba(0,119,182,0.18); }
+.option-btn.selected {
+  background: rgba(0,119,182,0.28);
+  border-color: var(--soft-cyan);
+}
+.option-btn.selected::after {
+  content: '✓';
+  position: absolute; right: 6px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--soft-cyan); font-weight: bold; font-size: 0.72rem;
+}
+
+/* Greyed-out / disabled propulsion options */
+.option-btn.prop-disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+.option-btn.prop-disabled:hover {
+  border-color: var(--border);
+  background: var(--surface2);
+}
+
+/* ============================================================
+   CSS: CUSTOM INPUT ROW
+   ============================================================ */
+.custom-row {
+  display: flex;
+  gap: 7px;
+  margin-top: 8px;
+}
+.custom-row input { flex: 1; min-width: 0; }
+
+.tags-wrap { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+
+.custom-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0,119,182,0.22);
+  border: 1px solid rgba(144,224,239,0.35);
+  padding: 2px 9px;
+  border-radius: 18px;
+  font-size: 0.75rem;
+  color: var(--pale-blue);
+}
+.custom-tag button {
+  background: none; border: none;
+  color: var(--dim); cursor: pointer;
+  padding: 0; font-size: 0.9rem; line-height: 1;
+}
+.custom-tag button:hover { color: var(--red); }
+
+/* ============================================================
+   CSS: SPECIAL INPUTS (wheel count, hybrid textarea)
+   ============================================================ */
+.special-input-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 10px;
+  padding: 8px 12px;
+  background: rgba(0,119,182,0.10);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+}
+.special-input-row label {
+  font-size: 0.76rem;
+  color: var(--soft-cyan);
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.propulsion-override {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 8px;
+  font-size: 0.74rem;
+  color: var(--dim);
+}
+.propulsion-override input[type="checkbox"] {
+  width: auto;
+  accent-color: var(--accent);
+}
+.propulsion-override label { cursor: pointer; }
+
+.prop-note {
+  font-size: 0.68rem;
+  color: var(--dim);
+  font-style: italic;
+  margin-left: 4px;
+}
+
+/* ============================================================
+   CSS: PREVIEW PANEL
+   ============================================================ */
+.preview-panel {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.preview-head {
+  padding: 8px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.20);
+}
+
+.prompt-display {
+  padding: 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 300;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 160px;
+  max-height: 340px;
+  overflow-y: auto;
+  color: var(--pale-blue);
+}
+.prompt-display.empty { color: var(--dim); font-style: italic; }
+
+.preview-actions {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.copy-confirm {
+  font-size: 0.72rem;
+  color: var(--green);
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
+.copy-confirm.show { opacity: 1; }
+
+/* ============================================================
+   CSS: xAI NARRATIVE PANEL
+   ============================================================ */
+.xai-panel {
+  margin-top: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.xai-head {
+  padding: 8px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.20);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.xai-body { padding: 14px; }
+
+.xai-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+.xai-row label {
+  font-size: 0.74rem;
+  color: var(--soft-cyan);
+  white-space: nowrap;
+  min-width: 68px;
+  font-weight: 500;
+}
+
+.xai-key-wrap {
+  position: relative;
+  flex: 1;
+}
+.xai-key-wrap input { padding-right: 60px; }
+
+.xai-toggle {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--dim); font-size: 0.70rem; font-family: 'Exo 2', sans-serif;
+  font-weight: 600; letter-spacing: 0.05em; padding: 2px 4px;
+}
+.xai-toggle:hover { color: var(--soft-cyan); }
+
+.xai-status {
+  font-size: 0.74rem;
+  color: var(--dim);
+  margin-top: 8px;
+  min-height: 1.2em;
+}
+.xai-status.ok  { color: var(--green); }
+.xai-status.err { color: var(--red); }
+.xai-status.run { color: var(--soft-cyan); }
+
+.narrative-output {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+  display: none;
+  background: rgba(0,0,0,0.25);
+}
+.narrative-output.visible { display: block; }
+
+.narrative-text {
+  padding: 12px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--pale-blue);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.narrative-actions {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--border);
+  align-items: center;
+}
+
+.narrative-copy-confirm {
+  font-size: 0.72rem;
+  color: var(--green);
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
+.narrative-copy-confirm.show { opacity: 1; }
+
+/* ============================================================
+   CSS: SPINNER
+   ============================================================ */
+.spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid rgba(144,224,239,0.20);
+  border-top-color: var(--soft-cyan);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   CSS: ACTION BAR
+   ============================================================ */
+.action-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* ============================================================
+   CSS: NOTICE
+   ============================================================ */
+.notice {
+  font-size: 0.78rem;
+  padding: 7px 11px;
+  border-radius: 4px;
+  margin-top: 8px;
+  display: none;
+}
+.notice.ok  { display: block; background: rgba(0,160,90,0.12);  border: 1px solid rgba(0,160,90,0.35);  color: var(--green); }
+.notice.err { display: block; background: rgba(200,30,30,0.15); border: 1px solid rgba(200,30,30,0.4);  color: var(--red); }
+
+/* ============================================================
+   CSS: RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .preview-col  { position: static; }
+  .options-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+}
+@media (max-width: 500px) {
+  .options-grid { grid-template-columns: 1fr 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HTML: HEADER
+     ============================================================ -->
+<header class="header">
+  <div>
+    <div class="hdr-title">&#9881; VEHICLE GENERATOR</div>
+    <div class="hdr-sub">v2.0 &mdash; COSMIC COWBOY'S AI WORLDBUILDERS</div>
+  </div>
+  <button class="btn" onclick="resetApp()">&#10022; RESET</button>
+</header>
+
+<!-- ============================================================
+     HTML: SCROLLABLE PAGE BODY
+     ============================================================ -->
+<div class="page-body">
+
+  <!-- Presets -->
+  <div class="section-head">Quick Start Presets</div>
+  <div class="presets-bar">
+    <button class="preset-btn" onclick="applyPreset('sleekFighter')">Sleek Fighter</button>
+    <button class="preset-btn" onclick="applyPreset('fantasyMount')">Fantasy Mount</button>
+    <button class="preset-btn" onclick="applyPreset('steampunkAirship')">Steampunk Airship</button>
+    <button class="preset-btn" onclick="applyPreset('sciFiTransport')">Sci-Fi Transport</button>
+    <button class="preset-btn" onclick="applyPreset('unicycle')">Unicycle</button>
+    <button class="preset-btn" onclick="applyPreset('motorcycle')">Motorcycle</button>
+    <button class="preset-btn" onclick="applyPreset('armoredCrawler')">Armored Crawler</button>
+    <button class="preset-btn" onclick="applyPreset('nauticalGalleon')">Nautical Galleon</button>
+    <button class="preset-btn" onclick="applyPreset('biomechWalker')">Biomech Walker</button>
+    <button class="preset-btn" onclick="applyPreset('voidRunner')">Void Runner</button>
+    <button class="preset-btn" onclick="randomizeAll()">&#9861; Random All</button>
+  </div>
+
+  <!-- Two-column layout -->
+  <div class="main-layout">
+
+    <!-- LEFT: Question accordions -->
+    <div>
+
+      <!-- Core Setup -->
+      <div class="accordion">
+        <div class="accordion-header open" onclick="toggleAccordion(this)">
+          Core Setup
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body open">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q1 — Vehicle Domain</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q1')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q1-options"></div>
+            <div class="world-notice" id="hybridNotice" style="display:none;">
+              Hybrid domain selected — describe how the vehicle operates across multiple domains below.
+            </div>
+            <div id="hybridDescWrap" style="display:none; margin-top:10px;">
+              <textarea id="hybridDesc" rows="2" placeholder="Hybrid Operation Description — e.g. 'amphibious land/sea craft that transforms between wheel and submersible modes'"></textarea>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q2 — Primary Function (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q2')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q2-options"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="Q2-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q2')">Add</button></div>
+            <div class="tags-wrap" id="Q2-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q3 — Era or Cultural Context</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3-options"></div>
+            <div class="custom-row"><input type="text" id="Q3-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q3')">Add</button></div>
+            <div class="tags-wrap" id="Q3-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q4 — Technology Level (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q4')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q4-options"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="Q4-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q4')">Add</button></div>
+            <div class="tags-wrap" id="Q4-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Propulsion and Motion -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Propulsion and Motion
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q5 — Propulsion (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q5')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q5-options"></div>
+            <p class="multi-note">Select up to 2. Incompatible options are greyed out based on domain.</p>
+            <div class="propulsion-override">
+              <input type="checkbox" id="propOverride" onchange="updatePropulsionAvailability()">
+              <label for="propOverride">Override domain filter (allow any propulsion)</label>
+            </div>
+            <div id="wheelCountWrap" style="display:none; margin-top:10px;">
+              <div class="special-input-row">
+                <label for="wheelCount">Wheel Count:</label>
+                <input type="number" id="wheelCount" min="1" max="20" value="4" oninput="updatePreview()">
+                <span style="font-size:0.74rem;color:var(--dim);">wheels (1–20)</span>
+              </div>
+            </div>
+            <div class="custom-row"><input type="text" id="Q5-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q5')">Add</button></div>
+            <div class="tags-wrap" id="Q5-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q55 — Chassis Orientation</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q55')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q55-options"></div>
+            <div class="custom-row"><input type="text" id="Q55-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q55')">Add</button></div>
+            <div class="tags-wrap" id="Q55-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q7 — Movement Characteristics (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q7')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q7-options"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="Q7-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q7')">Add</button></div>
+            <div class="tags-wrap" id="Q7-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q8 — Vehicle Scale</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q8')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q8-options"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Design and Materials -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Design and Materials
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q9 — Design Language (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q9')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q9-options"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="Q9-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q9')">Add</button></div>
+            <div class="tags-wrap" id="Q9-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q10 — Materials (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q10')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q10-options"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="Q10-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q10')">Add</button></div>
+            <div class="tags-wrap" id="Q10-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q11 — Condition</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q11')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q11-options"></div>
+            <div class="custom-row"><input type="text" id="Q11-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q11')">Add</button></div>
+            <div class="tags-wrap" id="Q11-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Scene and Presentation -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Scene and Presentation
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q12 — Background (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q12')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q12-options"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="Q12-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q12')">Add</button></div>
+            <div class="tags-wrap" id="Q12-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q13 — Vehicle Presentation</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q13')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q13-options"></div>
+            <div class="custom-row"><input type="text" id="Q13-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q13')">Add</button></div>
+            <div class="tags-wrap" id="Q13-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q14 — Perspective</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q14')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q14-options"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Visual Style -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Visual Style
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q15 — Color Palette</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q15')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q15-options"></div>
+            <div class="custom-row"><input type="text" id="Q15-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q15')">Add</button></div>
+            <div class="tags-wrap" id="Q15-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q16 — Art Style</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q16')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q16-options"></div>
+            <div class="custom-row"><input type="text" id="Q16-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q16')">Add</button></div>
+            <div class="tags-wrap" id="Q16-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q17 — Image Size</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q17')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q17-options"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Clarification -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Clarification and Finalization
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q18 — Override and Clarifications</span>
+            </div>
+            <p style="font-size:0.76rem;color:var(--dim);margin-bottom:8px;">
+              All text entered here supersedes earlier selections and is passed to xAI as additional context.
+            </p>
+            <textarea id="Q18-input" rows="3" placeholder="Clarifications, additions, removals, or overrides. Leave blank to skip."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action bar -->
+      <div class="action-bar">
+        <button class="btn btn-small" onclick="saveCurrent()">&#128190; Save</button>
+        <button class="btn btn-small" onclick="loadSaved()">&#128194; Load</button>
+        <button class="btn btn-small" onclick="clearSaved()">&#128465; Clear Saved</button>
+      </div>
+
+      <div class="notice" id="actionNotice"></div>
+
+    </div><!-- end left col -->
+
+    <!-- RIGHT: Live preview + xAI panel -->
+    <div class="preview-col">
+
+      <!-- Prompt preview -->
+      <div class="preview-panel">
+        <div class="preview-head">Live Prompt Preview</div>
+        <div class="prompt-display empty" id="livePreview">
+          Select a Vehicle Domain in Core Setup to begin.
+        </div>
+        <div class="preview-actions">
+          <button class="btn btn-small" onclick="copyPrompt()">&#128203; Copy Raw Prompt</button>
+          <span class="copy-confirm" id="copyConfirmInline"></span>
+        </div>
+      </div>
+
+      <!-- xAI Narrative Prompt panel -->
+      <div class="xai-panel">
+        <div class="xai-head">
+          &#9889; AI Narrative Prompt
+        </div>
+        <div class="xai-body">
+
+          <div class="xai-row">
+            <label>API Key</label>
+            <div class="xai-key-wrap">
+              <input type="password" id="xaiApiKey" autocomplete="off" placeholder="Enter your xAI API key">
+              <button class="xai-toggle" onclick="toggleKeyVis()">SHOW</button>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+            <input type="checkbox" id="xaiSaveKey" style="width:auto;accent-color:var(--soft-cyan);">
+            <label for="xaiSaveKey" style="font-size:0.74rem;color:var(--dim);margin:0;cursor:pointer;">
+              Save key to browser
+            </label>
+          </div>
+
+          <div style="margin-top:12px;">
+            <button class="btn btn-xai" id="xaiGenBtn" onclick="generateNarrativePrompt()" disabled>
+              &#9889; Generate Narrative Prompt
+            </button>
+          </div>
+
+          <div class="xai-status" id="xaiStatus">Enter an API key above to enable generation.</div>
+
+          <div class="narrative-output" id="narrativeOutput">
+            <div class="narrative-text" id="narrativeText"></div>
+            <div class="narrative-actions">
+              <button class="btn btn-small" onclick="copyNarrative()">&#128203; Copy</button>
+              <span class="narrative-copy-confirm" id="narrativeCopyConfirm">&#10003; Copied!</span>
+            </div>
+          </div>
+
+          <div class="notice" id="xaiNotice"></div>
+
+        </div>
+      </div>
+
+    </div><!-- end preview-col -->
+
+  </div><!-- end main-layout -->
+
+</div><!-- end page-body -->
+
+
+<script>
+
+/* ============================================================
+   JS: QUESTION DATA
+   ============================================================ */
+const QUESTIONS = {
+
+  Q1: { title:'Vehicle Domain', type:'single', options:[
+    {id:'1', text:'Land'},
+    {id:'2', text:'Air'},
+    {id:'3', text:'Water'},
+    {id:'4', text:'Space'},
+    {id:'5', text:'Hybrid or multi-domain'},
+  ]},
+
+  Q2: { title:'Primary Function', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1',  text:'Civilian transport'},
+    {id:'2',  text:'Military or combat'},
+    {id:'3',  text:'Industrial or utility'},
+    {id:'4',  text:'Exploration or science'},
+    {id:'5',  text:'Racing or sport'},
+    {id:'6',  text:'Personal or luxury'},
+    {id:'7',  text:'Ceremonial or feudal transport'},
+    {id:'8',  text:'Medical or rescue'},
+    {id:'9',  text:'Agricultural or environmental'},
+    {id:'10', text:'Entertainment or display'},
+    {id:'11', text:'Stealth or surveillance'},
+    {id:'12', text:'Diplomatic transport'},
+    {id:'13', text:'Smuggling or black ops'},
+    {id:'14', text:'Religious or ritual'},
+    {id:'15', text:'Mining or excavation'},
+    {id:'16', text:'Construction or engineering'},
+  ]},
+
+  Q3: { title:'Era or Cultural Context', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Pre-industrial'},
+    {id:'2',  text:'Early industrial'},
+    {id:'3',  text:'Modern'},
+    {id:'4',  text:'Near future'},
+    {id:'5',  text:'Far future'},
+    {id:'6',  text:'Post-apocalyptic'},
+    {id:'7',  text:'Ancient civilizations'},
+    {id:'8',  text:'Medieval or feudal'},
+    {id:'9',  text:'Renaissance or colonial'},
+    {id:'10', text:'Age of sail'},
+    {id:'11', text:'Wild west or frontier'},
+    {id:'12', text:'Art Deco era'},
+    {id:'13', text:'Cold war'},
+    {id:'14', text:'Alternate history'},
+    {id:'15', text:'Fantasy world'},
+    {id:'16', text:'Solarpunk future'},
+  ]},
+
+  Q4: { title:'Technology Level', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1',  text:'Mechanical'},
+    {id:'2',  text:'Electrical'},
+    {id:'3',  text:'Digital'},
+    {id:'4',  text:'Advanced sci-fi'},
+    {id:'5',  text:'Arcane or magical'},
+    {id:'6',  text:'Steam-powered'},
+    {id:'7',  text:'Chemical or explosive'},
+    {id:'8',  text:'Nuclear'},
+    {id:'9',  text:'Quantum'},
+    {id:'10', text:'Neural or AI-directed'},
+    {id:'11', text:'Crystalline or exotic'},
+    {id:'12', text:'Nanotech'},
+    {id:'13', text:'Alchemical or transmuted'},
+    {id:'14', text:'Biological'},
+  ]},
+
+  Q5: { title:'Propulsion', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1',  text:'Animal-drawn',               domains:['1','5']},
+    {id:'2',  text:'Beast-drawn',                domains:['1','5']},
+    {id:'3',  text:'Sledge',                     domains:['1','5']},
+    {id:'4',  text:'Wheels',                     domains:['1','5']},
+    {id:'5',  text:'Tracks',                     domains:['1','5']},
+    {id:'6',  text:'Legs or articulated walkers',domains:['1','5']},
+    {id:'7',  text:'Hover or repulsor lift',     domains:['1','2','3','4','5']},
+    {id:'8',  text:'Aerodynamic flight',         domains:['2','5']},
+    {id:'9',  text:'Vertical lift or VTOL',      domains:['2','5']},
+    {id:'10', text:'Sail or wind driven',        domains:['3','5']},
+    {id:'11', text:'Submersible propulsion',     domains:['3','5']},
+    {id:'12', text:'Reaction engines',           domains:['1','2','3','4','5']},
+    {id:'13', text:'Warp, jump, or FTL system',  domains:['4','5']},
+    {id:'14', text:'Pedal or human-powered',     domains:['1','5']},
+    {id:'15', text:'Steam engine',               domains:['1','2','3','5']},
+    {id:'16', text:'Combustion engine',          domains:['1','2','3','5']},
+    {id:'17', text:'Maglev or magnetic rail',    domains:['1','5']},
+    {id:'18', text:'Oars or paddle power',       domains:['3','5']},
+    {id:'19', text:'Ion drive',                  domains:['4','5']},
+    {id:'20', text:'Solar sail or photon sail',  domains:['4','5']},
+    {id:'21', text:'Gravitic or anti-gravity field', domains:['1','2','3','4','5']},
+    {id:'22', text:'Tethered or cable-guided',   domains:['1','5']},
+  ]},
+
+  Q55: { title:'Chassis Orientation', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Terrestrial'},
+    {id:'2',  text:'Aerial'},
+    {id:'3',  text:'Hydrodynamic'},
+    {id:'4',  text:'Non-orientation specific'},
+    {id:'5',  text:'Spaceframe'},
+    {id:'6',  text:'Low and ground-hugging'},
+    {id:'7',  text:'Multi-segmented or articulated'},
+    {id:'8',  text:'Centauroid or split-stance'},
+    {id:'9',  text:'Serpentine or elongated'},
+    {id:'10', text:'Disc or radially symmetric'},
+  ]},
+
+  Q7: { title:'Movement Characteristics', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1',  text:'Slow and heavy'},
+    {id:'2',  text:'Balanced and stable'},
+    {id:'3',  text:'Fast and agile'},
+    {id:'4',  text:'Extreme speed'},
+    {id:'5',  text:'Massive inertia'},
+    {id:'6',  text:'Eerie and silent'},
+    {id:'7',  text:'Graceful and flowing'},
+    {id:'8',  text:'Erratic and lurching'},
+    {id:'9',  text:'Precise and mechanical'},
+    {id:'10', text:'Sweeping arcs'},
+    {id:'11', text:'Nimble and acrobatic'},
+    {id:'12', text:'Rumbling and thunderous'},
+    {id:'13', text:'Hovering and weightless'},
+    {id:'14', text:'Relentless and inexorable'},
+    {id:'15', text:'Stuttering and intermittent'},
+  ]},
+
+  Q8: { title:'Vehicle Scale', type:'single', options:[
+    {id:'1', text:'Personal'},
+    {id:'2', text:'Small vehicle'},
+    {id:'3', text:'Medium vehicle'},
+    {id:'4', text:'Large vehicle'},
+    {id:'5', text:'Colossal'},
+    {id:'6', text:'City-scale or larger'},
+    {id:'7', text:'Micro or handheld'},
+  ]},
+
+  Q9: { title:'Design Language', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1',  text:'Realistic engineering'},
+    {id:'2',  text:'Cinematic realism'},
+    {id:'3',  text:'Concept art exaggeration'},
+    {id:'4',  text:'Retro futurism'},
+    {id:'5',  text:'Cyberpunk'},
+    {id:'6',  text:'Dieselpunk'},
+    {id:'7',  text:'Steampunk'},
+    {id:'8',  text:'Alien or non-human design'},
+    {id:'9',  text:'Pure function design'},
+    {id:'10', text:'Biopunk'},
+    {id:'11', text:'Solarpunk'},
+    {id:'12', text:'Fantasy ornate'},
+    {id:'13', text:'Military brutalist'},
+    {id:'14', text:'Art Deco streamline'},
+    {id:'15', text:'Gothic or grotesque'},
+    {id:'16', text:'Utilitarian minimalism'},
+    {id:'17', text:'Naval architecture'},
+    {id:'18', text:'Crystalline or geometric'},
+    {id:'19', text:'Futurist aerodynamic curves'},
+    {id:'20', text:'Prehistoric or primitive'},
+  ]},
+
+  Q10: { title:'Materials', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1',  text:'Metallic'},
+    {id:'2',  text:'Composite or carbon'},
+    {id:'3',  text:'Organic or grown'},
+    {id:'4',  text:'Biomechanical'},
+    {id:'5',  text:'Energy-based or light-formed'},
+    {id:'6',  text:'Stone or carved rock'},
+    {id:'7',  text:'Wood and natural fiber'},
+    {id:'8',  text:'Bone and chitin'},
+    {id:'9',  text:'Crystal or gemstone'},
+    {id:'10', text:'Ice or frozen matter'},
+    {id:'11', text:'Rusted iron and salvage'},
+    {id:'12', text:'Bronze and ancient alloy'},
+    {id:'13', text:'Plasma-shielded hull'},
+    {id:'14', text:'Hardlight constructs'},
+    {id:'15', text:'Regenerating biological tissue'},
+    {id:'16', text:'Woven or textile composite'},
+  ]},
+
+  Q11: { title:'Condition', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Pristine'},
+    {id:'2',  text:'Operational wear'},
+    {id:'3',  text:'Heavily worn'},
+    {id:'4',  text:'Battle damaged'},
+    {id:'5',  text:'Derelict or abandoned'},
+    {id:'6',  text:'Factory sealed and new'},
+    {id:'7',  text:'Field-modified for local use'},
+    {id:'8',  text:'Ceremonially decorated'},
+    {id:'9',  text:'Camouflaged or disguised'},
+    {id:'10', text:'Well-patched and maintained'},
+    {id:'11', text:'Jury-rigged or improvised'},
+    {id:'12', text:'Ancient and overgrown'},
+    {id:'13', text:'War trophy with enemy markings'},
+    {id:'14', text:'Heavily customized'},
+    {id:'15', text:'Stripped and bare-bones'},
+    {id:'16', text:'Ceremonially scarred'},
+  ]},
+
+  Q12: { title:'Background', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1',  text:'Urban'},
+    {id:'2',  text:'Wilderness'},
+    {id:'3',  text:'Industrial'},
+    {id:'4',  text:'Military zone'},
+    {id:'5',  text:'Space vacuum'},
+    {id:'6',  text:'Underwater'},
+    {id:'7',  text:'Desert or arid wasteland'},
+    {id:'8',  text:'Arctic or snowfield'},
+    {id:'9',  text:'Dense jungle or canopy'},
+    {id:'10', text:'Alien planet surface'},
+    {id:'11', text:'High atmosphere'},
+    {id:'12', text:'Hangar or drydock'},
+    {id:'13', text:'Arena or racing circuit'},
+    {id:'14', text:'Ruins or debris field'},
+    {id:'15', text:'Volcanic or geothermal'},
+    {id:'16', text:'Crystal cave or cavern'},
+    {id:'17', text:'Space station dock'},
+    {id:'18', text:'Open highway or elevated track'},
+    {id:'19', text:'Open ocean or sea'},
+    {id:'20', text:'Coastal harbor or port'},
+    {id:'21', text:'Subterranean tunnel or cavern'},
+  ]},
+
+  Q13: { title:'Vehicle Presentation', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Static display'},
+    {id:'2',  text:'In motion'},
+    {id:'3',  text:'Docked or landed'},
+    {id:'4',  text:'Combat or high action'},
+    {id:'5',  text:'Abandoned or discovered'},
+    {id:'6',  text:'Under repair or maintenance'},
+    {id:'7',  text:'Racing or pursuit'},
+    {id:'8',  text:'Ceremonial procession'},
+    {id:'9',  text:'Emergency landing or crash'},
+    {id:'10', text:'Under escort or formation'},
+    {id:'11', text:'Emerging from concealment'},
+    {id:'12', text:'Mid-assembly'},
+  ]},
+
+  Q14: { title:'Perspective', type:'single', options:[
+    {id:'1',  text:'Close detail view'},
+    {id:'2',  text:'Three-quarter view'},
+    {id:'3',  text:'Full profile'},
+    {id:'4',  text:'Wide environmental shot'},
+    {id:'5',  text:'Dramatic low angle'},
+    {id:'6',  text:'Aerial bird\'s eye view'},
+    {id:'7',  text:'Interior cockpit view'},
+    {id:'8',  text:'Front-facing head-on'},
+    {id:'9',  text:'Cross-section cutaway'},
+    {id:'10', text:'Blueprint or technical diagram'},
+    {id:'11', text:'Tracking shot side-angle'},
+    {id:'12', text:'Worm\'s eye view'},
+  ]},
+
+  Q15: { title:'Color Palette', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Neutral'},
+    {id:'2',  text:'High contrast'},
+    {id:'3',  text:'Muted'},
+    {id:'4',  text:'Industrial tones'},
+    {id:'5',  text:'Bold or stylized'},
+    {id:'6',  text:'Military olive drab'},
+    {id:'7',  text:'Desert tan and brown'},
+    {id:'8',  text:'Arctic white and grey'},
+    {id:'9',  text:'Deep space black'},
+    {id:'10', text:'Racing livery and decals'},
+    {id:'11', text:'Ceremonial gold and crimson'},
+    {id:'12', text:'Alien iridescent or prismatic'},
+    {id:'13', text:'Rust and decay orange'},
+    {id:'14', text:'Neon accents on dark base'},
+    {id:'15', text:'Forest camouflage green'},
+    {id:'16', text:'Ocean teal and navy'},
+  ]},
+
+  Q16: { title:'Art Style', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Photorealism'},
+    {id:'2',  text:'Hyper realism'},
+    {id:'3',  text:'Cinematic realism'},
+    {id:'4',  text:'Fantasy realism'},
+    {id:'5',  text:'Digital painting or concept art'},
+    {id:'6',  text:'Anime or manga illustration'},
+    {id:'7',  text:'Comic book or graphic novel'},
+    {id:'8',  text:'Technical blueprint or schematic'},
+    {id:'9',  text:'Vintage travel poster'},
+    {id:'10', text:'Gritty pulp fiction art'},
+    {id:'11', text:'Dark fantasy illustration'},
+    {id:'12', text:'Retro sci-fi magazine cover'},
+    {id:'13', text:'Watercolor or impressionist'},
+    {id:'14', text:'Oil painting or classical'},
+    {id:'15', text:'Ink linework and hatching'},
+    {id:'16', text:'Propaganda or constructivist art'},
+  ]},
+
+  Q17: { title:'Image Size', type:'single', options:[
+    {id:'1', text:'Square (1:1)'},
+    {id:'2', text:'Portrait — tall (2:3)'},
+    {id:'3', text:'Landscape — wide (3:2)'},
+  ]},
+
+};
+
+
+/* ============================================================
+   JS: PRESETS
+   ============================================================ */
+const PRESETS = {
+  sleekFighter:     { Q1:'2', Q2:['2','5'],  Q3:'4',  Q4:['3','4'],  Q5:['8','12'],  Q55:'2', Q7:['3','4'],  Q8:'2', Q9:['1','2'],  Q10:['2'],      Q11:'1', Q12:['4'],      Q13:'2', Q14:'2', Q15:'2', Q16:'2', Q17:'3' },
+  fantasyMount:     { Q1:'1', Q2:['1','7'],  Q3:'1',  Q4:['1','5'],  Q5:['1','4'],   Q55:'1', Q7:['2'],      Q8:'2', Q9:['7'],      Q10:['1','3'],   Q11:'2', Q12:['2'],      Q13:'2', Q14:'2', Q15:'4', Q16:'4', Q17:'2', wheelCount:4 },
+  steampunkAirship: { Q1:'2', Q2:['1','3'],  Q3:'2',  Q4:['1','6'],  Q5:['8','15'],  Q55:'2', Q7:['1'],      Q8:'3', Q9:['6','7'],  Q10:['1','7'],   Q11:'2', Q12:['1'],      Q13:'2', Q14:'4', Q15:'4', Q16:'3', Q17:'3' },
+  sciFiTransport:   { Q1:'4', Q2:['1','4'],  Q3:'5',  Q4:['3','4'],  Q5:['12','13'], Q55:'5', Q7:['3'],      Q8:'3', Q9:['4','8'],  Q10:['2','5'],   Q11:'1', Q12:['5'],      Q13:'3', Q14:'2', Q15:'1', Q16:'1', Q17:'3' },
+  unicycle:         { Q1:'1', Q2:['5','6'],  Q3:'3',  Q4:['2','3'],  Q5:['4'],       Q55:'1', Q7:['3'],      Q8:'1', Q9:['1','3'],  Q10:['1','2'],   Q11:'1', Q12:['1'],      Q13:'2', Q14:'2', Q15:'5', Q16:'1', Q17:'2', wheelCount:1 },
+  motorcycle:       { Q1:'1', Q2:['5','6'],  Q3:'3',  Q4:['2','3'],  Q5:['4'],       Q55:'1', Q7:['3','4'],  Q8:'1', Q9:['1','3'],  Q10:['1','2'],   Q11:'1', Q12:['1'],      Q13:'2', Q14:'2', Q15:'5', Q16:'1', Q17:'3', wheelCount:2 },
+  armoredCrawler:   { Q1:'1', Q2:['2','3'],  Q3:'13', Q4:['1','3'],  Q5:['5'],       Q55:'1', Q7:['1','9'],  Q8:'4', Q9:['13','16'],Q10:['1','11'],  Q11:'4', Q12:['1','7'],  Q13:'2', Q14:'5', Q15:'6', Q16:'1', Q17:'3' },
+  nauticalGalleon:  { Q1:'3', Q2:['1','2'],  Q3:'10', Q4:['1'],      Q5:['10','18'], Q55:'3', Q7:['2','7'],  Q8:'4', Q9:['12','17'],Q10:['7','12'],  Q11:'2', Q12:['19','20'],Q13:'2', Q14:'3', Q15:'16',Q16:'3', Q17:'3' },
+  biomechWalker:    { Q1:'1', Q2:['2','4'],  Q3:'5',  Q4:['4','14'], Q5:['6','21'],  Q55:'7', Q7:['3','7'],  Q8:'3', Q9:['10','8'], Q10:['3','4'],   Q11:'1', Q12:['2','10'], Q13:'2', Q14:'2', Q15:'12',Q16:'5', Q17:'3' },
+  voidRunner:       { Q1:'4', Q2:['5','4'],  Q3:'5',  Q4:['9','4'],  Q5:['19','13'], Q55:'5', Q7:['4','10'], Q8:'2', Q9:['4','19'], Q10:['2','5'],   Q11:'1', Q12:['5','17'], Q13:'2', Q14:'5', Q15:'9', Q16:'3', Q17:'3' },
+};
+
+
+/* ============================================================
+   JS: APP STATE
+   ============================================================ */
+let ST = {
+  answers:      {},
+  customInputs: {},
+};
+
+
+/* ============================================================
+   JS: DOMAIN LABEL MAP
+   ============================================================ */
+const DOMAIN_NAMES = { '1':'Land', '2':'Air', '3':'Water', '4':'Space', '5':'Hybrid' };
+
+
+/* ============================================================
+   JS: INIT
+   ============================================================ */
+function init() {
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updatePropulsionAvailability();
+  updateHybridVisibility();
+  updatePreview();
+
+  document.getElementById('Q18-input').addEventListener('input', () => {
+    ST.answers.Q18 = document.getElementById('Q18-input').value;
+    updatePreview();
+  });
+
+  document.getElementById('hybridDesc').addEventListener('input', () => {
+    updatePreview();
+  });
+
+  document.getElementById('wheelCount').addEventListener('input', () => {
+    updatePreview();
+  });
+
+  // Restore saved xAI key
+  const savedKey = localStorage.getItem('xaiKey_vehicle');
+  if (savedKey) {
+    document.getElementById('xaiApiKey').value = savedKey;
+    document.getElementById('xaiSaveKey').checked = true;
+    updateGenBtn();
+  }
+
+  document.getElementById('xaiApiKey').addEventListener('input', updateGenBtn);
+}
+
+
+/* ============================================================
+   JS: FIELD RENDERER
+   ============================================================ */
+function renderField(qid) {
+  const q  = QUESTIONS[qid];
+  const el = document.getElementById(`${qid}-options`);
+  if (!q || !el) return;
+
+  el.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className   = 'option-btn';
+    btn.textContent = opt.text;
+    btn.dataset.id  = opt.id;
+
+    const cur = ST.answers[qid];
+    if (cur) {
+      const sel = Array.isArray(cur) ? cur.includes(opt.id) : cur === opt.id;
+      if (sel) btn.classList.add('selected');
+    }
+
+    btn.onclick = () => handleClick(qid, opt.id);
+    el.appendChild(btn);
+  });
+
+  if (qid === 'Q5') updatePropulsionAvailability();
+  renderTags(qid);
+}
+
+
+/* ============================================================
+   JS: CLICK HANDLER
+   ============================================================ */
+function handleClick(qid, optId) {
+  const q = QUESTIONS[qid];
+
+  if (q.type === 'single') {
+    ST.answers[qid] = optId;
+    document.querySelectorAll(`#${qid}-options .option-btn`)
+      .forEach(b => b.classList.toggle('selected', b.dataset.id === optId));
+    if (qid === 'Q1') {
+      updatePropulsionAvailability();
+      updateHybridVisibility();
+    }
+
+  } else {
+    let cur = ST.answers[qid] || [];
+    if (!Array.isArray(cur)) cur = [];
+
+    if (cur.includes(optId)) {
+      cur = cur.filter(id => id !== optId);
+      document.querySelector(`#${qid}-options .option-btn[data-id="${optId}"]`)?.classList.remove('selected');
+    } else {
+      if (cur.length >= q.max) {
+        showNotice(`Max ${q.max} selections for this field.`, 'err', 'actionNotice');
+        setTimeout(() => hideNotice('actionNotice'), 2000);
+        return;
+      }
+      cur = [...cur, optId];
+      document.querySelector(`#${qid}-options .option-btn[data-id="${optId}"]`)?.classList.add('selected');
+    }
+    ST.answers[qid] = cur;
+
+    if (qid === 'Q5') {
+      updateWheelCountVisibility();
+    }
+  }
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: PROPULSION DOMAIN FILTERING
+   ============================================================ */
+function updatePropulsionAvailability() {
+  const domainId  = ST.answers.Q1;
+  const override  = document.getElementById('propOverride').checked;
+  const container = document.getElementById('Q5-options');
+  if (!container) return;
+
+  container.querySelectorAll('.option-btn').forEach(btn => {
+    const optId = btn.dataset.id;
+    const opt   = QUESTIONS.Q5.options.find(o => o.id === optId);
+    if (!opt || !opt.domains || override || !domainId) {
+      btn.classList.remove('prop-disabled');
+      btn.style.pointerEvents = '';
+      return;
+    }
+    const compatible = opt.domains.includes(domainId);
+    btn.classList.toggle('prop-disabled', !compatible);
+    btn.style.pointerEvents = compatible ? '' : 'none';
+  });
+
+  updateWheelCountVisibility();
+}
+
+function updateWheelCountVisibility() {
+  const sel = ST.answers.Q5 || [];
+  const hasWheels = Array.isArray(sel) ? sel.includes('4') : sel === '4';
+  document.getElementById('wheelCountWrap').style.display = hasWheels ? 'block' : 'none';
+}
+
+function updateHybridVisibility() {
+  const isHybrid = ST.answers.Q1 === '5';
+  document.getElementById('hybridNotice').style.display    = isHybrid ? 'block' : 'none';
+  document.getElementById('hybridDescWrap').style.display  = isHybrid ? 'block' : 'none';
+}
+
+
+/* ============================================================
+   JS: CUSTOM TAGS
+   ============================================================ */
+function addCustom(qid) {
+  const inp = document.getElementById(`${qid}-custom`);
+  const val = inp.value.trim();
+  if (!val) return;
+  if (!ST.customInputs[qid]) ST.customInputs[qid] = [];
+  ST.customInputs[qid].push(val);
+  inp.value = '';
+  renderTags(qid);
+  updatePreview();
+}
+
+function removeCustom(qid, idx) {
+  ST.customInputs[qid].splice(idx, 1);
+  renderTags(qid);
+  updatePreview();
+}
+
+function renderTags(qid) {
+  const wrap = document.getElementById(`${qid}-tags`);
+  if (!wrap) return;
+  const items = ST.customInputs[qid] || [];
+  wrap.innerHTML = items.map((t, i) =>
+    `<span class="custom-tag">${t}<button onclick="removeCustom('${qid}',${i})">&#215;</button></span>`
+  ).join('');
+}
+
+
+/* ============================================================
+   JS: ACCORDION TOGGLE
+   ============================================================ */
+function toggleAccordion(header) {
+  const body = header.nextElementSibling;
+  if (body.classList.contains('disabled')) return;
+  header.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+
+/* ============================================================
+   JS: RANDOMIZE FIELD
+   ============================================================ */
+function randomizeField(qid) {
+  const q = QUESTIONS[qid];
+  if (!q) return;
+
+  if (q.type === 'single') {
+    const pick = q.options[Math.floor(Math.random() * q.options.length)].id;
+    ST.answers[qid] = pick;
+    document.querySelectorAll(`#${qid}-options .option-btn`)
+      .forEach(b => b.classList.toggle('selected', b.dataset.id === pick));
+    if (qid === 'Q1') {
+      updatePropulsionAvailability();
+      updateHybridVisibility();
+    }
+  } else {
+    // For Q5, only pick from compatible options unless override is on
+    let pool = q.options;
+    if (qid === 'Q5' && ST.answers.Q1 && !document.getElementById('propOverride').checked) {
+      pool = q.options.filter(o => !o.domains || o.domains.includes(ST.answers.Q1));
+    }
+    if (pool.length === 0) pool = q.options;
+    const count = Math.min(Math.floor(Math.random() * q.max) + 1, pool.length);
+    const picks = [...pool].sort(() => Math.random() - 0.5).slice(0, count).map(o => o.id);
+    ST.answers[qid] = picks;
+    document.querySelectorAll(`#${qid}-options .option-btn`)
+      .forEach(b => b.classList.toggle('selected', picks.includes(b.dataset.id)));
+    if (qid === 'Q5') updateWheelCountVisibility();
+  }
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: RANDOMIZE ALL
+   ============================================================ */
+function randomizeAll() {
+  ST.answers      = {};
+  ST.customInputs = {};
+
+  // Pick domain first
+  ST.answers.Q1 = QUESTIONS.Q1.options[Math.floor(Math.random() * QUESTIONS.Q1.options.length)].id;
+
+  const allQs = ['Q2','Q3','Q4','Q5','Q55','Q7','Q8','Q9','Q10','Q11','Q12','Q13','Q14','Q15','Q16','Q17'];
+  allQs.forEach(qid => {
+    const q = QUESTIONS[qid];
+    if (!q) return;
+    if (q.type === 'single') {
+      ST.answers[qid] = q.options[Math.floor(Math.random() * q.options.length)].id;
+    } else {
+      let pool = q.options;
+      if (qid === 'Q5') {
+        pool = q.options.filter(o => !o.domains || o.domains.includes(ST.answers.Q1));
+        if (pool.length === 0) pool = q.options;
+      }
+      const count = Math.min(Math.floor(Math.random() * q.max) + 1, pool.length);
+      ST.answers[qid] = [...pool].sort(() => Math.random() - 0.5).slice(0, count).map(o => o.id);
+    }
+  });
+
+  // Clear textarea inputs
+  document.getElementById('Q18-input').value = '';
+  document.getElementById('hybridDesc').value = '';
+  document.getElementById('wheelCount').value = 4;
+
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updatePropulsionAvailability();
+  updateHybridVisibility();
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: APPLY PRESET
+   ============================================================ */
+function applyPreset(name) {
+  const preset = PRESETS[name];
+  if (!preset) { randomizeAll(); return; }
+
+  ST.customInputs = {};
+
+  // Extract wheelCount before spreading into answers
+  const { wheelCount, ...answerData } = preset;
+  ST.answers = { ...answerData };
+
+  if (wheelCount !== undefined) {
+    document.getElementById('wheelCount').value = wheelCount;
+  } else {
+    document.getElementById('wheelCount').value = 4;
+  }
+
+  document.getElementById('Q18-input').value = '';
+  document.getElementById('hybridDesc').value = '';
+
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updatePropulsionAvailability();
+  updateHybridVisibility();
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: GET ANSWER TEXT
+   ============================================================ */
+function getAns(qid) {
+  const q   = QUESTIONS[qid];
+  const ans = ST.answers[qid];
+  if (!q || !ans || (Array.isArray(ans) && ans.length === 0)) return '';
+
+  const baseText = Array.isArray(ans)
+    ? ans.map(id => (q.options.find(o => o.id === id) || {}).text).filter(Boolean).join(', ')
+    : (q.options.find(o => o.id === ans) || {}).text || '';
+
+  const customs = ST.customInputs[qid] || [];
+  return [baseText, ...customs].filter(Boolean).join(', ');
+}
+
+
+/* ============================================================
+   JS: ASSEMBLE PROMPT
+   ============================================================ */
+function assemblePrompt() {
+  const domainId   = ST.answers.Q1;
+  const domainName = domainId ? (QUESTIONS.Q1.options.find(o => o.id === domainId) || {}).text || '' : '';
+  const parts      = [];
+
+  // Opening line
+  parts.push(`A ${domainName.toLowerCase()} vehicle`);
+
+  // Q2 — Function
+  const fn = getAns('Q2'); if (fn) parts.push(`, designed for ${fn.toLowerCase()}`);
+
+  // Q3 — Era
+  const era = getAns('Q3'); if (era) parts.push(`, from the ${era.toLowerCase()} era`);
+
+  // Q4 — Tech level
+  const tech = getAns('Q4'); if (tech) parts.push(`, using ${tech.toLowerCase()} technology`);
+
+  // Q5 — Propulsion (with wheel count logic)
+  const propAns = ST.answers.Q5 || [];
+  const propArr = Array.isArray(propAns) ? propAns : [propAns];
+  const propCustom = ST.customInputs.Q5 || [];
+
+  if (propArr.length > 0 || propCustom.length > 0) {
+    // Build propulsion text, replacing 'Wheels' with wheel-count variant
+    const propTexts = propArr.map(id => {
+      const opt = QUESTIONS.Q5.options.find(o => o.id === id);
+      if (!opt) return '';
+      if (id === '4') {
+        // Wheels — inject count
+        const wc = parseInt(document.getElementById('wheelCount').value, 10) || 4;
+        return `featuring exactly ${wc} wheel${wc !== 1 ? 's' : ''}`;
+      }
+      return opt.text.toLowerCase();
+    }).filter(Boolean);
+
+    const allProp = [...propTexts, ...propCustom.map(t => t.toLowerCase())];
+    if (allProp.length > 0) {
+      // Handle wheel count text specially — already has 'featuring', don't prepend
+      const hasWheelCount = propArr.includes('4');
+      if (hasWheelCount && allProp.some(t => t.startsWith('featuring exactly'))) {
+        const nonWheel = allProp.filter(t => !t.startsWith('featuring exactly'));
+        const wheelPart = allProp.find(t => t.startsWith('featuring exactly'));
+        if (nonWheel.length > 0) parts.push(`, propelled by ${nonWheel.join(' and ')}, ${wheelPart}`);
+        else parts.push(`, ${wheelPart}`);
+      } else {
+        parts.push(`, propelled by ${allProp.join(' and ')}`);
+      }
+    }
+  }
+
+  // Q55 — Chassis
+  const chassis = getAns('Q55'); if (chassis) parts.push(`, with a ${chassis.toLowerCase()} chassis orientation`);
+
+  // Q7 — Movement
+  const move = getAns('Q7'); if (move) parts.push(`, moving in a ${move.toLowerCase()} manner`);
+
+  // Q8 — Scale
+  const scale = getAns('Q8'); if (scale) parts.push(`, ${scale.toLowerCase()} in scale`);
+
+  // Q9 — Design language
+  const design = getAns('Q9'); if (design) parts.push(`, with a ${design.toLowerCase()} aesthetic`);
+
+  // Q10 — Materials
+  const mats = getAns('Q10'); if (mats) parts.push(`, constructed from ${mats.toLowerCase()} materials`);
+
+  // Q11 — Condition
+  const cond = getAns('Q11'); if (cond) parts.push(`, in ${cond.toLowerCase()} condition`);
+
+  // Q12 — Background
+  const bg = getAns('Q12'); if (bg) parts.push(`, set against a ${bg.toLowerCase()} backdrop`);
+
+  // Q13 — Presentation
+  const pres = getAns('Q13'); if (pres) parts.push(`, shown ${pres.toLowerCase()}`);
+
+  // Hybrid description
+  if (domainId === '5') {
+    const hybDesc = document.getElementById('hybridDesc').value.trim();
+    if (hybDesc) parts.push(`. Hybrid operation: ${hybDesc}`);
+  }
+
+  // Q14 — Perspective
+  const persp = getAns('Q14'); if (persp) parts.push(`, viewed from a ${persp.toLowerCase()} perspective`);
+
+  // Q15 — Color palette
+  const palette = getAns('Q15'); if (palette) parts.push(`, rendered in a ${palette.toLowerCase()} color palette`);
+
+  // Q16 — Art style
+  const style = getAns('Q16'); if (style) parts.push(`, in ${style.toLowerCase()} style`);
+
+  // Q17 — Image size
+  const sz = getAns('Q17');
+  if (sz) {
+    const sizeMap = {'1':'square 1:1','2':'portrait tall 2:3','3':'landscape wide 3:2'};
+    const szId = ST.answers.Q17;
+    parts.push(`, ${sizeMap[szId] || sz.toLowerCase()} aspect ratio`);
+  }
+
+  // Q18 — Override / clarifications
+  const override = (ST.answers.Q18 || document.getElementById('Q18-input')?.value || '').trim();
+  if (override && override.toLowerCase() !== 'none') {
+    parts.push(`. ${override}`);
+  }
+
+  // Closing quality booster
+  parts.push(`. Ultra-fine surface detail with panel textures, surface markings, wear patterns, mechanical components, and structural elements. Sharp focus, clean edges. Cinematic physically plausible lighting. Professional production-grade rendering.`);
+
+  // Strip any double-wheel references caused by regex edge cases
+  const raw = parts.join('');
+  const cleaned = raw.replace(/\bwithout wheels\b/gi, '').replace(/\s{2,}/g, ' ');
+
+  return cleaned.charAt(0).toUpperCase() + cleaned.slice(1);
+}
+
+
+/* ============================================================
+   JS: UPDATE PREVIEW
+   ============================================================ */
+function updatePreview() {
+  const el = document.getElementById('livePreview');
+  if (!ST.answers.Q1) {
+    el.textContent = 'Select a Vehicle Domain in Core Setup to begin.';
+    el.className = 'prompt-display empty';
+    return;
+  }
+  el.textContent = assemblePrompt();
+  el.className = 'prompt-display';
+}
+
+
+/* ============================================================
+   JS: COPY RAW PROMPT
+   ============================================================ */
+function copyPrompt() {
+  const text = document.getElementById('livePreview').textContent;
+  if (!text || text.includes('Select a Vehicle Domain')) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById('copyConfirmInline');
+    el.textContent = '✓ Copied!';
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  });
+}
+
+
+/* ============================================================
+   JS: SAVE / LOAD / RESET
+   ============================================================ */
+function saveCurrent() {
+  const override = document.getElementById('Q18-input').value.trim();
+  if (override) ST.answers.Q18 = override;
+  const saveData = {
+    answers:      ST.answers,
+    customInputs: ST.customInputs,
+    wheelCount:   document.getElementById('wheelCount').value,
+    hybridDesc:   document.getElementById('hybridDesc').value,
+  };
+  localStorage.setItem('vehicleSave', JSON.stringify(saveData));
+  showNotice('Saved.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function loadSaved() {
+  const data = JSON.parse(localStorage.getItem('vehicleSave') || 'null');
+  if (!data) { showNotice('No saved data found.', 'err', 'actionNotice'); return; }
+  ST.answers      = data.answers      || {};
+  ST.customInputs = data.customInputs || {};
+  if (data.wheelCount !== undefined) document.getElementById('wheelCount').value = data.wheelCount;
+  if (data.hybridDesc !== undefined) document.getElementById('hybridDesc').value = data.hybridDesc;
+  if (ST.answers.Q18)  document.getElementById('Q18-input').value = ST.answers.Q18;
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updatePropulsionAvailability();
+  updateHybridVisibility();
+  updatePreview();
+  showNotice('Loaded.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function clearSaved() {
+  localStorage.removeItem('vehicleSave');
+  showNotice('Cleared.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function resetApp() {
+  ST = { answers: {}, customInputs: {} };
+  document.getElementById('Q18-input').value  = '';
+  document.getElementById('hybridDesc').value = '';
+  document.getElementById('wheelCount').value  = 4;
+  document.getElementById('propOverride').checked = false;
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updatePropulsionAvailability();
+  updateHybridVisibility();
+  updatePreview();
+  document.getElementById('narrativeOutput').classList.remove('visible');
+  document.getElementById('narrativeText').textContent = '';
+  setXaiStatus('Enter an API key above to enable generation.', '');
+  hideNotice('xaiNotice');
+}
+
+
+/* ============================================================
+   JS: NOTICE HELPERS
+   ============================================================ */
+function showNotice(msg, type, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'notice ' + type;
+}
+function hideNotice(id) {
+  const el = document.getElementById(id);
+  if (el) el.className = 'notice';
+}
+
+
+/* ============================================================
+   JS: xAI — KEY TOGGLE AND BUTTON STATE
+   ============================================================ */
+function toggleKeyVis() {
+  const inp = document.getElementById('xaiApiKey');
+  const btn = document.querySelector('.xai-toggle');
+  if (inp.type === 'password') { inp.type = 'text';     btn.textContent = 'HIDE'; }
+  else                         { inp.type = 'password'; btn.textContent = 'SHOW'; }
+}
+
+function updateGenBtn() {
+  const key = document.getElementById('xaiApiKey').value.trim();
+  document.getElementById('xaiGenBtn').disabled = !key;
+  if (!key) setXaiStatus('Enter an API key above to enable generation.', '');
+  else      setXaiStatus('Ready — build your vehicle above, then click Generate.', 'ok');
+}
+
+function setXaiStatus(msg, type) {
+  const el = document.getElementById('xaiStatus');
+  el.textContent = msg;
+  el.className   = 'xai-status' + (type ? ' ' + type : '');
+}
+
+
+/* ============================================================
+   JS: xAI — NARRATIVE PROMPT GENERATION
+   ============================================================ */
+async function generateNarrativePrompt() {
+  const key  = document.getElementById('xaiApiKey').value.trim();
+  const save = document.getElementById('xaiSaveKey').checked;
+
+  if (!key) { showNotice('Enter your xAI API key.', 'err', 'xaiNotice'); return; }
+  if (!ST.answers.Q1) { showNotice('Select a Vehicle Domain first.', 'err', 'xaiNotice'); return; }
+
+  if (save) localStorage.setItem('xaiKey_vehicle', key);
+  else      localStorage.removeItem('xaiKey_vehicle');
+
+  const fullPrompt = assemblePrompt();
+
+  const genBtn = document.getElementById('xaiGenBtn');
+  genBtn.disabled = true;
+  genBtn.innerHTML = '<span class="spinner"></span>Generating…';
+
+  document.getElementById('narrativeOutput').classList.remove('visible');
+  hideNotice('xaiNotice');
+  document.getElementById('xaiStatus').innerHTML =
+    '<span class="spinner"></span>Sending request to xAI…';
+  document.getElementById('xaiStatus').className = 'xai-status run';
+
+  try {
+    const res = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'grok-4.3',
+        max_tokens: 700,
+        reasoning_effort: 'none',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert AI image-prompt writer specializing in vehicles, machines, and transportation of all eras and genres — from prehistoric sledges to starships. Given structured vehicle attributes, craft one rich, vivid, cinematic image-generation prompt. Be specific about materials, surfaces, motion, lighting, and environment. Do not explain or comment. Output only the prompt.',
+          },
+          {
+            role: 'user',
+            content: `Convert these vehicle attributes into one rich, evocative image-generation prompt:\n\n${fullPrompt}`,
+          },
+        ],
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      const msg = data?.error?.message || `HTTP ${res.status}`;
+      setXaiStatus('', '');
+      showNotice(`Error: ${msg}`, 'err', 'xaiNotice');
+      return;
+    }
+
+    const text = data?.choices?.[0]?.message?.content?.trim() || '';
+    if (!text) {
+      setXaiStatus('', '');
+      showNotice('No response returned.', 'err', 'xaiNotice');
+      return;
+    }
+
+    document.getElementById('narrativeText').textContent = text;
+    document.getElementById('narrativeOutput').classList.add('visible');
+    setXaiStatus('Narrative prompt generated.', 'ok');
+
+  } catch (err) {
+    setXaiStatus('', '');
+    showNotice(`Network error: ${err.message}`, 'err', 'xaiNotice');
+  } finally {
+    genBtn.disabled = false;
+    genBtn.innerHTML = '&#9889; Generate Narrative Prompt';
+  }
+}
+
+
+/* ============================================================
+   JS: COPY NARRATIVE
+   ============================================================ */
+function copyNarrative() {
+  const text = document.getElementById('narrativeText').textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById('narrativeCopyConfirm');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  });
+}
+
+
+/* ============================================================
+   JS: BOOT
+   ============================================================ */
+window.onload = init;
+
+</script>
+</body>
+</html>
