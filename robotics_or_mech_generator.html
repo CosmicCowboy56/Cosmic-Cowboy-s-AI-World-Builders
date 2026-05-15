@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Robotics Generator v2.0 - Cosmic Cowboy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deepest:    #010E1F;
+  --ocean-blue: #0077B6;
+  --soft-cyan:  #90E0EF;
+  --pale-blue:  #CAF0F8;
+  --accent:     #FFD166;
+  --surface:    rgba(0,119,182,0.09);
+  --surface2:   rgba(0,119,182,0.17);
+  --border:     rgba(144,224,239,0.22);
+  --border-hi:  rgba(144,224,239,0.50);
+  --dim:        rgba(202,240,248,0.45);
+  --green:      #4ade80;
+  --red:        #f87171;
+  --glow:       0 0 12px rgba(144,224,239,0.30);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; font-family: 'Exo 2', sans-serif; font-weight: 300; font-size: 15px; background: var(--deepest); color: var(--pale-blue); }
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.15); }
+::-webkit-scrollbar-thumb { background: rgba(144,224,239,0.28); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(144,224,239,0.55); }
+
+.header { height: 52px; background: rgba(0,0,0,0.50); border-bottom: 1px solid var(--border-hi); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.header::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent); opacity: 0.5; }
+.hdr-title { font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 900; letter-spacing: 0.12em; color: var(--pale-blue); text-shadow: 0 0 18px rgba(144,224,239,0.4); }
+.hdr-sub { font-size: 0.62rem; color: var(--soft-cyan); letter-spacing: 0.2em; text-transform: uppercase; }
+
+.page-title { text-align: center; padding: 28px 24px 18px; border-bottom: 1px solid var(--border); }
+.page-title h1 { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 900; letter-spacing: 0.08em; color: var(--pale-blue); text-shadow: 0 0 24px rgba(144,224,239,0.35); margin-bottom: 4px; }
+.page-title .v-tag { font-size: 0.72rem; color: var(--soft-cyan); letter-spacing: 0.25em; text-transform: uppercase; }
+
+.api-bar { background: rgba(0,0,0,0.40); border-bottom: 1px solid var(--border); padding: 9px 24px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.api-lbl { font-size: 0.68rem; color: var(--soft-cyan); letter-spacing: 0.18em; text-transform: uppercase; white-space: nowrap; }
+.api-bar input[type="password"] { flex: 1; min-width: 240px; background: rgba(0,0,0,0.40); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.83rem; padding: 5px 10px; border-radius: 3px; outline: none; transition: border-color 0.2s; }
+.api-bar input:focus { border-color: var(--soft-cyan); }
+.connect-btn { background: rgba(0,119,182,0.15); border: 1px solid var(--border-hi); color: var(--soft-cyan); font-family: 'Exo 2', sans-serif; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; padding: 6px 16px; border-radius: 3px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.connect-btn:hover { background: rgba(0,119,182,0.30); }
+
+.page-body { display: grid; grid-template-columns: 1fr 400px; min-height: calc(100vh - 52px); align-items: start; }
+.form-col { padding: 22px 24px; border-right: 1px solid var(--border); }
+.out-col { padding: 22px 20px; position: sticky; top: 52px; max-height: calc(100vh - 52px); overflow-y: auto; }
+
+.section { background: var(--surface); border: 1px solid var(--border); border-radius: 5px; margin-bottom: 14px; overflow: hidden; }
+.section-title { font-family: 'Cinzel', serif; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft-cyan); padding: 9px 14px; background: rgba(0,0,0,0.28); border-bottom: 1px solid var(--border); }
+.section-body { padding: 14px; }
+
+.field-wrap { margin-bottom: 13px; }
+.field-label { font-size: 0.70rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--soft-cyan); margin-bottom: 7px; display: flex; align-items: center; justify-content: space-between; }
+.field-label .multi-note { font-size: 0.62rem; color: var(--dim); text-transform: none; letter-spacing: 0.04em; }
+
+.opts { display: flex; flex-wrap: wrap; gap: 5px; }
+.opt { background: rgba(0,0,0,0.32); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.78rem; padding: 4px 10px; border-radius: 3px; cursor: pointer; transition: all 0.14s; }
+.opt:hover { background: var(--surface2); border-color: var(--soft-cyan); }
+.opt.on { background: rgba(0,119,182,0.38); border-color: var(--soft-cyan); box-shadow: 0 0 5px rgba(144,224,239,0.18); }
+
+.dice { background: none; border: 1px solid var(--border); color: var(--soft-cyan); font-size: 0.70rem; padding: 3px 7px; border-radius: 3px; cursor: pointer; transition: background 0.14s; }
+.dice:hover { background: var(--surface2); }
+.sec-btn { background: rgba(0,0,0,0.30); border: 1px solid var(--border); color: var(--dim); font-family: 'Exo 2', sans-serif; font-size: 0.72rem; padding: 4px 9px; border-radius: 3px; cursor: pointer; transition: all 0.14s; white-space: nowrap; }
+.sec-btn:hover { background: var(--surface2); color: var(--pale-blue); }
+
+.txt { width: 100%; background: rgba(0,0,0,0.35); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.83rem; padding: 6px 9px; border-radius: 3px; outline: none; transition: border-color 0.2s; }
+.txt:focus { border-color: var(--soft-cyan); }
+textarea.txt { resize: vertical; min-height: 64px; }
+
+.custom-row { display: flex; gap: 5px; margin-top: 6px; }
+.custom-row .txt { flex: 1; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(0,119,182,0.22); border: 1px solid rgba(144,224,239,0.32); color: var(--soft-cyan); font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; }
+.tag button { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 0.82rem; padding: 0; line-height: 1; }
+.tag button:hover { color: var(--red); }
+
+.contrib-item { background: rgba(0,0,0,0.22); border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px 10px 10px; margin-bottom: 8px; position: relative; }
+.contrib-lbl { font-size: 0.60rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+.contrib-row { display: flex; gap: 6px; align-items: center; }
+.contrib-name { flex: 1; background: rgba(0,0,0,0.35); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.82rem; padding: 5px 8px; border-radius: 3px; outline: none; transition: border-color 0.2s; }
+.contrib-name:focus { border-color: var(--soft-cyan); }
+.contrib-pct { width: 56px; background: rgba(0,0,0,0.35); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.82rem; padding: 5px 6px; border-radius: 3px; outline: none; text-align: center; transition: border-color 0.2s; }
+.contrib-pct:focus { border-color: var(--soft-cyan); }
+.rm-btn { position: absolute; top: 6px; right: 7px; background: none; border: 1px solid rgba(248,113,113,0.28); color: rgba(248,113,113,0.50); font-size: 0.70rem; width: 18px; height: 18px; border-radius: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.14s; line-height: 1; }
+.rm-btn:hover { background: rgba(248,113,113,0.15); color: var(--red); border-color: var(--red); }
+.pct-total { font-size: 0.72rem; letter-spacing: 0.08em; color: var(--dim); margin-top: 6px; padding: 3px 8px; border-radius: 3px; background: rgba(0,0,0,0.20); display: inline-block; transition: all 0.2s; }
+.pct-total.ok { color: var(--green); background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.20); }
+.pct-total.over { color: var(--red); background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.20); }
+
+.preset-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.preset-btn { background: rgba(255,209,102,0.07); border: 1px solid rgba(255,209,102,0.28); color: var(--accent); font-family: 'Exo 2', sans-serif; font-size: 0.76rem; padding: 5px 11px; border-radius: 3px; cursor: pointer; transition: background 0.14s; }
+.preset-btn:hover { background: rgba(255,209,102,0.16); }
+.save-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.notice { background: rgba(0,119,182,0.10); border-left: 2px solid var(--soft-cyan); padding: 7px 10px; border-radius: 0 3px 3px 0; font-size: 0.76rem; color: var(--dim); line-height: 1.5; }
+.notice strong { color: var(--soft-cyan); font-weight: 600; }
+
+.err { font-size: 0.74rem; color: var(--red); background: rgba(248,113,113,0.09); border: 1px solid rgba(248,113,113,0.22); border-radius: 3px; padding: 6px 9px; margin-top: 7px; display: none; }
+
+.out-lbl { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.20em; text-transform: uppercase; color: var(--soft-cyan); margin-bottom: 8px; }
+.out-body { background: rgba(0,0,0,0.42); border: 1px solid var(--border); border-radius: 3px; padding: 13px; font-size: 0.81rem; line-height: 1.68; white-space: pre-wrap; min-height: 120px; color: var(--pale-blue); margin-bottom: 12px; }
+.out-body.empty { color: var(--dim); font-style: italic; }
+
+.gen-btn { width: 100%; background: linear-gradient(135deg, var(--ocean-blue), rgba(0,119,182,0.65)); border: 1px solid var(--soft-cyan); color: var(--pale-blue); font-family: 'Cinzel', serif; font-size: 0.80rem; font-weight: 700; letter-spacing: 0.12em; padding: 11px; border-radius: 3px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; box-shadow: var(--glow); display: flex; align-items: center; justify-content: center; gap: 8px; }
+.gen-btn:hover { box-shadow: 0 0 20px rgba(144,224,239,0.40); }
+.gen-btn:disabled { opacity: 0.40; cursor: not-allowed; }
+
+.action-row { display: flex; gap: 6px; margin-top: 7px; }
+.copy-btn, .reset-btn { flex: 1; background: rgba(0,0,0,0.28); border: 1px solid var(--border); color: var(--dim); font-family: 'Exo 2', sans-serif; font-size: 0.72rem; padding: 5px; border-radius: 3px; cursor: pointer; transition: all 0.14s; }
+.copy-btn:hover, .reset-btn:hover { background: var(--surface2); color: var(--pale-blue); }
+
+.preview-lbl { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); margin: 16px 0 6px; }
+.preview-body { background: rgba(0,0,0,0.25); border: 1px solid rgba(144,224,239,0.12); border-radius: 3px; padding: 10px 12px; font-size: 0.75rem; line-height: 1.55; color: var(--dim); }
+
+.spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(144,224,239,0.18); border-top-color: var(--soft-cyan); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+footer { text-align: center; padding: 16px; font-size: 0.70rem; color: var(--dim); border-top: 1px solid var(--border); letter-spacing: 0.08em; }
+
+@media (max-width: 960px) {
+  .page-body { grid-template-columns: 1fr; }
+  .form-col { border-right: none; border-bottom: 1px solid var(--border); }
+  .out-col { position: static; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <span class="hdr-title">COSMIC COWBOY'S AI WORLDBUILDERS</span>
+  <span class="hdr-sub">Robotics Generator v2.0</span>
+</header>
+
+<div class="page-title">
+  <h1>ROBOTICS GENERATOR</h1>
+  <div class="v-tag">v2.0 - xAI Powered - Single Integrated Construct</div>
+</div>
+
+<div class="api-bar">
+  <span class="api-lbl">xAI API Key</span>
+  <input type="password" id="apiKey" placeholder="xai-..." autocomplete="off">
+  <button class="connect-btn" id="connectBtn" onclick="confirmConnect()">CONNECT</button>
+</div>
+
+<div class="page-body">
+
+  <div class="form-col">
+
+    <div class="section">
+      <div class="section-title">Quick Start Presets</div>
+      <div class="section-body">
+        <p style="font-size:0.76rem;color:var(--dim);margin-bottom:10px">Click any preset to auto-fill. Modify freely, then generate.</p>
+        <div class="preset-row">
+          <button class="preset-btn" onclick="applyPreset('battleMech')">Battle Mech</button>
+          <button class="preset-btn" onclick="applyPreset('industrialHybrid')">Industrial Hybrid</button>
+          <button class="preset-btn" onclick="applyPreset('biomechBeast')">Biomech Beast</button>
+          <button class="preset-btn" onclick="applyPreset('abstractEntity')">Abstract Entity</button>
+          <button class="preset-btn" onclick="applyPreset('random')">Randomize All</button>
+        </div>
+        <div class="save-row">
+          <button class="sec-btn" onclick="saveCurrent()">Save</button>
+          <button class="sec-btn" onclick="loadSaved()">Load</button>
+          <button class="sec-btn" onclick="clearSaved()">Clear Saved</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Core Setup</div>
+      <div class="section-body">
+        <div class="field-wrap">
+          <div class="field-label">
+            Robotics Category
+            <button class="dice" onclick="randField('Q2')">Randomize</button>
+          </div>
+          <div class="opts" id="Q2-opts"></div>
+          <div class="notice" style="margin-top:10px">
+            <strong>Fully Mechanical</strong> - no biological elements.
+            <strong>Biomechanical</strong> - biological and mechanical integrated into a unified whole.
+            <strong>Industrial-Organic Hybrid</strong> - distinct industrial and organic layers, separation is intentional and valid.
+            <strong>Abstract Mechanical Entity</strong> - non-standard structure, contributor influences may be geometric, energetic, or conceptual.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Contributors and Dominance</div>
+      <div class="section-body">
+        <div class="notice" style="margin-bottom:12px">
+          <strong>1 to 4 contributors, percentages must total 100.</strong><br>
+          Any real-world machine, vehicle, creature, structure, or concept. Dominance % controls how strongly each source shapes the final entity. Integration level is governed by your Category and Surface Integration choices.
+        </div>
+        <div id="contrib-list"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;">
+          <button class="sec-btn" id="addBtn" onclick="addContrib()">+ Add Contributor</button>
+          <button class="sec-btn" onclick="randomizeContribs()">Randomize Contributors</button>
+          <span class="pct-total" id="pctTotal">Total: 0%</span>
+        </div>
+        <div class="err" id="contrib-err"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Form and Structure</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">Primary Body Plan <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q4')">Randomize</button>
+          </div>
+          <div class="opts" id="Q4-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q4-custom" placeholder="Custom body plan..."><button class="sec-btn" onclick="addCustom('Q4')">Add</button></div>
+          <div class="tags" id="Q4-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Structural Complexity
+            <button class="dice" onclick="randField('Q5')">Randomize</button>
+          </div>
+          <div class="opts" id="Q5-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q5-custom" placeholder="Custom complexity..."><button class="sec-btn" onclick="addCustom('Q5')">Add</button></div>
+          <div class="tags" id="Q5-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Primary Locomotion <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q6')">Randomize</button>
+          </div>
+          <div class="opts" id="Q6-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q6-custom" placeholder="Custom locomotion..."><button class="sec-btn" onclick="addCustom('Q6')">Add</button></div>
+          <div class="tags" id="Q6-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Secondary Appendages <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q7')">Randomize</button>
+          </div>
+          <div class="opts" id="Q7-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q7-custom" placeholder="Custom appendages..."><button class="sec-btn" onclick="addCustom('Q7')">Add</button></div>
+          <div class="tags" id="Q7-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Scale or Size
+            <button class="dice" onclick="randField('Q8')">Randomize</button>
+          </div>
+          <div class="opts" id="Q8-opts"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Surface and Systems</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">Surface Integration Style <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q9')">Randomize</button>
+          </div>
+          <div class="opts" id="Q9-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q9-custom" placeholder="Custom surface style..."><button class="sec-btn" onclick="addCustom('Q9')">Add</button></div>
+          <div class="tags" id="Q9-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Control Structure <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q10')">Randomize</button>
+          </div>
+          <div class="opts" id="Q10-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q10-custom" placeholder="Custom control structure..."><button class="sec-btn" onclick="addCustom('Q10')">Add</button></div>
+          <div class="tags" id="Q10-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Sensory Systems <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q11')">Randomize</button>
+          </div>
+          <div class="opts" id="Q11-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q11-custom" placeholder="Custom sensory systems..."><button class="sec-btn" onclick="addCustom('Q11')">Add</button></div>
+          <div class="tags" id="Q11-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Power Source <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q12')">Randomize</button>
+          </div>
+          <div class="opts" id="Q12-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q12-custom" placeholder="Custom power source..."><button class="sec-btn" onclick="addCustom('Q12')">Add</button></div>
+          <div class="tags" id="Q12-tags"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Role and Context</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">Primary Role <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q13')">Randomize</button>
+          </div>
+          <div class="opts" id="Q13-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q13-custom" placeholder="Custom role..."><button class="sec-btn" onclick="addCustom('Q13')">Add</button></div>
+          <div class="tags" id="Q13-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Operating Environment <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q14')">Randomize</button>
+          </div>
+          <div class="opts" id="Q14-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q14-custom" placeholder="Custom environment..."><button class="sec-btn" onclick="addCustom('Q14')">Add</button></div>
+          <div class="tags" id="Q14-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Posture or Motion <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q15')">Randomize</button>
+          </div>
+          <div class="opts" id="Q15-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q15-custom" placeholder="Custom posture..."><button class="sec-btn" onclick="addCustom('Q15')">Add</button></div>
+          <div class="tags" id="Q15-tags"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Visual Controls</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">POV or Framing
+            <button class="dice" onclick="randField('Q16')">Randomize</button>
+          </div>
+          <div class="opts" id="Q16-opts"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Visual Style
+            <button class="dice" onclick="randField('Q17')">Randomize</button>
+          </div>
+          <div class="opts" id="Q17-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q17-custom" placeholder="Custom style..."><button class="sec-btn" onclick="addCustom('Q17')">Add</button></div>
+          <div class="tags" id="Q17-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Material and Color Palette <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q18')">Randomize</button>
+          </div>
+          <div class="opts" id="Q18-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q18-custom" placeholder="Custom palette..."><button class="sec-btn" onclick="addCustom('Q18')">Add</button></div>
+          <div class="tags" id="Q18-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Image Aspect Ratio
+            <button class="dice" onclick="randField('Q19')">Randomize</button>
+          </div>
+          <div class="opts" id="Q19-opts"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Clarifications and Overrides</div>
+      <div class="section-body">
+        <p style="font-size:0.76rem;color:var(--dim);margin-bottom:9px">Authoritative. Overrides all earlier selections where there is conflict. Specific mechanical details, textures, poses, or anything not covered above.</p>
+        <textarea class="txt" id="Q20-input" rows="3" placeholder="Enter clarifications, additions, or overrides. Leave blank if none."></textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="out-col">
+    <div class="out-lbl">Generated Prompt</div>
+    <div class="out-body empty" id="outPrompt">Connect your API key, fill the form, and click Generate.</div>
+    <button class="gen-btn" id="genBtn" onclick="generatePrompt()">Generate Prompt</button>
+    <div class="err" id="gen-err"></div>
+    <div class="action-row">
+      <button class="copy-btn" onclick="copyPrompt()">Copy Prompt</button>
+      <button class="reset-btn" onclick="resetApp()">Reset All</button>
+    </div>
+    <div class="preview-lbl">Form Summary</div>
+    <div class="preview-body" id="livePreview">Fill in the form to see a summary...</div>
+  </div>
+
+</div>
+
+<footer>r/CCsAIWorldBuilders - Cosmic Cowboy's AI Worldbuilders - Single integrated construct only</footer>
+
+<script>
+const XAI_ENDPOINT = 'https://api.x.ai/v1/chat/completions';
+const XAI_MODEL    = 'grok-4.3';
+
+const Q = {
+  Q2: { type:'single', opts:[
+    'Fully Mechanical','Biomechanical','Industrial-Organic Hybrid','Abstract Mechanical Entity'
+  ]},
+  Q4: { type:'multi', max:2, opts:[
+    'Vehicular-Derived','Quadrupedal Mechanical Beast','Quadrupedal Biological','Bipedal Mechanical',
+    'Bipedal Biological','Multi-Legged Crawler','Serpentine Elongated','Abstract Non-Axial',
+    'Centauroid Hybrid Frame','Arachnid Multi-Limb','Winged Avian Frame','Aquatic Streamlined Hull',
+    'Tetrapod Low-Slung','Radially Symmetric','Modular Stacked Tower','Amorphous Shifting Mass',
+    'Insectoid Segmented','Crustacean Armored Shell','Barrel-Chest Gorilla Frame','Centipede Rail Body'
+  ]},
+  Q5: { type:'single', opts:[
+    'Monolithic','Modular','Layered','Articulated','Distributed','Adaptive Reconfigurable',
+    'Bio-Inspired Structural Logic','Abstract Non-Physical','Nested Telescoping','Lattice Skeletal',
+    'Dense Compact Core','Sparse Exoskeletal Frame','Redundant Parallel Systems','Asymmetric Imbalanced',
+    'Collapsible Folding','Crystal Lattice Growth'
+  ]},
+  Q6: { type:'multi', max:2, opts:[
+    'Wheels or Rolling Mass','Tracks','Legs or Articulated Walkers','Hover or Levitation',
+    'Winged Flight','Hybrid Unconventional','Stationary','Jet or Thruster Propulsion',
+    'Slithering Undulation','Magnetic Rail Glide','Tentacle Propulsion','Aquatic Swimming',
+    'Brachiation Arm-Swing','Burrowing Subterranean','Cable or Tether Suspension','Ballistic Launch'
+  ]},
+  Q7: { type:'multi', max:2, opts:[
+    'None','Mechanical Manipulators','Organic Appendages','Mixed Mechanical-Organic',
+    'Hydraulic Crane Arms','Pincer Claws','Whip Tendrils','Energy Emitter Arrays',
+    'Tool-Tip Swap Modules','Tentacle Cluster','Blade or Spike Protrusions','Shield Panels',
+    'Grapple and Tether Lines','Sensory Probe Stalks','Cannon or Launcher Mounts','Wing Fins'
+  ]},
+  Q8: { type:'single', opts:[
+    'Hand-Held Micro','Human-Scale','Vehicle-Scale','Building-Scale','Colossal',
+    'Titan City-Scale','Nano Swarm Unit','Insect-Scale','Horse-Scale','Tank-Scale'
+  ]},
+  Q9: { type:'multi', max:2, opts:[
+    'Clean Mechanical Seams','Riveted Layered Industrial Plating','Organic Skin Over Structure',
+    'Blended Biomechanical Surface','Architectural Infrastructural Surface',
+    'Exposed Cable and Conduit Weave','Cracked Chitin Plating','Corroded Rust Patina',
+    'Polished Mirror Chrome','Matte Ceramic Composite','Carbon Fiber Weave','Bone and Metal Fusion',
+    'Pulsing Bioluminescent Membrane','Carved Stone Encrustation','Bark and Root Overlay',
+    'Ice Crystal Encasement','Lattice Mesh Open Frame','Liquid Metal Flowing Surface'
+  ]},
+  Q10: { type:'multi', max:2, opts:[
+    'Central Cockpit Command Pod','Distributed Control Nodes','Organic Control Core',
+    'No Visible Control Structure','Exposed Neural Cluster','Remote Antenna Array',
+    'Crystal Matrix Core','Hive-Mind Distributed Intelligence','Chest-Mounted Reactor Hub',
+    'Head-Mounted Sensor Crown','Embedded Spine Column','Swarm Coordination Beacon',
+    'External Control Harness','Autonomous Self-Directing'
+  ]},
+  Q11: { type:'multi', max:2, opts:[
+    'Mechanical Sensors Only','Mixed Mechanical-Organic Sensors','Organic Sensory Dominance',
+    'Abstract Implied Sensing','Multi-Spectrum Camera Eyes','Compound Insect Eyes',
+    'Sonar Dish Array','Thermal Infrared Sensors','Radar Dome','Chemoreceptor Tendrils',
+    'Electro-Magnetic Field Detection','Lidar Rotating Emitter','Acoustic Resonance Membranes',
+    'Pressure-Sensitive Skin','Echolocation Vents','Single Cyclopean Lens'
+  ]},
+  Q12: { type:'multi', max:2, opts:[
+    'Steam Pressure-Based','Diesel Combustion','Electrical Battery','Bio-Organic Metabolic',
+    'Hybrid Multi-Source','Speculative Exotic','Nuclear Fission Core','Fusion Plasma Reactor',
+    'Solar Collector Array','Geothermal Tap','Atmospheric Energy Harvesting','Dark Matter Containment',
+    'Crystalline Energy Store','Kinetic Flywheel','Hydraulic Pressure Accumulator','Alchemical Combustion'
+  ]},
+  Q13: { type:'multi', max:2, opts:[
+    'Transport and Logistics','Combat or Siege or Demolition','Exploration or Patrol',
+    'Industrial Utility','Ceremonial or Symbolic','Search and Rescue','Mining and Extraction',
+    'Construction and Assembly','Surveillance and Intelligence','Scientific Research',
+    'Agricultural Harvesting','Crowd Control','Diplomatic Escort','Terraforming',
+    'Waste Processing','Medical Support'
+  ]},
+  Q14: { type:'multi', max:2, opts:[
+    'Urban Infrastructure','Industrial Zone','Battlefield','Wilderness','Interior Facility',
+    'Arctic Tundra','Desert Wasteland','Dense Jungle','Oceanic Depths','High Altitude Peaks',
+    'Subterranean Caverns','Space Void','Volcanic Active Zone','Toxic Chemical Swamp',
+    'Ancient Ruins','Orbital Platform','Megacity Sprawl','Flooded Lowlands'
+  ]},
+  Q15: { type:'multi', max:2, opts:[
+    'Static Anchored Imposing','Slow Advance','Aggressive Attacking','Patrolling','Dormant Standby',
+    'Sprinting at Full Speed','Crouched Ready to Pounce','Rearing Up Dominant','Recoiling from Blast',
+    'Mid-Leap Airborne','Collapsed Defeated','Pivoting on Axis','Crawling Low Profile',
+    'Towering Over Landscape','Dismantling Target','Locked in Combat Grapple'
+  ]},
+  Q16: { type:'single', opts:[
+    'Front Neutral View','Three-Quarter View','Low-Angle Dominance','Wide Environmental',
+    'Detail Close-Up','Aerial Top-Down','Worm\'s Eye Ground Level','Side Profile Silhouette',
+    'Rear Three-Quarter','Dutch Angle Tilt'
+  ]},
+  Q17: { type:'single', opts:[
+    'Photorealism','Hyper Realism','Cinematic Realism','Gritty Industrial Realism',
+    'Digital Painting Concept Art','Matte Painting','Hard Surface CGI Render',
+    'Ink and Watercolor Illustration','Retro Pulp Science Fiction','Biopunk Organic Render',
+    'Dieselpunk Illustrated','Military Technical Blueprint','Noir Monochrome Photography',
+    'Oil Painting Classical','Anime Mecha Style','Glitch Aesthetic Digital Art'
+  ]},
+  Q18: { type:'multi', max:2, opts:[
+    'Dark Industrial Metals','Oxidized Brass Copper Iron','Hazard Colors Yellow Black',
+    'Muted Battlefield Tones','Bioluminescent Organic Tones','Polished Chrome Silver',
+    'Matte Olive Military Drab','Bone and Ivory Pale','Toxic Acid Green','Deep Space Black',
+    'Volcanic Ember Orange','Arctic White and Ice Blue','Jungle Camouflage Green',
+    'Desert Sand and Terracotta','Blood Red and Black','Alien Iridescent Purple',
+    'Rust and Decay Brown','Neon Circuit Blue'
+  ]},
+  Q19: { type:'single', opts:['Square','Portrait Tall','Landscape Wide'] },
+};
+
+let ans      = {};
+let custom   = {};
+let contribs = [];
+let cid      = 0;
+
+const PRESETS = {
+  battleMech: {
+    Q2:'Fully Mechanical', contributors:[{name:'Main battle tank',pct:60},{name:'Industrial exoskeleton',pct:25},{name:'Siege engine',pct:15}],
+    Q4:['Quadrupedal Mechanical Beast','Bipedal Mechanical'], Q5:'Articulated', Q6:['Tracks','Legs or Articulated Walkers'],
+    Q7:['Mechanical Manipulators'], Q8:'Vehicle-Scale', Q9:['Riveted Layered Industrial Plating'],
+    Q10:['Central Cockpit Command Pod'], Q11:['Mechanical Sensors Only'], Q12:['Diesel Combustion'],
+    Q13:['Combat or Siege or Demolition'], Q14:['Battlefield'], Q15:['Aggressive Attacking'],
+    Q16:'Low-Angle Dominance', Q17:'Cinematic Realism', Q18:['Dark Industrial Metals','Hazard Colors Yellow Black'], Q19:'Landscape Wide'
+  },
+  industrialHybrid: {
+    Q2:'Industrial-Organic Hybrid', contributors:[{name:'Heavy excavator',pct:50},{name:'Organic root system',pct:30},{name:'Railroad locomotive',pct:20}],
+    Q4:['Vehicular-Derived'], Q5:'Layered', Q6:['Tracks'], Q7:['Mechanical Manipulators'], Q8:'Building-Scale',
+    Q9:['Riveted Layered Industrial Plating','Organic Skin Over Structure'], Q10:['Distributed Control Nodes'],
+    Q11:['Mixed Mechanical-Organic Sensors'], Q12:['Diesel Combustion','Hybrid Multi-Source'],
+    Q13:['Industrial Utility'], Q14:['Industrial Zone'], Q15:['Slow Advance'],
+    Q16:'Wide Environmental', Q17:'Gritty Industrial Realism', Q18:['Dark Industrial Metals','Oxidized Brass Copper Iron'], Q19:'Landscape Wide'
+  },
+  biomechBeast: {
+    Q2:'Biomechanical', contributors:[{name:'Large predator',pct:55},{name:'Mechanical prosthetics',pct:30},{name:'Neural interface hardware',pct:15}],
+    Q4:['Quadrupedal Biological'], Q5:'Bio-Inspired Structural Logic', Q6:['Legs or Articulated Walkers'],
+    Q7:['Mixed Mechanical-Organic'], Q8:'Vehicle-Scale', Q9:['Organic Skin Over Structure','Blended Biomechanical Surface'],
+    Q10:['Organic Control Core'], Q11:['Organic Sensory Dominance'], Q12:['Bio-Organic Metabolic','Hybrid Multi-Source'],
+    Q13:['Exploration or Patrol'], Q14:['Wilderness'], Q15:['Patrolling'],
+    Q16:'Three-Quarter View', Q17:'Digital Painting Concept Art', Q18:['Bioluminescent Organic Tones'], Q19:'Portrait Tall'
+  },
+  abstractEntity: {
+    Q2:'Abstract Mechanical Entity', contributors:[{name:'Geometric crystal formation',pct:70},{name:'Electromagnetic field',pct:30}],
+    Q4:['Abstract Non-Axial'], Q5:'Abstract Non-Physical', Q6:['Hover or Levitation'], Q7:['None'], Q8:'Building-Scale',
+    Q9:['Architectural Infrastructural Surface'], Q10:['No Visible Control Structure'],
+    Q11:['Abstract Implied Sensing'], Q12:['Speculative Exotic'],
+    Q13:['Ceremonial or Symbolic'], Q14:['Interior Facility'], Q15:['Static Anchored Imposing'],
+    Q16:'Wide Environmental', Q17:'Gritty Industrial Realism', Q18:['Dark Industrial Metals'], Q19:'Portrait Tall'
+  },
+};
+
+/* API */
+function confirmConnect() {
+  const key = document.getElementById('apiKey').value.trim();
+  const btn = document.getElementById('connectBtn');
+  if (!key || key.length < 6) {
+    btn.textContent = 'NEED KEY';
+    btn.style.cssText = 'font-size:0.66rem;padding:6px 16px;background:rgba(200,30,30,0.12);color:var(--red);border-color:rgba(200,30,30,0.35);';
+    return;
+  }
+  localStorage.setItem('xaiKey_robotics', key);
+  btn.textContent = 'CONNECTED';
+  btn.style.cssText = 'font-size:0.66rem;padding:6px 16px;background:rgba(0,160,90,0.15);color:var(--green);border-color:rgba(0,160,90,0.35);';
+}
+function apiKey()   { return document.getElementById('apiKey').value.trim(); }
+function apiReady() { return document.getElementById('connectBtn').textContent === 'CONNECTED'; }
+
+/* RENDER */
+function renderAll() {
+  Object.keys(Q).forEach(qid => renderField(qid));
+  renderContribs();
+  updatePreview();
+}
+
+function renderField(qid) {
+  const q = Q[qid];
+  const cont = document.getElementById(`${qid}-opts`);
+  if (!cont) return;
+  cont.innerHTML = '';
+  q.opts.forEach(opt => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.textContent = opt;
+    const sel = ans[qid];
+    if (sel && (Array.isArray(sel) ? sel.includes(opt) : sel === opt)) b.classList.add('on');
+    b.onclick = () => handleClick(qid, opt);
+    cont.appendChild(b);
+  });
+  renderTags(qid);
+}
+
+function handleClick(qid, opt) {
+  const q = Q[qid];
+  if (q.type === 'single') {
+    ans[qid] = (ans[qid] === opt) ? null : opt;
+  } else {
+    let cur = ans[qid] || [];
+    if (cur.includes(opt)) { ans[qid] = cur.filter(v => v !== opt); }
+    else if (cur.length < q.max) { ans[qid] = [...cur, opt]; }
+    else return;
+  }
+  renderField(qid);
+  updatePreview();
+}
+
+function addCustom(qid) {
+  const inp = document.getElementById(`${qid}-custom`);
+  const val = inp.value.trim(); if (!val) return;
+  if (!custom[qid]) custom[qid] = [];
+  custom[qid].push(val); inp.value = '';
+  renderTags(qid); updatePreview();
+}
+
+function removeCustom(qid, idx) {
+  custom[qid].splice(idx, 1);
+  renderTags(qid); updatePreview();
+}
+
+function renderTags(qid) {
+  const wrap = document.getElementById(`${qid}-tags`); if (!wrap) return;
+  wrap.innerHTML = (custom[qid] || []).map((t, i) =>
+    `<span class="tag">${t}<button onclick="removeCustom('${qid}',${i})">x</button></span>`
+  ).join('');
+}
+
+function randField(qid) {
+  const q = Q[qid];
+  if (q.type === 'single') { ans[qid] = q.opts[Math.floor(Math.random() * q.opts.length)]; }
+  else { const n = Math.floor(Math.random() * q.max) + 1; ans[qid] = [...q.opts].sort(() => 0.5 - Math.random()).slice(0, n); }
+  renderField(qid); updatePreview();
+}
+
+/* CONTRIBUTORS */
+function renderContribs() {
+  const list = document.getElementById('contrib-list');
+  list.innerHTML = '';
+  contribs.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'contrib-item';
+    div.innerHTML = `
+      <button class="rm-btn" onclick="removeContrib(${c.id})">x</button>
+      <div class="contrib-lbl">CONTRIBUTOR ${i + 1}</div>
+      <div class="contrib-row">
+        <input type="text" class="contrib-name" placeholder="e.g. Battle tank, Spider, Locomotive, Crystal..." value="${esc(c.name)}" oninput="updateContrib(${c.id},'name',this.value)">
+        <input type="number" class="contrib-pct" min="1" max="100" placeholder="%" value="${c.pct || ''}" oninput="updateContrib(${c.id},'pct',this.value)">
+      </div>`;
+    list.appendChild(div);
+  });
+  document.getElementById('addBtn').style.display = contribs.length >= 4 ? 'none' : '';
+  calcPct();
+}
+
+function addContrib() {
+  if (contribs.length >= 4) return;
+  contribs.push({ id: ++cid, name: '', pct: '' });
+  renderContribs();
+}
+
+function removeContrib(id) {
+  contribs = contribs.filter(c => c.id !== id);
+  renderContribs(); updatePreview();
+}
+
+function updateContrib(id, field, val) {
+  const c = contribs.find(c => c.id === id); if (!c) return;
+  c[field] = field === 'pct' ? (parseInt(val) || '') : val;
+  calcPct(); updatePreview();
+}
+
+function calcPct() {
+  const total = contribs.reduce((s, c) => s + (parseInt(c.pct) || 0), 0);
+  const el = document.getElementById('pctTotal');
+  el.textContent = `Total: ${total}%`;
+  el.className = 'pct-total' + (total === 100 ? ' ok' : total > 100 ? ' over' : '');
+}
+
+function validateContribs() {
+  if (contribs.length === 0) return 'Add at least one contributor.';
+  if (contribs.some(c => !c.name.trim())) return 'All contributors must have a name.';
+  const total = contribs.reduce((s, c) => s + (parseInt(c.pct) || 0), 0);
+  if (total !== 100) return `Percentages must total 100. Currently ${total}%.`;
+  return null;
+}
+
+function randomizeContribs() {
+  const pool = [
+    'Battle tank','Steam locomotive','Industrial crane','Spider','Serpent','Eagle','Submarine',
+    'Excavator','Biological predator','Ancient ruins','Crystal formation','Aircraft','Cargo ship',
+    'Siege engine','Wolf','Scorpion','Crab','Mantis shrimp','Dragonfly','Centipede',
+    'Deep sea fish','Orca','Elephant','Rhinoceros','Gorilla','Ancient temple','Drilling rig',
+    'Power station','Bridge truss','Combine harvester','Jet fighter','Submarine','Warship',
+    'Space rocket','Mining borer','Hydraulic press','Windmill','Water tower'
+  ];
+  contribs = []; cid = Math.max(cid, 0);
+  const count = Math.floor(Math.random() * 3) + 1;
+  let remaining = 100;
+  for (let i = 0; i < count; i++) {
+    const name = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+    const pct = i === count - 1 ? remaining : Math.round(Math.random() * (remaining - (count - i - 1) * 10) + 10);
+    remaining -= pct;
+    contribs.push({ id: ++cid, name, pct });
+  }
+  renderContribs(); updatePreview();
+}
+
+/* HELPERS */
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
+
+function getAns(qid) {
+  const a = ans[qid]; const c = custom[qid] || [];
+  const base = Array.isArray(a) ? a.join(', ') : (a || '');
+  return [base, ...c].filter(Boolean).join(', ');
+}
+
+function stateToText() {
+  const lines = [];
+  const cat = getAns('Q2'); if (cat) lines.push(`Category: ${cat}`);
+  if (contribs.length) lines.push(`Contributors: ${contribs.map(c => `${c.name} (${c.pct}%)`).join(', ')}`);
+  const f = (label, qid) => { const v = getAns(qid); if (v) lines.push(`${label}: ${v}`); };
+  f('Body Plan', 'Q4'); f('Structural Complexity', 'Q5'); f('Locomotion', 'Q6');
+  f('Appendages', 'Q7'); f('Scale', 'Q8'); f('Surface Integration', 'Q9');
+  f('Control Structure', 'Q10'); f('Sensory Systems', 'Q11'); f('Power Source', 'Q12');
+  f('Primary Role', 'Q13'); f('Environment', 'Q14'); f('Posture or Motion', 'Q15');
+  f('POV', 'Q16'); f('Visual Style', 'Q17'); f('Palette', 'Q18'); f('Aspect Ratio', 'Q19');
+  const q20 = document.getElementById('Q20-input')?.value.trim();
+  if (q20) lines.push(`Clarifications: ${q20}`);
+  return lines.join('\n');
+}
+
+function updatePreview() {
+  const text = stateToText();
+  document.getElementById('livePreview').textContent = text || 'Fill in the form to see a summary...';
+}
+
+/* PRESETS */
+function applyPreset(name) {
+  if (name === 'random') { randomizeAll(); return; }
+  const p = PRESETS[name]; if (!p) return;
+  ans = {}; custom = {}; contribs = [];
+  Object.entries(p).forEach(([k, v]) => {
+    if (k === 'contributors') { contribs = v.map(c => ({ id: ++cid, name: c.name, pct: c.pct })); }
+    else { ans[k] = v; }
+  });
+  renderAll();
+}
+
+function randomizeAll() {
+  ans = {}; custom = {}; contribs = [];
+  Object.keys(Q).forEach(qid => {
+    const q = Q[qid];
+    if (q.type === 'single') { ans[qid] = q.opts[Math.floor(Math.random() * q.opts.length)]; }
+    else { const n = Math.floor(Math.random() * q.max) + 1; ans[qid] = [...q.opts].sort(() => 0.5 - Math.random()).slice(0, n); }
+  });
+  randomizeContribs();
+  renderAll();
+}
+
+/* GENERATE */
+async function generatePrompt() {
+  if (!apiReady()) { showErr('Connect your API key first.'); return; }
+  const contribErr = validateContribs();
+  if (contribErr) {
+    const el = document.getElementById('contrib-err');
+    el.textContent = contribErr; el.style.display = 'block'; return;
+  }
+  document.getElementById('contrib-err').style.display = 'none';
+  hideErr();
+
+  const cat = ans.Q2 || '';
+  let integrationRule = '';
+  if (cat === 'Fully Mechanical') {
+    integrationRule = 'FULLY MECHANICAL: No biological elements. All contributor influences express as mechanical forms, silhouettes, and engineering logic only.';
+  } else if (cat === 'Biomechanical') {
+    integrationRule = 'BIOMECHANICAL: Biological and mechanical elements are genuinely integrated - they grow into each other and share surfaces. Integration depth is defined by the surface style choices provided.';
+  } else if (cat === 'Industrial-Organic Hybrid') {
+    integrationRule = 'INDUSTRIAL-ORGANIC HYBRID: Industrial and organic elements coexist as intentionally distinct but connected layers. The user has chosen this separation deliberately. Honor the surface integration style choices exactly - they define how the layers interact.';
+  } else if (cat === 'Abstract Mechanical Entity') {
+    integrationRule = 'ABSTRACT MECHANICAL ENTITY: Standard structural logic does not apply. Contributor influences may manifest as geometry, energy, pattern, or conceptual form rather than literal physical structures.';
+  } else {
+    integrationRule = 'Honor the surface integration style and category choices, which define how elements interact.';
+  }
+
+  const systemPrompt = `You are the prompt engine for Cosmic Cowboy's ROBOTICS GENERATOR. Output ONLY a dense, comma-separated image generation prompt. No labels, no preamble, no explanation - start immediately with descriptive terms.
+
+INTEGRATION RULE: ${integrationRule}
+
+HARD RULE: Single construct only. One entity, one body. No duplicate robots, no pairs, no swarms unless explicitly requested in clarifications.
+
+The surface integration style and category are the user's authority on how mechanical and organic elements interact. Do not override them with your own assumptions.
+
+FORBIDDEN in output: contributor names, percentages, "blend of", "combination of", "part X", "X%", any reference to source materials by name.
+
+Always end with: Ultra-fine surface detail with panel seams, mechanical joints, material texture, and weathering where appropriate. Sharp focus. Cinematic physically plausible lighting. Professional production-grade rendering.`;
+
+  const btn = document.getElementById('genBtn');
+  const out = document.getElementById('outPrompt');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Generating...';
+  out.textContent = ''; out.className = 'out-body';
+
+  try {
+    const res = await fetch(XAI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey()}` },
+      body: JSON.stringify({
+        model: XAI_MODEL,
+        max_tokens: 900,
+        reasoning_effort: 'none',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user',   content: `Generate a prompt for this robotic entity:\n\n${stateToText()}` }
+        ]
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `API error ${res.status}`);
+    const reply = (data.choices?.[0]?.message?.content || '').trim();
+    if (!reply) throw new Error('Empty response from API.');
+    out.textContent = reply; out.className = 'out-body';
+  } catch (e) {
+    showErr(e.message);
+    out.textContent = ''; out.className = 'out-body empty';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Generate Prompt';
+  }
+}
+
+function showErr(msg) { const el = document.getElementById('gen-err'); el.textContent = msg; el.style.display = 'block'; }
+function hideErr()    { document.getElementById('gen-err').style.display = 'none'; }
+
+function copyPrompt() {
+  const out = document.getElementById('outPrompt');
+  if (out.classList.contains('empty') || !out.textContent.trim()) return;
+  navigator.clipboard.writeText(out.textContent).catch(() => {});
+}
+
+/* SAVE / LOAD / RESET */
+function saveCurrent() {
+  localStorage.setItem('cc_robotics_v2', JSON.stringify({ ans, custom, contribs, Q20: document.getElementById('Q20-input').value }));
+  alert('Saved.');
+}
+function loadSaved() {
+  const raw = localStorage.getItem('cc_robotics_v2'); if (!raw) { alert('No saved data.'); return; }
+  const d = JSON.parse(raw);
+  ans = d.ans || {}; custom = d.custom || {}; contribs = d.contribs || [];
+  cid = contribs.reduce((m, c) => Math.max(m, c.id || 0), 0);
+  if (d.Q20) document.getElementById('Q20-input').value = d.Q20;
+  renderAll(); alert('Loaded.');
+}
+function clearSaved() { localStorage.removeItem('cc_robotics_v2'); alert('Cleared.'); }
+
+function resetApp() {
+  ans = {}; custom = {}; contribs = []; cid = 0;
+  document.getElementById('Q20-input').value = '';
+  document.getElementById('outPrompt').textContent = 'Connect your API key, fill the form, and click Generate.';
+  document.getElementById('outPrompt').className = 'out-body empty';
+  document.getElementById('contrib-err').style.display = 'none';
+  hideErr(); renderAll();
+}
+
+/* INIT */
+const savedKey = localStorage.getItem('xaiKey_robotics');
+if (savedKey) {
+  document.getElementById('apiKey').value = savedKey;
+  confirmConnect();
+}
+document.getElementById('Q20-input').addEventListener('input', updatePreview);
+renderAll();
+</script>
+</body>
+</html>
