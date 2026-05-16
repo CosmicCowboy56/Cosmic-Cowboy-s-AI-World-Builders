@@ -1704,8 +1704,18 @@ function assemblePrompt() {
   const domainName = domainId ? (QUESTIONS.Q1.options.find(o => o.id === domainId) || {}).text || '' : '';
   const parts      = [];
 
-  // Opening line
-  parts.push(`A ${domainName.toLowerCase()} vehicle`);
+  // Wheel count — compute early so opening line can use it
+  const _propAnsEarly = ST.answers.Q5 || [];
+  const _propArrEarly = Array.isArray(_propAnsEarly) ? _propAnsEarly : [_propAnsEarly];
+  const _hasWheels    = _propArrEarly.includes('4');
+  const _wc           = _hasWheels ? (parseInt(document.getElementById('wheelCount').value, 10) || 4) : null;
+  const _wheelWord    = _wc === 1 ? 'single-wheeled' : _wc === 2 ? 'two-wheeled' : _wc === 3 ? 'three-wheeled' : _wc ? `${_wc}-wheeled` : null;
+
+  // Opening line — embed wheel count so the model is primed from the first word
+  const _opening = _wheelWord
+    ? `A ${_wheelWord} ${domainName.toLowerCase()} vehicle`
+    : `A ${domainName.toLowerCase()} vehicle`;
+  parts.push(_opening);
 
   // Q2 — Function
   const fn = getAns('Q2'); if (fn) parts.push(`, designed for ${fn.toLowerCase()}`);
@@ -1800,6 +1810,11 @@ function assemblePrompt() {
   const override = (ST.answers.Q18 || document.getElementById('Q18-input')?.value || '').trim();
   if (override && override.toLowerCase() !== 'none') {
     parts.push(`. ${override}`);
+  }
+
+  // Hard wheel-count constraint — must appear immediately before the quality line
+  if (_hasWheels && _wc !== null) {
+    parts.push(`. STRICT REQUIREMENT: this vehicle must have exactly ${_wc} wheel${_wc !== 1 ? 's' : ''} and no more — do not default to four wheels`);
   }
 
   // Closing quality booster
