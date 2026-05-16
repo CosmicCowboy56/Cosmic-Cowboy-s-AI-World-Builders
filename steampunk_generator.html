@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Steampunk Saturday v2.0 - Cosmic Cowboy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deepest:    #010E1F;
+  --ocean-blue: #0077B6;
+  --soft-cyan:  #90E0EF;
+  --pale-blue:  #CAF0F8;
+  --accent:     #FFD166;
+  --surface:    rgba(0,119,182,0.09);
+  --surface2:   rgba(0,119,182,0.17);
+  --border:     rgba(144,224,239,0.22);
+  --border-hi:  rgba(144,224,239,0.50);
+  --dim:        rgba(202,240,248,0.45);
+  --green:      #4ade80;
+  --red:        #f87171;
+  --brass:      rgba(184,134,11,0.15);
+  --brass-bdr:  rgba(184,134,11,0.40);
+  --glow:       0 0 12px rgba(144,224,239,0.30);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; font-family: 'Exo 2', sans-serif; font-weight: 300; font-size: 15px; background: var(--deepest); color: var(--pale-blue); }
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.15); }
+::-webkit-scrollbar-thumb { background: rgba(144,224,239,0.28); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(144,224,239,0.55); }
+
+.header { height: 52px; background: rgba(0,0,0,0.50); border-bottom: 1px solid var(--border-hi); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.header::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent); opacity: 0.5; }
+.hdr-title { font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 900; letter-spacing: 0.12em; color: var(--pale-blue); text-shadow: 0 0 18px rgba(144,224,239,0.4); }
+.hdr-sub { font-size: 0.62rem; color: var(--soft-cyan); letter-spacing: 0.2em; text-transform: uppercase; }
+
+.page-title { text-align: center; padding: 28px 24px 18px; border-bottom: 1px solid var(--border); }
+.page-title h1 { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 900; letter-spacing: 0.08em; color: var(--pale-blue); text-shadow: 0 0 24px rgba(144,224,239,0.35); margin-bottom: 4px; }
+.page-title .v-tag { font-size: 0.72rem; color: var(--soft-cyan); letter-spacing: 0.25em; text-transform: uppercase; }
+
+.api-bar { background: rgba(0,0,0,0.40); border-bottom: 1px solid var(--border); padding: 9px 24px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.api-lbl { font-size: 0.68rem; color: var(--soft-cyan); letter-spacing: 0.18em; text-transform: uppercase; white-space: nowrap; }
+.api-bar input[type="password"] { flex: 1; min-width: 240px; background: rgba(0,0,0,0.40); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.83rem; padding: 5px 10px; border-radius: 3px; outline: none; transition: border-color 0.2s; }
+.api-bar input:focus { border-color: var(--soft-cyan); }
+.connect-btn { background: rgba(0,119,182,0.15); border: 1px solid var(--border-hi); color: var(--soft-cyan); font-family: 'Exo 2', sans-serif; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; padding: 6px 16px; border-radius: 3px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.connect-btn:hover { background: rgba(0,119,182,0.30); }
+
+.page-body { display: grid; grid-template-columns: 1fr 400px; min-height: calc(100vh - 52px); align-items: start; }
+.form-col { padding: 22px 24px; border-right: 1px solid var(--border); }
+.out-col { padding: 22px 20px; position: sticky; top: 52px; max-height: calc(100vh - 52px); overflow-y: auto; }
+
+.section { background: var(--surface); border: 1px solid var(--border); border-radius: 5px; margin-bottom: 14px; overflow: hidden; }
+.section-title { font-family: 'Cinzel', serif; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft-cyan); padding: 9px 14px; background: rgba(0,0,0,0.28); border-bottom: 1px solid var(--border); }
+.section-body { padding: 14px; }
+
+.field-wrap { margin-bottom: 13px; }
+.field-label { font-size: 0.70rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--soft-cyan); margin-bottom: 7px; display: flex; align-items: center; justify-content: space-between; }
+.field-label .multi-note { font-size: 0.62rem; color: var(--dim); text-transform: none; letter-spacing: 0.04em; }
+
+.opts { display: flex; flex-wrap: wrap; gap: 5px; }
+.opt { background: rgba(0,0,0,0.32); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.78rem; padding: 4px 10px; border-radius: 3px; cursor: pointer; transition: all 0.14s; }
+.opt:hover { background: var(--surface2); border-color: var(--soft-cyan); }
+.opt.on { background: rgba(0,119,182,0.38); border-color: var(--soft-cyan); box-shadow: 0 0 5px rgba(144,224,239,0.18); }
+
+.dice { background: none; border: 1px solid var(--border); color: var(--soft-cyan); font-size: 0.70rem; padding: 3px 7px; border-radius: 3px; cursor: pointer; transition: background 0.14s; }
+.dice:hover { background: var(--surface2); }
+.sec-btn { background: rgba(0,0,0,0.30); border: 1px solid var(--border); color: var(--dim); font-family: 'Exo 2', sans-serif; font-size: 0.72rem; padding: 4px 9px; border-radius: 3px; cursor: pointer; transition: all 0.14s; white-space: nowrap; }
+.sec-btn:hover { background: var(--surface2); color: var(--pale-blue); }
+
+.txt { width: 100%; background: rgba(0,0,0,0.35); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.83rem; padding: 6px 9px; border-radius: 3px; outline: none; transition: border-color 0.2s; }
+.txt:focus { border-color: var(--soft-cyan); }
+textarea.txt { resize: vertical; min-height: 64px; }
+
+.custom-row { display: flex; gap: 5px; margin-top: 6px; }
+.custom-row .txt { flex: 1; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(0,119,182,0.22); border: 1px solid rgba(144,224,239,0.32); color: var(--soft-cyan); font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; }
+.tag button { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 0.82rem; padding: 0; line-height: 1; }
+.tag button:hover { color: var(--red); }
+
+.contrib-item { background: rgba(0,0,0,0.22); border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px 10px 10px; margin-bottom: 8px; position: relative; }
+.contrib-lbl { font-size: 0.60rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+.contrib-row { display: flex; gap: 6px; align-items: center; }
+.contrib-name { flex: 1; background: rgba(0,0,0,0.35); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.82rem; padding: 5px 8px; border-radius: 3px; outline: none; transition: border-color 0.2s; }
+.contrib-name:focus { border-color: var(--soft-cyan); }
+.contrib-pct { width: 56px; background: rgba(0,0,0,0.35); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.82rem; padding: 5px 6px; border-radius: 3px; outline: none; text-align: center; transition: border-color 0.2s; }
+.contrib-pct:focus { border-color: var(--soft-cyan); }
+.rm-btn { position: absolute; top: 6px; right: 7px; background: none; border: 1px solid rgba(248,113,113,0.28); color: rgba(248,113,113,0.50); font-size: 0.70rem; width: 18px; height: 18px; border-radius: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.14s; line-height: 1; }
+.rm-btn:hover { background: rgba(248,113,113,0.15); color: var(--red); border-color: var(--red); }
+.pct-total { font-size: 0.72rem; letter-spacing: 0.08em; color: var(--dim); margin-top: 6px; padding: 3px 8px; border-radius: 3px; background: rgba(0,0,0,0.20); display: inline-block; transition: all 0.2s; }
+.pct-total.ok { color: var(--green); background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.20); }
+.pct-total.over { color: var(--red); background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.20); }
+
+.preset-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.preset-btn { background: rgba(255,209,102,0.07); border: 1px solid rgba(255,209,102,0.28); color: var(--accent); font-family: 'Exo 2', sans-serif; font-size: 0.76rem; padding: 5px 11px; border-radius: 3px; cursor: pointer; transition: background 0.14s; }
+.preset-btn:hover { background: rgba(255,209,102,0.16); }
+.save-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.notice { background: rgba(0,119,182,0.10); border-left: 2px solid var(--soft-cyan); padding: 7px 10px; border-radius: 0 3px 3px 0; font-size: 0.76rem; color: var(--dim); line-height: 1.5; }
+.notice strong { color: var(--soft-cyan); font-weight: 600; }
+.brass-notice { background: var(--brass); border-left: 2px solid var(--brass-bdr); padding: 7px 10px; border-radius: 0 3px 3px 0; font-size: 0.76rem; color: rgba(212,168,55,0.85); line-height: 1.5; }
+
+.err { font-size: 0.74rem; color: var(--red); background: rgba(248,113,113,0.09); border: 1px solid rgba(248,113,113,0.22); border-radius: 3px; padding: 6px 9px; margin-top: 7px; display: none; }
+
+.out-lbl { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.20em; text-transform: uppercase; color: var(--soft-cyan); margin-bottom: 8px; }
+.out-body { background: rgba(0,0,0,0.42); border: 1px solid var(--border); border-radius: 3px; padding: 13px; font-size: 0.81rem; line-height: 1.68; white-space: pre-wrap; min-height: 120px; color: var(--pale-blue); margin-bottom: 12px; }
+.out-body.empty { color: var(--dim); font-style: italic; }
+
+.gen-btn { width: 100%; background: linear-gradient(135deg, var(--ocean-blue), rgba(0,119,182,0.65)); border: 1px solid var(--soft-cyan); color: var(--pale-blue); font-family: 'Cinzel', serif; font-size: 0.80rem; font-weight: 700; letter-spacing: 0.12em; padding: 11px; border-radius: 3px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; box-shadow: var(--glow); display: flex; align-items: center; justify-content: center; gap: 8px; }
+.gen-btn:hover { box-shadow: 0 0 20px rgba(144,224,239,0.40); }
+.gen-btn:disabled { opacity: 0.40; cursor: not-allowed; }
+
+.action-row { display: flex; gap: 6px; margin-top: 7px; }
+.copy-btn, .reset-btn { flex: 1; background: rgba(0,0,0,0.28); border: 1px solid var(--border); color: var(--dim); font-family: 'Exo 2', sans-serif; font-size: 0.72rem; padding: 5px; border-radius: 3px; cursor: pointer; transition: all 0.14s; }
+.copy-btn:hover, .reset-btn:hover { background: var(--surface2); color: var(--pale-blue); }
+
+.preview-lbl { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); margin: 16px 0 6px; }
+.preview-body { background: rgba(0,0,0,0.25); border: 1px solid rgba(144,224,239,0.12); border-radius: 3px; padding: 10px 12px; font-size: 0.75rem; line-height: 1.55; color: var(--dim); }
+
+.spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(144,224,239,0.18); border-top-color: var(--soft-cyan); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+footer { text-align: center; padding: 16px; font-size: 0.70rem; color: var(--dim); border-top: 1px solid var(--border); letter-spacing: 0.08em; }
+
+@media (max-width: 960px) {
+  .page-body { grid-template-columns: 1fr; }
+  .form-col { border-right: none; border-bottom: 1px solid var(--border); }
+  .out-col { position: static; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <span class="hdr-title">COSMIC COWBOY'S AI WORLDBUILDERS</span>
+  <span class="hdr-sub">Steampunk Saturday v2.0</span>
+</header>
+
+<div class="page-title">
+  <h1>STEAMPUNK SATURDAY</h1>
+  <div class="v-tag">v2.0 - xAI Powered - Victorian Mechanical Aesthetics</div>
+</div>
+
+<div class="api-bar">
+  <span class="api-lbl">xAI API Key</span>
+  <input type="password" id="apiKey" placeholder="xai-..." autocomplete="off">
+  <button class="connect-btn" id="connectBtn" onclick="confirmConnect()">CONNECT</button>
+</div>
+
+<div class="page-body">
+
+  <div class="form-col">
+
+    <div class="section">
+      <div class="section-title">Quick Start Presets</div>
+      <div class="section-body">
+        <p style="font-size:0.76rem;color:var(--dim);margin-bottom:10px">Click any preset to auto-fill. Modify freely, then generate.</p>
+        <div class="preset-row">
+          <button class="preset-btn" onclick="applyPreset('airshipPilot')">Airship Pilot</button>
+          <button class="preset-btn" onclick="applyPreset('clockworkAutomaton')">Clockwork Automaton</button>
+          <button class="preset-btn" onclick="applyPreset('steamLocomotive')">Steam Locomotive</button>
+          <button class="preset-btn" onclick="applyPreset('factoryDistrict')">Factory District</button>
+          <button class="preset-btn" onclick="applyPreset('madScientist')">Mad Scientist</button>
+          <button class="preset-btn" onclick="applyPreset('ironNavy')">Iron Navy Warship</button>
+          <button class="preset-btn" onclick="applyPreset('random')">Randomize All</button>
+        </div>
+        <div class="save-row">
+          <button class="sec-btn" onclick="saveCurrent()">Save</button>
+          <button class="sec-btn" onclick="loadSaved()">Load</button>
+          <button class="sec-btn" onclick="clearSaved()">Clear Saved</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Core Setup</div>
+      <div class="section-body">
+        <div class="field-wrap">
+          <div class="field-label">
+            Creation Type
+            <button class="dice" onclick="randField('Q2')">Randomize</button>
+          </div>
+          <div class="opts" id="Q2-opts"></div>
+          <div class="notice" style="margin-top:10px">
+            Environment or Location type generates a pure atmospheric prompt. All other types use the Contributors section below.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="contrib-section">
+      <div class="section-title">Contributors and Dominance</div>
+      <div class="section-body">
+        <div class="notice" style="margin-bottom:12px">
+          <strong>1 to 4 contributors, percentages must total 100.</strong><br>
+          Steampunk sources fused into the subject. Examples: "brass automaton 60, human pilot 40" or "steam engine 50, leather 30, clockwork gears 20". Can be materials, objects, or character types.
+        </div>
+        <div id="contrib-list"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;">
+          <button class="sec-btn" id="addBtn" onclick="addContrib()">+ Add Contributor</button>
+          <button class="sec-btn" onclick="randomizeContribs()">Randomize Contributors</button>
+          <span class="pct-total" id="pctTotal">Total: 0%</span>
+        </div>
+        <div class="err" id="contrib-err"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Era and Form</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Era Flavor
+            <button class="dice" onclick="randField('Q4')">Randomize</button>
+          </div>
+          <div class="opts" id="Q4-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q4-custom" placeholder="Custom era..."><button class="sec-btn" onclick="addCustom('Q4')">Add</button></div>
+          <div class="tags" id="Q4-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label" id="q5-label">
+            Subject Form <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q5')">Randomize</button>
+          </div>
+          <div class="opts" id="Q5-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q5-custom" placeholder="Custom form..."><button class="sec-btn" onclick="addCustom('Q5')">Add</button></div>
+          <div class="tags" id="Q5-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Structural Logic
+            <button class="dice" onclick="randField('Q6')">Randomize</button>
+          </div>
+          <div class="opts" id="Q6-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q6-custom" placeholder="Custom structural logic..."><button class="sec-btn" onclick="addCustom('Q6')">Add</button></div>
+          <div class="tags" id="Q6-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label" id="q7-label">
+            Mechanical Configuration <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q7')">Randomize</button>
+          </div>
+          <div class="opts" id="Q7-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q7-custom" placeholder="Custom configuration..."><button class="sec-btn" onclick="addCustom('Q7')">Add</button></div>
+          <div class="tags" id="Q7-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Scale
+            <button class="dice" onclick="randField('Q8')">Randomize</button>
+          </div>
+          <div class="opts" id="Q8-opts"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Materials and Mechanics</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label" id="q9-label">
+            Attire or Surface Detail <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q9')">Randomize</button>
+          </div>
+          <div class="opts" id="Q9-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q9-custom" placeholder="Custom surface detail..."><button class="sec-btn" onclick="addCustom('Q9')">Add</button></div>
+          <div class="tags" id="Q9-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Mechanical Complexity
+            <button class="dice" onclick="randField('Q10')">Randomize</button>
+          </div>
+          <div class="opts" id="Q10-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q10-custom" placeholder="Custom complexity..."><button class="sec-btn" onclick="addCustom('Q10')">Add</button></div>
+          <div class="tags" id="Q10-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Power Source <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q11')">Randomize</button>
+          </div>
+          <div class="opts" id="Q11-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q11-custom" placeholder="Custom power source..."><button class="sec-btn" onclick="addCustom('Q11')">Add</button></div>
+          <div class="tags" id="Q11-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Primary Role <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q12')">Randomize</button>
+          </div>
+          <div class="opts" id="Q12-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q12-custom" placeholder="Custom role..."><button class="sec-btn" onclick="addCustom('Q12')">Add</button></div>
+          <div class="tags" id="Q12-tags"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Environment and Atmosphere</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Environment <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q13')">Randomize</button>
+          </div>
+          <div class="opts" id="Q13-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q13-custom" placeholder="Custom environment..."><button class="sec-btn" onclick="addCustom('Q13')">Add</button></div>
+          <div class="tags" id="Q13-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Mood or Tone <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q14')">Randomize</button>
+          </div>
+          <div class="opts" id="Q14-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q14-custom" placeholder="Custom mood..."><button class="sec-btn" onclick="addCustom('Q14')">Add</button></div>
+          <div class="tags" id="Q14-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Lighting
+            <button class="dice" onclick="randField('Q15')">Randomize</button>
+          </div>
+          <div class="opts" id="Q15-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q15-custom" placeholder="Custom lighting..."><button class="sec-btn" onclick="addCustom('Q15')">Add</button></div>
+          <div class="tags" id="Q15-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Color Palette <span class="multi-note">up to 2</span>
+            <button class="dice" onclick="randField('Q16')">Randomize</button>
+          </div>
+          <div class="opts" id="Q16-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q16-custom" placeholder="Custom palette..."><button class="sec-btn" onclick="addCustom('Q16')">Add</button></div>
+          <div class="tags" id="Q16-tags"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Visual Controls</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">
+            POV or Framing
+            <button class="dice" onclick="randField('Q17')">Randomize</button>
+          </div>
+          <div class="opts" id="Q17-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q17-custom" placeholder="Custom POV..."><button class="sec-btn" onclick="addCustom('Q17')">Add</button></div>
+          <div class="tags" id="Q17-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Art Style
+            <button class="dice" onclick="randField('Q18')">Randomize</button>
+          </div>
+          <div class="opts" id="Q18-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q18-custom" placeholder="Custom art style..."><button class="sec-btn" onclick="addCustom('Q18')">Add</button></div>
+          <div class="tags" id="Q18-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Image Aspect Ratio
+            <button class="dice" onclick="randField('Q19')">Randomize</button>
+          </div>
+          <div class="opts" id="Q19-opts"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Clarifications and Overrides</div>
+      <div class="section-body">
+        <div class="brass-notice" style="margin-bottom:9px">
+          Authoritative. Use to reinforce critical steampunk details - specific materials, mechanical features, era accuracy, or anything not covered above. Overrides all earlier selections where there is conflict.
+        </div>
+        <textarea class="txt" id="Q20-input" rows="3" placeholder="Enter clarifications, additions, or overrides. Leave blank if none."></textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="out-col">
+    <div class="out-lbl">Generated Prompt</div>
+    <div class="out-body empty" id="outPrompt">Connect your API key, fill the form, and click Generate.</div>
+    <button class="gen-btn" id="genBtn" onclick="generatePrompt()">Generate Prompt</button>
+    <div class="err" id="gen-err"></div>
+    <div class="action-row">
+      <button class="copy-btn" onclick="copyPrompt()">Copy Prompt</button>
+      <button class="reset-btn" onclick="resetApp()">Reset All</button>
+    </div>
+    <div class="preview-lbl">Form Summary</div>
+    <div class="preview-body" id="livePreview">Select a creation type to begin...</div>
+  </div>
+
+</div>
+
+<footer>r/CCsAIWorldBuilders - Cosmic Cowboy's AI Worldbuilders - Victorian-era mechanical aesthetics only</footer>
+
+<script>
+const XAI_ENDPOINT = 'https://api.x.ai/v1/chat/completions';
+const XAI_MODEL    = 'grok-4.3';
+
+const Q = {
+  Q2: { type:'single', opts:[
+    'Steampunk Character','Automaton or Clockwork Being','Vehicle or Airship','Environment or Location'
+  ]},
+  Q4: { type:'single', opts:[
+    'Early Victorian','High Victorian','Late Victorian or Industrial Boom','Edwardian-Adjacent',
+    'Alt-History or Speculative','Timeless Steampunk Blend','Georgian Proto-Steam',
+    'Colonial Imperial Steam','Post-Apocalyptic Steam Remnant','Far-Future Retro Victorian',
+    'Underground Clockwork Culture','Biopunk Victorian Fusion'
+  ]},
+  Q5: { type:'multi', max:2, opts:[
+    'Fully Human','Augmented Human','Fully Mechanical','Biomechanical Hybrid',
+    'Vehicle-Dominant','Architectural or Environmental','Cyborg with Visible Organ Systems',
+    'Skeletal Exposed Frame','Humanoid Automaton with Human Face','Quad-Limb Industrial Form',
+    'Serpentine Elongated Body','Insectoid Chitinous Frame','Towering Colossus Form',
+    'Compact Handheld Device','Modular Reconfigurable Platform','Abstract Geometric Construct'
+  ]},
+  Q6: { type:'single', opts:[
+    'Elegant and Refined','Heavy Industrial','Modular and Exposed','Layered and Complex',
+    'Minimalist but Functional','Ornate and Ceremonial','Brutalist Raw Iron',
+    'Baroque Over-Engineered','Compact and Utilitarian','Asymmetric Experimental',
+    'Symmetrical Architectural','Weathered and Field-Repaired'
+  ]},
+  Q7: { type:'multi', max:2, opts:[
+    'Bipedal Design','Wheeled or Tracked Base','Wing-Equipped','Hovering or Suspension Apparatus',
+    'Fixed or Stationary Mount','Multi-Modal Design','Articulated Crab-Walk Legs',
+    'Rail-Mounted Linear Track','Amphibious Hull','Balloon or Dirigible Lift',
+    'Rotating Turret Platform','Retractable Folding Configuration',
+    'Anchor-and-Chain Tethered','Aquatic Paddle-Wheel Drive','Wall-Mounted Armature'
+  ]},
+  Q8: { type:'single', opts:[
+    'Intimate or Personal','Human-Scale','Vehicle-Scale','Building-Scale','Colossal',
+    'Pocket-Watch Micro','District or City-Scale','Handheld Tool-Scale','Naval Vessel-Scale'
+  ]},
+  Q9: { type:'multi', max:2, opts:[
+    'Brass Plates and Rivets','Leather Straps and Belts','Fabric Layers and Corsetry',
+    'Exposed Gears and Pistons','Polished Aristocratic Finish','Soot-Stained Industrial Wear',
+    'Copper Pipe Filigree','Engraved Clockwork Panels','Waxed Canvas Weatherproofing',
+    'Riveted Iron Boiler Plating','Glass Observation Domes','Rubber Hose and Valve Clusters',
+    'Velvet and Brocade Upholstery','Oxidized Patina Green Copper','Coal Dust and Grease Stains',
+    'Pressed Steel Art Nouveau Panels','Ivory and Bone Inlay','Wire-Mesh Cage Armor'
+  ]},
+  Q10: { type:'single', opts:[
+    'Mostly Decorative','Functionally Mechanical','Highly Complex Machinery',
+    'Experimental or Unstable','Implied Rather Than Explicit','Dangerously Overbuilt',
+    'Elegantly Miniaturized','Jury-Rigged Field Repair','Precision Instrument Grade',
+    'Prototype Untested Design','Mass-Produced Industrial Standard'
+  ]},
+  Q11: { type:'multi', max:2, opts:[
+    'Steam Pressure','Clockwork Springs','Combustion','Electrical Early or Experimental',
+    'Exotic or Speculative','Hidden or Unknown','Compressed Air Pneumatic',
+    'Hydraulic Fluid Pressure','Coal Furnace Direct Burn','Aetherite Crystal Power',
+    'Chemical Reaction Chamber','Tidal or Water Wheel','Animal Locomotion Amplified',
+    'Voltaic Cell Battery Array','Magneto-Dynamo Generator'
+  ]},
+  Q12: { type:'multi', max:2, opts:[
+    'Exploration','Transport','Industry or Labor','Combat or Enforcement',
+    'Social Status or Ceremony','Espionage or Secrecy','Scientific Research',
+    'Medical or Surgical','Mining and Excavation','Navigation and Cartography',
+    'Diplomacy or Political Display','Entertainment or Spectacle',
+    'Rescue and Emergency Response','Agricultural Mechanization'
+  ]},
+  Q13: { type:'multi', max:2, opts:[
+    'Foggy City Streets','Industrial Factory District','Airship Docks','Underground Workshops',
+    'Aristocratic Interiors','Open Skies Above Cloud Layer','Harbor and Drydock',
+    'Coal Mine Tunnel Network','Grand Exhibition Hall','Jungle or Colonial Outpost',
+    'Arctic Expedition Camp','Rooftop Skyline Walkways','Parliament or Government Hall',
+    'Sewer Infrastructure Below City','Desert Railway Station','Volcano Observatory Tower',
+    'Ocean Trench Submersible Bay','Alchemist Laboratory Tower'
+  ]},
+  Q14: { type:'multi', max:2, opts:[
+    'Adventurous','Mysterious','Gritty and Oppressive','Elegant and Romantic',
+    'Dangerous','Hopeful','Melancholic and Nostalgic','Tense and Paranoid',
+    'Triumphant and Grand','Lonely and Desolate','Frantic and Chaotic',
+    'Reverent and Solemn','Playful and Whimsical','Cold and Calculating'
+  ]},
+  Q15: { type:'single', opts:[
+    'Gaslight Glow','Backlit Steam Clouds','Low-Key Shadowed','Daylight Filtered Through Smog',
+    'Warm Interior Lighting','Electrical Arc Flash','Forge Fire Orange',
+    'Candlelight and Lantern Glow','Overcast Diffused Daylight','Bioluminescent Aether Glow',
+    'Moonlight and Fog','Sunset Through Industrial Haze'
+  ]},
+  Q16: { type:'multi', max:2, opts:[
+    'Brass Copper and Sepia','Dark Iron and Soot','Muted Jewel Tones','Creams and Parchment Whites',
+    'Verdigris Green Patina','Crimson and Gold Aristocratic','Slate Grey and Gunmetal',
+    'Amber and Burnt Sienna','Ivory and Bone Yellow','Violet Aether Glow Accent',
+    'Midnight Blue and Silver','Blood Red and Black Iron','Weathered Brown Leather Tones',
+    'Coal Black with Ember Orange'
+  ]},
+  Q17: { type:'single', opts:[
+    'Front Neutral','Three-Quarter View','Low-Angle Dominance','Wide Cinematic',
+    'Detail Close-Up','Aerial Overhead','Worm\'s Eye Ground Level',
+    'Side Profile Silhouette','Rear Three-Quarter','Dutch Angle Tilt'
+  ]},
+  Q18: { type:'single', opts:[
+    'Photorealistic','Hyper-Realistic','Cinematic Realism','Gritty Concept Art',
+    'Painterly Illustration','Vintage Lithograph','Ink Etching Engraving',
+    'Watercolor Wash','Art Nouveau Decorative','Noir Monochrome Photography',
+    'Technical Blueprint Cross-Section','Dime Novel Pulp Illustration',
+    'Oil Painting Portrait Style','Anime Steampunk Style'
+  ]},
+  Q19: { type:'single', opts:['Square','Portrait Tall','Landscape Wide'] },
+};
+
+const LABELS = {
+  'Steampunk Character':          { Q5:'Character Form',     Q7:'Character Configuration',  Q9:'Attire Detail' },
+  'Automaton or Clockwork Being': { Q5:'Automaton Form',     Q7:'Mechanical Configuration', Q9:'Surface Detail' },
+  'Vehicle or Airship':           { Q5:'Vehicle Form',       Q7:'Vehicle Configuration',    Q9:'Surface Detail' },
+  'Environment or Location':      { Q5:'Environment Form',   Q7:'Structural Configuration', Q9:'Surface Detail' },
+};
+const DEFAULT_LABELS = { Q5:'Subject Form', Q7:'Mechanical Configuration', Q9:'Attire or Surface Detail' };
+
+let ans      = {};
+let custom   = {};
+let contribs = [];
+let cid      = 0;
+
+const PRESETS = {
+  airshipPilot: {
+    Q2:'Steampunk Character',
+    contributors:[{name:'Victorian aviator',pct:60},{name:'brass goggles',pct:25},{name:'leather flight coat',pct:15}],
+    Q4:'High Victorian', Q5:['Fully Human','Augmented Human'], Q6:'Elegant and Refined',
+    Q7:['Wing-Equipped'], Q8:'Human-Scale', Q9:['Leather Straps and Belts','Fabric Layers and Corsetry'],
+    Q10:'Functionally Mechanical', Q11:['Steam Pressure'], Q12:['Exploration','Transport'],
+    Q13:['Airship Docks','Open Skies Above Cloud Layer'], Q14:['Adventurous'], Q15:'Gaslight Glow',
+    Q16:['Brass Copper and Sepia'], Q17:'Three-Quarter View', Q18:'Cinematic Realism', Q19:'Portrait Tall'
+  },
+  clockworkAutomaton: {
+    Q2:'Automaton or Clockwork Being',
+    contributors:[{name:'clockwork skeleton',pct:55},{name:'Victorian butler',pct:30},{name:'music box mechanism',pct:15}],
+    Q4:'High Victorian', Q5:['Fully Mechanical'], Q6:'Layered and Complex',
+    Q7:['Bipedal Design'], Q8:'Human-Scale', Q9:['Brass Plates and Rivets','Exposed Gears and Pistons'],
+    Q10:'Highly Complex Machinery', Q11:['Clockwork Springs'], Q12:['Social Status or Ceremony'],
+    Q13:['Aristocratic Interiors'], Q14:['Mysterious'], Q15:'Warm Interior Lighting',
+    Q16:['Brass Copper and Sepia','Creams and Parchment Whites'], Q17:'Detail Close-Up', Q18:'Hyper-Realistic', Q19:'Portrait Tall'
+  },
+  steamLocomotive: {
+    Q2:'Vehicle or Airship',
+    contributors:[{name:'steam locomotive',pct:65},{name:'iron fortress',pct:25},{name:'coal smoke',pct:10}],
+    Q4:'Late Victorian or Industrial Boom', Q5:['Fully Mechanical','Vehicle-Dominant'], Q6:'Heavy Industrial',
+    Q7:['Wheeled or Tracked Base'], Q8:'Vehicle-Scale', Q9:['Brass Plates and Rivets','Soot-Stained Industrial Wear'],
+    Q10:'Functionally Mechanical', Q11:['Steam Pressure','Combustion'], Q12:['Transport'],
+    Q13:['Industrial Factory District'], Q14:['Adventurous'], Q15:'Backlit Steam Clouds',
+    Q16:['Dark Iron and Soot'], Q17:'Wide Cinematic', Q18:'Cinematic Realism', Q19:'Landscape Wide'
+  },
+  factoryDistrict: {
+    Q2:'Environment or Location',
+    Q4:'Late Victorian or Industrial Boom', Q5:['Architectural or Environmental'], Q6:'Heavy Industrial',
+    Q7:['Fixed or Stationary Mount'], Q8:'Building-Scale', Q9:['Soot-Stained Industrial Wear','Exposed Gears and Pistons'],
+    Q10:'Highly Complex Machinery', Q11:['Steam Pressure'], Q12:['Industry or Labor'],
+    Q13:['Industrial Factory District'], Q14:['Gritty and Oppressive'], Q15:'Daylight Filtered Through Smog',
+    Q16:['Dark Iron and Soot'], Q17:'Wide Cinematic', Q18:'Gritty Concept Art', Q19:'Landscape Wide'
+  },
+  madScientist: {
+    Q2:'Steampunk Character',
+    contributors:[{name:'Victorian scientist',pct:50},{name:'electrical apparatus',pct:30},{name:'clockwork prosthetic arm',pct:20}],
+    Q4:'Late Victorian or Industrial Boom', Q5:['Augmented Human'], Q6:'Baroque Over-Engineered',
+    Q7:['Bipedal Design'], Q8:'Human-Scale', Q9:['Copper Pipe Filigree','Engraved Clockwork Panels'],
+    Q10:'Experimental or Unstable', Q11:['Electrical Early or Experimental','Voltaic Cell Battery Array'],
+    Q12:['Scientific Research'], Q13:['Alchemist Laboratory Tower'], Q14:['Frantic and Chaotic'],
+    Q15:'Electrical Arc Flash', Q16:['Verdigris Green Patina','Amber and Burnt Sienna'],
+    Q17:'Three-Quarter View', Q18:'Gritty Concept Art', Q19:'Portrait Tall'
+  },
+  ironNavy: {
+    Q2:'Vehicle or Airship',
+    contributors:[{name:'ironclad warship',pct:60},{name:'submarine hull',pct:25},{name:'naval cannon battery',pct:15}],
+    Q4:'Late Victorian or Industrial Boom', Q5:['Fully Mechanical','Vehicle-Dominant'], Q6:'Brutalist Raw Iron',
+    Q7:['Aquatic Paddle-Wheel Drive','Hovering or Suspension Apparatus'], Q8:'Naval Vessel-Scale',
+    Q9:['Riveted Iron Boiler Plating','Brass Plates and Rivets'],
+    Q10:'Dangerously Overbuilt', Q11:['Steam Pressure','Coal Furnace Direct Burn'],
+    Q12:['Combat or Enforcement'], Q13:['Harbor and Drydock','Open Skies Above Cloud Layer'],
+    Q14:['Dangerous','Triumphant and Grand'], Q15:'Forge Fire Orange',
+    Q16:['Dark Iron and Soot','Coal Black with Ember Orange'],
+    Q17:'Low-Angle Dominance', Q18:'Cinematic Realism', Q19:'Landscape Wide'
+  },
+};
+
+/* API */
+function confirmConnect() {
+  const key = document.getElementById('apiKey').value.trim();
+  const btn = document.getElementById('connectBtn');
+  if (!key || key.length < 6) {
+    btn.textContent = 'NEED KEY';
+    btn.style.cssText = 'font-size:0.66rem;padding:6px 16px;background:rgba(200,30,30,0.12);color:var(--red);border-color:rgba(200,30,30,0.35);';
+    return;
+  }
+  localStorage.setItem('xaiKey_steampunk', key);
+  btn.textContent = 'CONNECTED';
+  btn.style.cssText = 'font-size:0.66rem;padding:6px 16px;background:rgba(0,160,90,0.15);color:var(--green);border-color:rgba(0,160,90,0.35);';
+}
+function apiKey()   { return document.getElementById('apiKey').value.trim(); }
+function apiReady() { return document.getElementById('connectBtn').textContent === 'CONNECTED'; }
+
+/* RENDER */
+function renderAll() {
+  Object.keys(Q).forEach(qid => renderField(qid));
+  renderContribs();
+  updateUI();
+}
+
+function renderField(qid) {
+  const q = Q[qid];
+  const cont = document.getElementById(`${qid}-opts`);
+  if (!cont) return;
+  cont.innerHTML = '';
+  q.opts.forEach(opt => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.textContent = opt;
+    const sel = ans[qid];
+    if (sel && (Array.isArray(sel) ? sel.includes(opt) : sel === opt)) b.classList.add('on');
+    b.onclick = () => handleClick(qid, opt);
+    cont.appendChild(b);
+  });
+  renderTags(qid);
+}
+
+function handleClick(qid, opt) {
+  const q = Q[qid];
+  if (q.type === 'single') {
+    ans[qid] = (ans[qid] === opt) ? null : opt;
+  } else {
+    let cur = ans[qid] || [];
+    if (cur.includes(opt)) { ans[qid] = cur.filter(v => v !== opt); }
+    else if (cur.length < q.max) { ans[qid] = [...cur, opt]; }
+    else return;
+  }
+  renderField(qid);
+  if (qid === 'Q2') updateUI();
+  else updatePreview();
+}
+
+function addCustom(qid) {
+  const inp = document.getElementById(`${qid}-custom`);
+  const val = inp.value.trim(); if (!val) return;
+  if (!custom[qid]) custom[qid] = [];
+  custom[qid].push(val); inp.value = '';
+  renderTags(qid); updatePreview();
+}
+
+function removeCustom(qid, idx) {
+  custom[qid].splice(idx, 1);
+  renderTags(qid); updatePreview();
+}
+
+function renderTags(qid) {
+  const wrap = document.getElementById(`${qid}-tags`); if (!wrap) return;
+  wrap.innerHTML = (custom[qid] || []).map((t, i) =>
+    `<span class="tag">${t}<button onclick="removeCustom('${qid}',${i})">x</button></span>`
+  ).join('');
+}
+
+function randField(qid) {
+  const q = Q[qid];
+  if (q.type === 'single') { ans[qid] = q.opts[Math.floor(Math.random() * q.opts.length)]; }
+  else { const n = Math.floor(Math.random() * q.max) + 1; ans[qid] = [...q.opts].sort(() => 0.5 - Math.random()).slice(0, n); }
+  renderField(qid);
+  if (qid === 'Q2') updateUI();
+  else updatePreview();
+}
+
+/* UI STATE */
+function isLocation() { return ans.Q2 === 'Environment or Location'; }
+
+function updateUI() {
+  document.getElementById('contrib-section').style.display = isLocation() ? 'none' : '';
+
+  const labels = (ans.Q2 && LABELS[ans.Q2]) || DEFAULT_LABELS;
+  const mn = ' <span class="multi-note">up to 2</span>';
+  const dice = id => ` <button class="dice" onclick="randField('${id}')">Randomize</button>`;
+
+  document.getElementById('q5-label').innerHTML = labels.Q5 + mn + dice('Q5');
+  document.getElementById('q7-label').innerHTML = labels.Q7 + mn + dice('Q7');
+  document.getElementById('q9-label').innerHTML = labels.Q9 + mn + dice('Q9');
+
+  updatePreview();
+}
+
+/* CONTRIBUTORS */
+function renderContribs() {
+  const list = document.getElementById('contrib-list');
+  list.innerHTML = '';
+  contribs.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'contrib-item';
+    div.innerHTML = `
+      <button class="rm-btn" onclick="removeContrib(${c.id})">x</button>
+      <div class="contrib-lbl">CONTRIBUTOR ${i + 1}</div>
+      <div class="contrib-row">
+        <input type="text" class="contrib-name" placeholder="e.g. brass automaton, human pilot, clockwork, leather..." value="${esc(c.name)}" oninput="updateContrib(${c.id},'name',this.value)">
+        <input type="number" class="contrib-pct" min="1" max="100" placeholder="%" value="${c.pct||''}" oninput="updateContrib(${c.id},'pct',this.value)">
+      </div>`;
+    list.appendChild(div);
+  });
+  document.getElementById('addBtn').style.display = contribs.length >= 4 ? 'none' : '';
+  calcPct();
+}
+
+function addContrib() {
+  if (contribs.length >= 4) return;
+  contribs.push({ id: ++cid, name: '', pct: '' });
+  renderContribs();
+}
+
+function removeContrib(id) {
+  contribs = contribs.filter(c => c.id !== id);
+  renderContribs(); updatePreview();
+}
+
+function updateContrib(id, field, val) {
+  const c = contribs.find(c => c.id === id); if (!c) return;
+  c[field] = field === 'pct' ? (parseInt(val) || '') : val;
+  calcPct(); updatePreview();
+}
+
+function calcPct() {
+  const total = contribs.reduce((s, c) => s + (parseInt(c.pct) || 0), 0);
+  const el = document.getElementById('pctTotal');
+  el.textContent = `Total: ${total}%`;
+  el.className = 'pct-total' + (total === 100 ? ' ok' : total > 100 ? ' over' : '');
+}
+
+function validateContribs() {
+  if (contribs.length === 0) return 'Add at least one contributor.';
+  if (contribs.some(c => !c.name.trim())) return 'All contributors must have a name.';
+  const total = contribs.reduce((s, c) => s + (parseInt(c.pct) || 0), 0);
+  if (total !== 100) return `Percentages must total 100. Currently ${total}%.`;
+  return null;
+}
+
+function randomizeContribs() {
+  const pool = [
+    'brass automaton','Victorian gentleman','steam engine','leather','clockwork gears',
+    'copper fittings','airship hull','corset','goggles','boiler','rivets','coal soot',
+    'velvet','iron framework','pressure gauges','patina','pocket watch','naval cannon',
+    'iron boiler plate','calfskin leather','top hat','pneumatic drill','gas lantern',
+    'telegraph machine','diving bell','zeppelin envelope','coal furnace','ether tank',
+    'clockwork bird','iron maiden armor','Victorian lady','soldier in uniform'
+  ];
+  contribs = []; cid = Math.max(cid, 0);
+  const count = Math.floor(Math.random() * 3) + 1;
+  let remaining = 100;
+  for (let i = 0; i < count; i++) {
+    const name = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+    const pct = i === count - 1 ? remaining : Math.round(Math.random() * (remaining - (count - i - 1) * 10) + 10);
+    remaining -= pct;
+    contribs.push({ id: ++cid, name, pct });
+  }
+  renderContribs(); updatePreview();
+}
+
+/* HELPERS */
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
+
+function getAns(qid) {
+  const a = ans[qid]; const c = custom[qid] || [];
+  const base = Array.isArray(a) ? a.join(', ') : (a || '');
+  return [base, ...c].filter(Boolean).join(', ');
+}
+
+function stateToText() {
+  const lines = [];
+  const type = ans.Q2; if (type) lines.push(`Creation Type: ${type}`);
+  if (!isLocation() && contribs.length) {
+    lines.push(`Contributors: ${contribs.map(c => `${c.name} (${c.pct}%)`).join(', ')}`);
+  }
+  const labels = (ans.Q2 && LABELS[ans.Q2]) || DEFAULT_LABELS;
+  const f = (label, qid) => { const v = getAns(qid); if (v) lines.push(`${label}: ${v}`); };
+  f('Era', 'Q4'); f(labels.Q5, 'Q5'); f('Structural Logic', 'Q6');
+  f(labels.Q7, 'Q7'); f('Scale', 'Q8'); f(labels.Q9, 'Q9');
+  f('Mechanical Complexity', 'Q10'); f('Power Source', 'Q11'); f('Primary Role', 'Q12');
+  f('Environment', 'Q13'); f('Mood', 'Q14'); f('Lighting', 'Q15'); f('Color Palette', 'Q16');
+  f('POV', 'Q17'); f('Art Style', 'Q18'); f('Aspect Ratio', 'Q19');
+  const q20 = document.getElementById('Q20-input')?.value.trim();
+  if (q20) lines.push(`Clarifications: ${q20}`);
+  return lines.join('\n');
+}
+
+function updatePreview() {
+  const text = stateToText();
+  document.getElementById('livePreview').textContent = text || 'Select a creation type to begin...';
+}
+
+/* PRESETS */
+function applyPreset(name) {
+  if (name === 'random') { randomizeAll(); return; }
+  const p = PRESETS[name]; if (!p) return;
+  ans = {}; custom = {}; contribs = [];
+  Object.entries(p).forEach(([k, v]) => {
+    if (k === 'contributors') { contribs = v.map(c => ({ id: ++cid, name: c.name, pct: c.pct })); }
+    else { ans[k] = v; }
+  });
+  renderAll();
+}
+
+function randomizeAll() {
+  ans = {}; custom = {}; contribs = [];
+  ans.Q2 = Q.Q2.opts[Math.floor(Math.random() * Q.Q2.opts.length)];
+  Object.keys(Q).filter(qid => qid !== 'Q2').forEach(qid => {
+    const q = Q[qid];
+    if (q.type === 'single') { ans[qid] = q.opts[Math.floor(Math.random() * q.opts.length)]; }
+    else { const n = Math.floor(Math.random() * q.max) + 1; ans[qid] = [...q.opts].sort(() => 0.5 - Math.random()).slice(0, n); }
+  });
+  if (!isLocation()) randomizeContribs();
+  renderAll();
+}
+
+/* GENERATE */
+async function generatePrompt() {
+  if (!apiReady()) { showErr('Connect your API key first.'); return; }
+  if (!ans.Q2) { showErr('Select a creation type first.'); return; }
+
+  if (!isLocation()) {
+    const contribErr = validateContribs();
+    if (contribErr) {
+      const el = document.getElementById('contrib-err');
+      el.textContent = contribErr; el.style.display = 'block'; return;
+    }
+  }
+  document.getElementById('contrib-err').style.display = 'none';
+  hideErr();
+
+  const systemPrompt = `You are the prompt engine for Cosmic Cowboy's STEAMPUNK SATURDAY GENERATOR. Output ONLY a dense, comma-separated image generation prompt. No labels, no preamble, no explanation - start immediately with descriptive terms.
+
+CREATION TYPE: ${ans.Q2}
+${!isLocation()
+  ? 'Contributors define the steampunk sources fused into this subject. Translate contributor dominance into visual weight - a 60% contributor dominates the form and material language, a 20% contributor is a present but secondary influence. Never name contributors explicitly in the output.'
+  : 'This is a pure environment or location prompt. The steampunk aesthetic emerges from the architecture, machinery, atmosphere, and implied activity of the space itself.'}
+
+STEAMPUNK COHERENCE RULE: Victorian-era aesthetics, mechanical logic, and brass/copper/iron material language must be consistent throughout. No modern digital technology, no plastic, no contemporary design elements unless explicitly overridden in clarifications.
+
+FORBIDDEN in output: contributor names, percentages, "blend of", "combination of", any reference to source materials by name.
+
+Always end with: Ultra-fine surface detail with metal wear, patina, brass fittings, copper piping, leather straps, exposed gears, clockwork mechanisms, steam vents, pressure gauges, rivets, and fabric weave where appropriate. Sharp focus. Cinematic physically plausible lighting. Professional production-grade rendering.`;
+
+  const btn = document.getElementById('genBtn');
+  const out = document.getElementById('outPrompt');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Generating...';
+  out.textContent = ''; out.className = 'out-body';
+
+  try {
+    const res = await fetch(XAI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey()}` },
+      body: JSON.stringify({
+        model: XAI_MODEL,
+        max_tokens: 900,
+        reasoning_effort: 'none',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user',   content: `Generate a steampunk prompt for:\n\n${stateToText()}` }
+        ]
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `API error ${res.status}`);
+    const reply = (data.choices?.[0]?.message?.content || '').trim();
+    if (!reply) throw new Error('Empty response from API.');
+    out.textContent = reply; out.className = 'out-body';
+  } catch(e) {
+    showErr(e.message);
+    out.textContent = ''; out.className = 'out-body empty';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Generate Prompt';
+  }
+}
+
+function showErr(msg) { const el = document.getElementById('gen-err'); el.textContent = msg; el.style.display = 'block'; }
+function hideErr()    { document.getElementById('gen-err').style.display = 'none'; }
+
+function copyPrompt() {
+  const out = document.getElementById('outPrompt');
+  if (out.classList.contains('empty') || !out.textContent.trim()) return;
+  navigator.clipboard.writeText(out.textContent).catch(() => {});
+}
+
+/* SAVE / LOAD / RESET */
+function saveCurrent() {
+  localStorage.setItem('cc_steampunk_v2', JSON.stringify({ ans, custom, contribs, Q20: document.getElementById('Q20-input').value }));
+  alert('Saved.');
+}
+function loadSaved() {
+  const raw = localStorage.getItem('cc_steampunk_v2'); if (!raw) { alert('No saved data.'); return; }
+  const d = JSON.parse(raw);
+  ans = d.ans || {}; custom = d.custom || {}; contribs = d.contribs || [];
+  cid = contribs.reduce((m, c) => Math.max(m, c.id || 0), 0);
+  if (d.Q20) document.getElementById('Q20-input').value = d.Q20;
+  renderAll(); alert('Loaded.');
+}
+function clearSaved() { localStorage.removeItem('cc_steampunk_v2'); alert('Cleared.'); }
+
+function resetApp() {
+  ans = {}; custom = {}; contribs = []; cid = 0;
+  document.getElementById('Q20-input').value = '';
+  document.getElementById('outPrompt').textContent = 'Connect your API key, fill the form, and click Generate.';
+  document.getElementById('outPrompt').className = 'out-body empty';
+  document.getElementById('contrib-err').style.display = 'none';
+  hideErr(); renderAll();
+}
+
+/* INIT */
+const savedKey = localStorage.getItem('xaiKey_steampunk');
+if (savedKey) {
+  document.getElementById('apiKey').value = savedKey;
+  confirmConnect();
+}
+document.getElementById('Q20-input').addEventListener('input', updatePreview);
+renderAll();
+</script>
+</body>
+</html>

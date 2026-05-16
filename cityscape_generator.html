@@ -1,0 +1,2100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- ============================================================
+     HEAD: Page metadata and Google Fonts import
+     ============================================================ -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Cityscape Generator v2.0 — Cosmic Cowboy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* ============================================================
+   CSS: VARIABLES
+   ============================================================ */
+:root {
+  --dark-blue:   #023E8A;
+  --ocean-blue:  #0077B6;
+  --soft-cyan:   #90E0EF;
+  --pale-blue:   #CAF0F8;
+  --deepest:     #010E1F;
+  --surface:     rgba(0,119,182,0.09);
+  --surface2:    rgba(0,119,182,0.17);
+  --border:      rgba(144,224,239,0.22);
+  --border-hi:   rgba(144,224,239,0.50);
+  --dim:         rgba(202,240,248,0.45);
+  --green:       #4ade80;
+  --red:         #f87171;
+  --glow:        0 0 12px rgba(144,224,239,0.30);
+  --accent:      #FFD166;
+}
+
+/* ============================================================
+   CSS: RESET AND BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  background: var(--deepest);
+  color: var(--pale-blue);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
+/* ============================================================
+   CSS: SCROLLBARS
+   ============================================================ */
+::-webkit-scrollbar              { width: 8px; height: 8px; }
+::-webkit-scrollbar-track        { background: rgba(0,0,0,0.15); border-radius: 4px; }
+::-webkit-scrollbar-thumb        { background: rgba(144,224,239,0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(144,224,239,0.6); }
+
+/* ============================================================
+   CSS: HEADER
+   ============================================================ */
+.header {
+  flex-shrink: 0;
+  height: 52px;
+  background: rgba(0,0,0,0.40);
+  border-bottom: 1px solid var(--border-hi);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 10;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
+  opacity: 0.5;
+}
+
+.hdr-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.10rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--pale-blue);
+  text-shadow: 0 0 18px rgba(144,224,239,0.4);
+}
+
+.hdr-sub {
+  font-size: 0.60rem;
+  color: var(--soft-cyan);
+  letter-spacing: 0.2em;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   CSS: SHARED FORM INPUTS
+   ============================================================ */
+input[type="text"],
+input[type="password"],
+textarea,
+select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 300;
+  border-radius: 4px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  width: 100%;
+}
+
+select {
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2390E0EF' d='M6 8L0 0h12z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 10px center;
+  padding-right: 30px;
+}
+
+select option { background: #011830; color: var(--pale-blue); }
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--soft-cyan);
+  box-shadow: var(--glow);
+}
+
+input::placeholder, textarea::placeholder { color: var(--dim); }
+
+/* ============================================================
+   CSS: SHARED BUTTONS
+   ============================================================ */
+.btn {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  padding: 6px 15px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--soft-cyan);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.btn:hover:not(:disabled) { border-color: var(--soft-cyan); background: rgba(144,224,239,0.10); }
+.btn:disabled              { opacity: 0.30; cursor: not-allowed; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: 0 3px 14px rgba(0,119,182,0.40);
+}
+
+.btn-rand {
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  color: var(--accent);
+  border-color: rgba(255,209,102,0.3);
+}
+.btn-rand:hover:not(:disabled) {
+  background: rgba(255,209,102,0.08);
+  border-color: var(--accent);
+}
+
+.btn-small { font-size: 0.66rem; padding: 5px 12px; }
+
+.btn-xai {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
+  font-size: 0.80rem;
+  padding: 9px 20px;
+}
+.btn-xai:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: var(--glow);
+}
+.btn-xai:disabled { opacity: 0.4; }
+
+/* ============================================================
+   CSS: PAGE BODY
+   ============================================================ */
+.page-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  max-width: 1300px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   CSS: SECTION HEADING
+   ============================================================ */
+.section-head {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ============================================================
+   CSS: PRESETS BAR
+   ============================================================ */
+.presets-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.preset-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  padding: 5px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  transition: all 0.15s;
+}
+.preset-btn:hover { border-color: var(--soft-cyan); background: rgba(0,119,182,0.18); }
+
+/* ============================================================
+   CSS: MAIN TWO-COLUMN LAYOUT
+   ============================================================ */
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+  align-items: start;
+}
+
+.preview-col { position: sticky; top: 20px; }
+
+/* ============================================================
+   CSS: ACCORDION SECTIONS
+   ============================================================ */
+.accordion {
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.accordion-header {
+  background: rgba(0,0,0,0.20);
+  padding: 11px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.84rem;
+  user-select: none;
+  gap: 10px;
+  color: var(--pale-blue);
+}
+.accordion-header:hover { background: rgba(0,0,0,0.30); }
+
+.accordion-chevron {
+  font-size: 0.70rem;
+  color: var(--dim);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.accordion-header.open .accordion-chevron { transform: rotate(180deg); }
+
+.accordion-body {
+  padding: 14px 16px;
+  background: var(--surface);
+  display: none;
+}
+.accordion-body.open     { display: block; }
+.accordion-body.disabled { opacity: 0.35; pointer-events: none; }
+
+/* ============================================================
+   CSS: QUESTION BLOCKS
+   ============================================================ */
+.q-block { margin-bottom: 18px; }
+.q-block:last-child { margin-bottom: 0; }
+
+.q-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.q-title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--soft-cyan);
+  letter-spacing: 0.06em;
+}
+
+.multi-note {
+  font-size: 0.70rem;
+  color: var(--dim);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.world-notice {
+  font-size: 0.76rem;
+  color: rgba(144,224,239,0.6);
+  font-style: italic;
+  margin-top: 8px;
+  padding: 6px 10px;
+  border-left: 2px solid rgba(144,224,239,0.3);
+}
+
+/* ============================================================
+   CSS: OPTION BUTTONS
+   ============================================================ */
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 5px;
+}
+
+.option-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  padding: 6px 9px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 300;
+  transition: all 0.15s;
+  position: relative;
+  line-height: 1.30;
+}
+.option-btn:hover  { border-color: var(--soft-cyan); background: rgba(0,119,182,0.18); }
+.option-btn.selected {
+  background: rgba(0,119,182,0.28);
+  border-color: var(--soft-cyan);
+}
+.option-btn.selected::after {
+  content: '✓';
+  position: absolute; right: 6px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--soft-cyan); font-weight: bold; font-size: 0.72rem;
+}
+
+/* ============================================================
+   CSS: CUSTOM INPUT ROW
+   ============================================================ */
+.custom-row {
+  display: flex;
+  gap: 7px;
+  margin-top: 8px;
+}
+.custom-row input { flex: 1; min-width: 0; }
+
+.tags-wrap { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+
+.custom-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0,119,182,0.22);
+  border: 1px solid rgba(144,224,239,0.35);
+  padding: 2px 9px;
+  border-radius: 18px;
+  font-size: 0.75rem;
+  color: var(--pale-blue);
+}
+.custom-tag button {
+  background: none; border: none;
+  color: var(--dim); cursor: pointer;
+  padding: 0; font-size: 0.9rem; line-height: 1;
+}
+.custom-tag button:hover { color: var(--red); }
+
+/* ============================================================
+   CSS: PREVIEW PANEL
+   ============================================================ */
+.preview-panel {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.preview-head {
+  padding: 8px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.20);
+}
+
+.prompt-display {
+  padding: 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 300;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 160px;
+  max-height: 340px;
+  overflow-y: auto;
+  color: var(--pale-blue);
+}
+.prompt-display.empty { color: var(--dim); font-style: italic; }
+
+.preview-actions {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.copy-confirm {
+  font-size: 0.72rem;
+  color: var(--green);
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
+.copy-confirm.show { opacity: 1; }
+
+/* ============================================================
+   CSS: xAI NARRATIVE PANEL
+   ============================================================ */
+.xai-panel {
+  margin-top: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.xai-head {
+  padding: 8px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.20);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.xai-body { padding: 14px; }
+
+.xai-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+.xai-row label {
+  font-size: 0.74rem;
+  color: var(--soft-cyan);
+  white-space: nowrap;
+  min-width: 68px;
+  font-weight: 500;
+}
+
+.xai-key-wrap {
+  position: relative;
+  flex: 1;
+}
+.xai-key-wrap input { padding-right: 60px; }
+
+.xai-toggle {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--dim); font-size: 0.70rem; font-family: 'Exo 2', sans-serif;
+  font-weight: 600; letter-spacing: 0.05em; padding: 2px 4px;
+}
+.xai-toggle:hover { color: var(--soft-cyan); }
+
+.xai-status {
+  font-size: 0.74rem;
+  color: var(--dim);
+  margin-top: 8px;
+  min-height: 1.2em;
+}
+.xai-status.ok  { color: var(--green); }
+.xai-status.err { color: var(--red); }
+.xai-status.run { color: var(--soft-cyan); }
+
+.narrative-output {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+  display: none;
+  background: rgba(0,0,0,0.25);
+}
+.narrative-output.visible { display: block; }
+
+.narrative-text {
+  padding: 12px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--pale-blue);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.narrative-actions {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--border);
+  align-items: center;
+}
+
+.narrative-copy-confirm {
+  font-size: 0.72rem;
+  color: var(--green);
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
+.narrative-copy-confirm.show { opacity: 1; }
+
+/* ============================================================
+   CSS: SPINNER
+   ============================================================ */
+.spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid rgba(144,224,239,0.20);
+  border-top-color: var(--soft-cyan);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   CSS: ACTION BAR
+   ============================================================ */
+.action-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* ============================================================
+   CSS: NOTICE
+   ============================================================ */
+.notice {
+  font-size: 0.78rem;
+  padding: 7px 11px;
+  border-radius: 4px;
+  margin-top: 8px;
+  display: none;
+}
+.notice.ok  { display: block; background: rgba(0,160,90,0.12);  border: 1px solid rgba(0,160,90,0.35);  color: var(--green); }
+.notice.err { display: block; background: rgba(200,30,30,0.15); border: 1px solid rgba(200,30,30,0.4);  color: var(--red); }
+
+/* ============================================================
+   CSS: RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .preview-col  { position: static; }
+  .options-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+}
+@media (max-width: 500px) {
+  .options-grid { grid-template-columns: 1fr 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HTML: HEADER
+     ============================================================ -->
+<header class="header">
+  <div>
+    <div class="hdr-title">&#127961; CLAUDE CITYSCAPE GENERATOR</div>
+    <div class="hdr-sub">v2.0 &mdash; COSMIC COWBOY'S AI WORLDBUILDERS</div>
+  </div>
+  <button class="btn" onclick="resetApp()">&#10022; RESET</button>
+</header>
+
+<!-- ============================================================
+     HTML: SCROLLABLE PAGE BODY
+     ============================================================ -->
+<div class="page-body">
+
+  <!-- Presets -->
+  <div class="section-head">Quick Start Presets</div>
+  <div class="presets-bar">
+    <button class="preset-btn" onclick="applyPreset('cyberpunk')">Cyberpunk Megacity</button>
+    <button class="preset-btn" onclick="applyPreset('steampunk')">Steampunk Port</button>
+    <button class="preset-btn" onclick="applyPreset('alienBio')">Alien Biotech City</button>
+    <button class="preset-btn" onclick="applyPreset('mixed')">Mixed World City</button>
+    <button class="preset-btn" onclick="applyPreset('medievalCity')">Medieval City</button>
+    <button class="preset-btn" onclick="applyPreset('solarpunk')">Solarpunk Utopia</button>
+    <button class="preset-btn" onclick="applyPreset('ruinedMetro')">Ruined Metropolis</button>
+    <button class="preset-btn" onclick="applyPreset('colonialPort')">Colonial Port</button>
+    <button class="preset-btn" onclick="randomizeAll()">&#9861; Random All</button>
+  </div>
+
+  <!-- Two-column layout -->
+  <div class="main-layout">
+
+    <!-- LEFT: Question accordions -->
+    <div>
+
+      <!-- Core Setup -->
+      <div class="accordion">
+        <div class="accordion-header open" onclick="toggleAccordion(this)">
+          Core Setup
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body open">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">World Type</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q1')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q1-options"></div>
+            <div class="world-notice">Selecting Earth, Alien, or Mixed shows or hides the relevant sections below.</div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Mode</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q2')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q2-options"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Earth City Elements -->
+      <div class="accordion" id="earth-accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Earth City Elements
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body disabled" id="earth-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">City / Settlement Type (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q3-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q3')">Add</button></div>
+            <div class="tags-wrap" id="Q3-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Era or Style (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q4')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q4-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q4-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q4')">Add</button></div>
+            <div class="tags-wrap" id="Q4-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Time of Day / Sky (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q5')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q5-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q5-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q5')">Add</button></div>
+            <div class="tags-wrap" id="Q5-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Weather / Air Condition (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q6')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q6-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q6-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q6')">Add</button></div>
+            <div class="tags-wrap" id="Q6-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Urban Layout (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q7')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q7-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q7-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q7')">Add</button></div>
+            <div class="tags-wrap" id="Q7-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Transportation Focus (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q8')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q8-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q8-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q8')">Add</button></div>
+            <div class="tags-wrap" id="Q8-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Skyline Balance</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q9')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q9-options"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Focal Element (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q10')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q10-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q10-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q10')">Add</button></div>
+            <div class="tags-wrap" id="Q10-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Street Life / Activity (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('QSL')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="QSL-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="QSL-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('QSL')">Add</button></div>
+            <div class="tags-wrap" id="QSL-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Alien City Elements -->
+      <div class="accordion" id="alien-accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Alien City Elements
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body disabled" id="alien-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Alien Architecture Theme (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q11')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q11-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q11-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q11')">Add</button></div>
+            <div class="tags-wrap" id="Q11-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Celestial / Environmental Context (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q12')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q12-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q12-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q12')">Add</button></div>
+            <div class="tags-wrap" id="Q12-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Alien Sky (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q13')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q13-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q13-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q13')">Add</button></div>
+            <div class="tags-wrap" id="Q13-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Atmospheric Effects (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q14')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q14-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q14-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q14')">Add</button></div>
+            <div class="tags-wrap" id="Q14-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Structural Anomalies (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q15')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q15-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q15-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q15')">Add</button></div>
+            <div class="tags-wrap" id="Q15-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Energy / Fluid Systems (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q16')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q16-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q16-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q16')">Add</button></div>
+            <div class="tags-wrap" id="Q16-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Alien Inhabitants (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('QAI')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="QAI-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="QAI-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('QAI')">Add</button></div>
+            <div class="tags-wrap" id="QAI-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Shared Visual Controls -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Shared Visual Controls
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Activity Level</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q17')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q17-options"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Scene Density</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q18')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q18-options"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Point of View</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q19')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q19-options"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Composition Layout (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q20')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q20-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q20-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q20')">Add</button></div>
+            <div class="tags-wrap" id="Q20-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Lens / Field</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q21')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q21-options"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Contrast</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q22')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q22-options"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Palette (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q23')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q23-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q23-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q23')">Add</button></div>
+            <div class="tags-wrap" id="Q23-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Style</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q24')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q24-options"></div>
+            <div class="custom-row"><input type="text" id="Q24-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q24')">Add</button></div>
+            <div class="tags-wrap" id="Q24-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Image Size</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q25')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q25-options"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Clarification -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Clarification and Finalization
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Clarification and Revision</span>
+            </div>
+            <p style="font-size:0.76rem;color:var(--dim);margin-bottom:8px;">
+              All text entered here is passed to xAI as additional context. Skipped in Random Mode.
+            </p>
+            <textarea id="Q26-input" rows="3" placeholder="Clarifications, additions, removals, or overrides. Leave blank to skip."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <!-- Action bar -->
+      <div class="action-bar">
+        <button class="btn btn-small" onclick="saveCurrent()">&#128190; Save</button>
+        <button class="btn btn-small" onclick="loadSaved()">&#128194; Load</button>
+        <button class="btn btn-small" onclick="clearSaved()">&#128465; Clear Saved</button>
+      </div>
+
+      <div class="notice" id="actionNotice"></div>
+
+    </div><!-- end left col -->
+
+    <!-- RIGHT: Live preview + xAI panel -->
+    <div class="preview-col">
+
+      <!-- Prompt preview -->
+      <div class="preview-panel">
+        <div class="preview-head">Live Prompt Preview</div>
+        <div class="prompt-display empty" id="livePreview">
+          Select a World Type in Core Setup to begin.
+        </div>
+        <div class="preview-actions">
+          <button class="btn btn-small" onclick="copyPrompt()">&#128203; Copy Raw Prompt</button>
+          <span class="copy-confirm" id="copyConfirmInline"></span>
+        </div>
+      </div>
+
+      <!-- xAI Narrative Prompt panel -->
+      <div class="xai-panel">
+        <div class="xai-head">
+          &#9889; xAI Narrative Prompt
+        </div>
+        <div class="xai-body">
+
+          <div class="xai-row">
+            <label>API Key</label>
+            <div class="xai-key-wrap">
+              <input type="password" id="xaiApiKey" autocomplete="off" placeholder="Enter your xAI API key">
+              <button class="xai-toggle" onclick="toggleKeyVis()">SHOW</button>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+            <input type="checkbox" id="xaiSaveKey" style="width:auto;accent-color:var(--soft-cyan);">
+            <label for="xaiSaveKey" style="font-size:0.74rem;color:var(--dim);margin:0;cursor:pointer;">
+              Save API key in browser
+            </label>
+          </div>
+
+          <div style="margin-top:12px;">
+            <button class="btn btn-xai" id="xaiGenBtn" onclick="generateNarrativePrompt()" disabled>
+              &#9889; Generate Narrative Prompt
+            </button>
+          </div>
+
+          <div class="xai-status" id="xaiStatus">Enter an API key above to enable generation.</div>
+
+          <div class="narrative-output" id="narrativeOutput">
+            <div class="narrative-text" id="narrativeText"></div>
+            <div class="narrative-actions">
+              <button class="btn btn-small" onclick="copyNarrative()">&#128203; Copy</button>
+              <span class="narrative-copy-confirm" id="narrativeCopyConfirm">&#10003; Copied!</span>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div><!-- end preview-col -->
+
+  </div><!-- end main-layout -->
+
+</div><!-- end page-body -->
+
+
+<script>
+
+/* ============================================================
+   JS: QUESTION DATA — expanded option lists
+   ============================================================ */
+const QUESTIONS = {
+  Q1: { title:'World Type', type:'single', options:[
+    {id:'1',text:'Earth'},
+    {id:'2',text:'Alien'},
+    {id:'3',text:'Mixed Earth + Alien'},
+  ]},
+
+  Q2: { title:'Mode', type:'single', options:[
+    {id:'1',text:'Step by step'},
+    {id:'2',text:'Random'},
+  ]},
+
+  Q3: { title:'City / Settlement Type', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Modern metropolis'},
+    {id:'2', text:'Futuristic megacity'},
+    {id:'3', text:'Industrial port city'},
+    {id:'4', text:'Mountain city'},
+    {id:'5', text:'Coastal skyline'},
+    {id:'6', text:'Old world capital'},
+    {id:'7', text:'Frontier outpost'},
+    {id:'8', text:'Underground complex'},
+    {id:'9', text:'Frozen outpost'},
+    {id:'10',text:'Desert trading hub'},
+    {id:'11',text:'River delta city'},
+    {id:'12',text:'Island fortress'},
+    {id:'13',text:'Walled medieval town'},
+    {id:'14',text:'Floating city'},
+    {id:'15',text:'Subterranean city'},
+    {id:'16',text:'Orbital habitat ring'},
+    {id:'17',text:'Mining colony'},
+    {id:'18',text:'Agricultural township'},
+    {id:'19',text:'Academic district'},
+    {id:'20',text:'Refugee settlement'},
+    {id:'21',text:'Corporate arcology'},
+    {id:'22',text:'Nomadic convoy city'},
+    {id:'23',text:'Jungle canopy settlement'},
+    {id:'24',text:'Volcanic plateau city'},
+  ]},
+
+  Q4: { title:'Era or Style', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Contemporary'},
+    {id:'2', text:'Near-future'},
+    {id:'3', text:'Dystopian cyberpunk'},
+    {id:'4', text:'Steampunk'},
+    {id:'5', text:'Solarpunk'},
+    {id:'6', text:'Retro-futurist'},
+    {id:'7', text:'Neo-Gothic'},
+    {id:'8', text:'Art Deco'},
+    {id:'9', text:'Eco-village architecture'},
+    {id:'10',text:'Expeditionary research'},
+    {id:'11',text:'Ancient Rome / Greece'},
+    {id:'12',text:'Medieval'},
+    {id:'13',text:'Renaissance'},
+    {id:'14',text:'Victorian industrial'},
+    {id:'15',text:'Modernist brutalism'},
+    {id:'16',text:'Deconstructivist'},
+    {id:'17',text:'Post-apocalyptic salvage'},
+    {id:'18',text:'Dieselpunk'},
+    {id:'19',text:'Biopunk organic'},
+    {id:'20',text:'Atompunk 1950s sci-fi'},
+    {id:'21',text:'Far-future post-human'},
+    {id:'22',text:'Islamic golden age'},
+    {id:'23',text:'East Asian dynastic'},
+    {id:'24',text:'Colonial frontier'},
+  ]},
+
+  Q5: { title:'Time of Day / Sky', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Pre-dawn'},
+    {id:'2', text:'Dawn'},
+    {id:'3', text:'Morning haze'},
+    {id:'4', text:'Noon'},
+    {id:'5', text:'Afternoon'},
+    {id:'6', text:'Golden hour'},
+    {id:'7', text:'Sunset'},
+    {id:'8', text:'Dusk / blue hour'},
+    {id:'9', text:'Neon night'},
+    {id:'10',text:'Overcast day'},
+    {id:'11',text:'Storm night'},
+    {id:'12',text:'Starlit night'},
+    {id:'13',text:'Moonlit night'},
+    {id:'14',text:'Eclipse'},
+    {id:'15',text:'Early morning fog'},
+    {id:'16',text:'Amber afternoon'},
+  ]},
+
+  Q6: { title:'Weather / Air Condition', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Clear sky'},
+    {id:'2', text:'Light smog'},
+    {id:'3', text:'Heavy smog / pollution'},
+    {id:'4', text:'Light rain'},
+    {id:'5', text:'Heavy rain'},
+    {id:'6', text:'Thunderstorm'},
+    {id:'7', text:'Snow flurries'},
+    {id:'8', text:'Blizzard'},
+    {id:'9', text:'Dense fog'},
+    {id:'10',text:'Haze'},
+    {id:'11',text:'Sandstorm / dust'},
+    {id:'12',text:'Acid rain'},
+    {id:'13',text:'Ash fall'},
+    {id:'14',text:'Heat shimmer'},
+    {id:'15',text:'Sea spray / mist'},
+    {id:'16',text:'Ice storm'},
+    {id:'17',text:'Tornado on horizon'},
+    {id:'18',text:'Wildfire smoke'},
+    {id:'19',text:'Humid tropical haze'},
+    {id:'20',text:'Windy / gale'},
+  ]},
+
+  Q7: { title:'Urban Layout', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Grid pattern streets'},
+    {id:'2', text:'Radial city core'},
+    {id:'3', text:'Layered vertical tiers'},
+    {id:'4', text:'Walled district clusters'},
+    {id:'5', text:'Floating platforms'},
+    {id:'6', text:'Bridge-linked megastructures'},
+    {id:'7', text:'Spiral central tower'},
+    {id:'8', text:'Clustered village rings'},
+    {id:'9', text:'Scattered dwellings'},
+    {id:'10',text:'Harbor-centric layout'},
+    {id:'11',text:'Underground tunnels + surface'},
+    {id:'12',text:'Canyon-carved districts'},
+    {id:'13',text:'Organic flowing streets'},
+    {id:'14',text:'Fortified concentric rings'},
+    {id:'15',text:'River-bisected quarters'},
+    {id:'16',text:'Elevated skywalk network'},
+    {id:'17',text:'Terraced hillside city'},
+    {id:'18',text:'Linear corridor city'},
+    {id:'19',text:'Sprawling low-density'},
+    {id:'20',text:'Dense vertical city core'},
+  ]},
+
+  Q8: { title:'Transportation Focus', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Highways and overpasses'},
+    {id:'2', text:'Maglev train lines'},
+    {id:'3', text:'Air traffic lanes'},
+    {id:'4', text:'Water canals'},
+    {id:'5', text:'Pedestrian skywalks'},
+    {id:'6', text:'Space elevator'},
+    {id:'7', text:'Dirt or stone roads'},
+    {id:'8', text:'Footpaths and trails'},
+    {id:'9', text:'Animal cart routes'},
+    {id:'10',text:'Small airstrips / docks'},
+    {id:'11',text:'Subway / metro visible'},
+    {id:'12',text:'Gondola / cable car'},
+    {id:'13',text:'Pneumatic tubes'},
+    {id:'14',text:'Horse-drawn traffic'},
+    {id:'15',text:'Bicycle infrastructure'},
+    {id:'16',text:'Drone delivery swarms'},
+    {id:'17',text:'Flying vehicle lanes'},
+    {id:'18',text:'River ferries'},
+    {id:'19',text:'Monorail'},
+    {id:'20',text:'Teleportation pads'},
+  ]},
+
+  Q9: { title:'Skyline Balance', type:'single', options:[
+    {id:'1', text:'Minimal sky (10%)'},
+    {id:'2', text:'Low sky (25%)'},
+    {id:'3', text:'Balanced (50/50)'},
+    {id:'4', text:'Dominant sky (70%)'},
+    {id:'5', text:'Overwhelming sky (85%)'},
+    {id:'6', text:'Dense vertical fill'},
+    {id:'7', text:'Horizon silhouette only'},
+  ]},
+
+  Q10: { title:'Focal Element', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Central tower / spire'},
+    {id:'2', text:'Street market / plaza'},
+    {id:'3', text:'Bridge'},
+    {id:'4', text:'Cathedral / temple dome'},
+    {id:'5', text:'Moving train or vehicle'},
+    {id:'6', text:'Shipyard / dry dock'},
+    {id:'7', text:'Launch pad'},
+    {id:'8', text:'Lighthouse / beacon'},
+    {id:'9', text:'Windmill or water tower'},
+    {id:'10',text:'Farmstead / greenhouse'},
+    {id:'11',text:'Destroyed ruin landmark'},
+    {id:'12',text:'Construction crane cluster'},
+    {id:'13',text:'Giant statue or monument'},
+    {id:'14',text:'Waterfall into city'},
+    {id:'15',text:'Underground entrance'},
+    {id:'16',text:'Fortified gate'},
+    {id:'17',text:'Amphitheater'},
+    {id:'18',text:'Floating platform dock'},
+    {id:'19',text:'Factory smokestacks'},
+    {id:'20',text:'Arena or stadium'},
+    {id:'21',text:'Observatory dome'},
+    {id:'22',text:'Ancient aqueduct'},
+  ]},
+
+  QSL: { title:'Street Life / Activity', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Crowded market stalls'},
+    {id:'2', text:'Rush hour commuters'},
+    {id:'3', text:'Military patrol'},
+    {id:'4', text:'Festival or celebration'},
+    {id:'5', text:'Protest / unrest'},
+    {id:'6', text:'Lone figure in distance'},
+    {id:'7', text:'Children playing'},
+    {id:'8', text:'Merchants and traders'},
+    {id:'9', text:'Abandoned — no people'},
+    {id:'10',text:'Emergency vehicles'},
+    {id:'11',text:'Construction workers'},
+    {id:'12',text:'Street performers'},
+    {id:'13',text:'Armed conflict ongoing'},
+    {id:'14',text:'Refugees moving through'},
+    {id:'15',text:'Automated drones only'},
+    {id:'16',text:'Night-time revelers'},
+  ]},
+
+  Q11: { title:'Alien Architecture Theme', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Organic biotech structures'},
+    {id:'2', text:'Crystalline spires'},
+    {id:'3', text:'Floating habitats'},
+    {id:'4', text:'Fluid metallic surfaces'},
+    {id:'5', text:'Hive colony architecture'},
+    {id:'6', text:'Transparent megastructures'},
+    {id:'7', text:'Gravity-bent skyscrapers'},
+    {id:'8', text:'Membrane dome clusters'},
+    {id:'9', text:'Coral-like growths'},
+    {id:'10',text:'Bio-engineered towers'},
+    {id:'11',text:'Tessellated geometric forms'},
+    {id:'12',text:'Root-network infrastructure'},
+    {id:'13',text:'Bioluminescent facades'},
+    {id:'14',text:'Self-repairing structures'},
+    {id:'15',text:'Nested sphere habitats'},
+    {id:'16',text:'Fractal recursive towers'},
+    {id:'17',text:'Fungal mass architecture'},
+    {id:'18',text:'Living wall ecosystems'},
+    {id:'19',text:'Bone-like skeletal frames'},
+    {id:'20',text:'Magnetite levitating blocks'},
+    {id:'21',text:'Woven fiber mega-forms'},
+    {id:'22',text:'Geode hollow chambers'},
+  ]},
+
+  Q12: { title:'Celestial / Environmental Context', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Twin suns'},
+    {id:'2', text:'Triple moons'},
+    {id:'3', text:'Orbital rings visible'},
+    {id:'4', text:'Nearby gas giant'},
+    {id:'5', text:'Aurora canopy overhead'},
+    {id:'6', text:'Nebula sky'},
+    {id:'7', text:'Meteor showers'},
+    {id:'8', text:'Artificial daylight grid'},
+    {id:'9', text:'Vacuum shield dome'},
+    {id:'10',text:'Star cluster backdrop'},
+    {id:'11',text:'Solar eclipse in progress'},
+    {id:'12',text:'Debris field overhead'},
+    {id:'13',text:'Binary star sunset'},
+    {id:'14',text:'Comet tail streaking sky'},
+    {id:'15',text:'Space station visible'},
+    {id:'16',text:'Ion storm approaching'},
+    {id:'17',text:'Lava sea on horizon'},
+    {id:'18',text:'Crystalline plains beyond'},
+    {id:'19',text:'Ringed planet filling sky'},
+    {id:'20',text:'Dyson shell interior'},
+  ]},
+
+  Q13: { title:'Alien Sky', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Eternal dusk'},
+    {id:'2', text:'Binary sunrise'},
+    {id:'3', text:'Iridescent twilight'},
+    {id:'4', text:'Dim neon noon'},
+    {id:'5', text:'Polar aurora night'},
+    {id:'6', text:'Lightstorm dawn'},
+    {id:'7', text:'Prismatic horizon'},
+    {id:'8', text:'Luminous void phase'},
+    {id:'9', text:'Chromatic overcast'},
+    {id:'10',text:'Rift-lit night'},
+    {id:'11',text:'Green sulfuric haze'},
+    {id:'12',text:'Crimson storm veil'},
+    {id:'13',text:'Violet noon glare'},
+    {id:'14',text:'Phosphorescent cloud cover'},
+    {id:'15',text:'Deep indigo pre-storm'},
+    {id:'16',text:'Amber toxic smog dome'},
+    {id:'17',text:'Fractured sky rifts'},
+    {id:'18',text:'Ultraviolet blaze'},
+    {id:'19',text:'Coronal mass ejection glow'},
+    {id:'20',text:'White-out polar noon'},
+  ]},
+
+  Q14: { title:'Atmospheric Effects', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Plasma haze'},
+    {id:'2', text:'Luminescent fog'},
+    {id:'3', text:'Dust crystal suspension'},
+    {id:'4', text:'Photonic rain'},
+    {id:'5', text:'Static lightning arcs'},
+    {id:'6', text:'Acid mist'},
+    {id:'7', text:'Liquid vapor clouds'},
+    {id:'8', text:'Radiant energy drift'},
+    {id:'9', text:'Iridescent smog'},
+    {id:'10',text:'Electromagnetic shimmer'},
+    {id:'11',text:'Spore cloud banks'},
+    {id:'12',text:'Methane bubble columns'},
+    {id:'13',text:'Gravity wave distortion'},
+    {id:'14',text:'Bioluminescent rainfall'},
+    {id:'15',text:'Silica particle curtains'},
+    {id:'16',text:'Phase-shifted light bands'},
+    {id:'17',text:'Ion storm tendrils'},
+    {id:'18',text:'Crystal fog'},
+    {id:'19',text:'Radioactive glow haze'},
+    {id:'20',text:'Magnetic iron dust shimmer'},
+  ]},
+
+  Q15: { title:'Structural Anomalies', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Floating skyscrapers'},
+    {id:'2', text:'Inverted towers'},
+    {id:'3', text:'Fractal street geometry'},
+    {id:'4', text:'Living bridges'},
+    {id:'5', text:'Transparent streets'},
+    {id:'6', text:'Pulsating walls'},
+    {id:'7', text:'Infinite reflections'},
+    {id:'8', text:'Vertical oceans'},
+    {id:'9', text:'Gravity-bent structures'},
+    {id:'10',text:'Recursive corridors'},
+    {id:'11',text:'Buildings grown from terrain'},
+    {id:'12',text:'Structures fused with wildlife'},
+    {id:'13',text:'Continuously shifting forms'},
+    {id:'14',text:'Hollow megastructure interior'},
+    {id:'15',text:'Mobius-loop architecture'},
+    {id:'16',text:'Partially phased-out buildings'},
+    {id:'17',text:'Crystallized frozen city'},
+    {id:'18',text:'Half-sunken ruins'},
+    {id:'19',text:'Buildings on colossal stilts'},
+    {id:'20',text:'Tessellated impossible angles'},
+  ]},
+
+  Q16: { title:'Energy / Fluid Systems', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Plasma rivers'},
+    {id:'2', text:'Light conduit networks'},
+    {id:'3', text:'Liquid metal channels'},
+    {id:'4', text:'Bioluminescent streams'},
+    {id:'5', text:'Gel power cores'},
+    {id:'6', text:'Energy mist fountains'},
+    {id:'7', text:'Radiant flow lines'},
+    {id:'8', text:'Magnetic fluid vents'},
+    {id:'9', text:'Vapor energy plumes'},
+    {id:'10',text:'Crystal coolant runoffs'},
+    {id:'11',text:'Arc reactor towers'},
+    {id:'12',text:'Pulsing arterial pipelines'},
+    {id:'13',text:'Antigravity lift columns'},
+    {id:'14',text:'Solar collector arrays'},
+    {id:'15',text:'Dark matter conduits'},
+    {id:'16',text:'Living root power networks'},
+    {id:'17',text:'Quantum entanglement nodes'},
+    {id:'18',text:'Geothermal vent taps'},
+    {id:'19',text:'Atmospheric harvester towers'},
+    {id:'20',text:'Tidal resonance chambers'},
+  ]},
+
+  QAI: { title:'Alien Inhabitants', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'None visible'},
+    {id:'2', text:'Distant silhouettes only'},
+    {id:'3', text:'Insectoid crowds'},
+    {id:'4', text:'Towering bipedal forms'},
+    {id:'5', text:'Amorphous floating entities'},
+    {id:'6', text:'Mechanical constructs'},
+    {id:'7', text:'Swarm intelligence clusters'},
+    {id:'8', text:'Aquatic beings on land'},
+    {id:'9', text:'Translucent energy forms'},
+    {id:'10',text:'Multi-limbed arthropoids'},
+    {id:'11',text:'Humanoid but distinctly alien'},
+    {id:'12',text:'Vast single organism'},
+    {id:'13',text:'Microscopic colony visible as mass'},
+    {id:'14',text:'Plant-animal hybrids'},
+    {id:'15',text:'Crystalline beings'},
+  ]},
+
+  Q17: { title:'Activity Level', type:'single', options:[
+    {id:'1', text:'Abandoned / ghost city'},
+    {id:'2', text:'Sparse movement'},
+    {id:'3', text:'Moderate activity'},
+    {id:'4', text:'Busy'},
+    {id:'5', text:'Overcrowded / teeming'},
+    {id:'6', text:'Under siege / conflict'},
+    {id:'7', text:'Festive / celebratory'},
+  ]},
+
+  Q18: { title:'Scene Density', type:'single', options:[
+    {id:'1', text:'Minimal — open spaces'},
+    {id:'2', text:'Moderate — balanced'},
+    {id:'3', text:'Heavy — packed'},
+    {id:'4', text:'Overloaded — chaotic'},
+    {id:'5', text:'Layered foreground/background'},
+  ]},
+
+  Q19: { title:'Point of View', type:'single', options:[
+    {id:'1', text:'Orbital / satellite'},
+    {id:'2', text:'Wide aerial'},
+    {id:'3', text:'High rooftop'},
+    {id:'4', text:'Mid-level vantage'},
+    {id:'5', text:'Eye level street'},
+    {id:'6', text:'Street level ground up'},
+    {id:'7', text:'Underground looking up'},
+    {id:'8', text:'Isometric'},
+    {id:'9', text:'Framed foreground'},
+    {id:'10',text:'Interior window out'},
+    {id:'11',text:'Waterline / canal level'},
+    {id:'12',text:'First-person immersive'},
+  ]},
+
+  Q20: { title:'Composition Layout', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Central core'},
+    {id:'2', text:'Diagonal perspective'},
+    {id:'3', text:'Asymmetric skyline'},
+    {id:'4', text:'Layered depth planes'},
+    {id:'5', text:'Vertical canyon view'},
+    {id:'6', text:'Panoramic sweep'},
+    {id:'7', text:'Rule of thirds'},
+    {id:'8', text:'S-curve lead-in'},
+    {id:'9', text:'Tunnel / corridor'},
+    {id:'10',text:'Foreground frame'},
+    {id:'11',text:'Radial / spoke'},
+    {id:'12',text:'Reflection in water'},
+  ]},
+
+  Q21: { title:'Lens / Field', type:'single', options:[
+    {id:'1', text:'Ultra-wide (14–18mm)'},
+    {id:'2', text:'Wide (24–28mm)'},
+    {id:'3', text:'Normal (50mm)'},
+    {id:'4', text:'Short tele (85mm)'},
+    {id:'5', text:'Telephoto (200mm)'},
+    {id:'6', text:'Super-tele (600mm)'},
+    {id:'7', text:'Tilt-shift miniaturization'},
+    {id:'8', text:'Fisheye'},
+    {id:'9', text:'Drone-style perspective'},
+  ]},
+
+  Q22: { title:'Contrast', type:'single', options:[
+    {id:'1', text:'Very low / muted'},
+    {id:'2', text:'Low / soft'},
+    {id:'3', text:'Neutral'},
+    {id:'4', text:'High'},
+    {id:'5', text:'Very high'},
+    {id:'6', text:'Chiaroscuro'},
+    {id:'7', text:'HDR tonemapped'},
+  ]},
+
+  Q23: { title:'Palette', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1', text:'Warm urban light'},
+    {id:'2', text:'Cool industrial tones'},
+    {id:'3', text:'Neon spectrum'},
+    {id:'4', text:'Muted grayscale'},
+    {id:'5', text:'Earth tones'},
+    {id:'6', text:'Pastel smog light'},
+    {id:'7', text:'Metallic reflections'},
+    {id:'8', text:'Monochrome'},
+    {id:'9', text:'High saturation'},
+    {id:'10',text:'Autumn fire'},
+    {id:'11',text:'Icy blue-white'},
+    {id:'12',text:'Volcanic red-orange'},
+    {id:'13',text:'Deep teal-green'},
+    {id:'14',text:'Midnight purple'},
+    {id:'15',text:'Dusty rose'},
+    {id:'16',text:'Golden-hour amber'},
+    {id:'17',text:'Iridescent / prismatic'},
+    {id:'18',text:'Duotone'},
+  ]},
+
+  Q24: { title:'Style', type:'single', allowCustom:true, options:[
+    {id:'1', text:'Photorealism'},
+    {id:'2', text:'Hyper-realism'},
+    {id:'3', text:'Cinematic realism'},
+    {id:'4', text:'Surrealism'},
+    {id:'5', text:'Fantasy realism'},
+    {id:'6', text:'Digital painting / concept art'},
+    {id:'7', text:'Impressionistic realism'},
+    {id:'8', text:'Classical oil painting'},
+    {id:'9', text:'Anime / manga'},
+    {id:'10',text:'Pixel art'},
+    {id:'11',text:'Watercolor'},
+    {id:'12',text:'Gouache illustration'},
+    {id:'13',text:'Ink and wash'},
+    {id:'14',text:'Matte painting / VFX'},
+    {id:'15',text:'Sci-fi illustration'},
+    {id:'16',text:'Romanticism painting'},
+    {id:'17',text:'Art nouveau'},
+    {id:'18',text:'Brutalist art'},
+    {id:'19',text:'Pencil sketch / graphite'},
+    {id:'20',text:'8K render / Unreal Engine'},
+    {id:'21',text:'Storybook illustration'},
+    {id:'22',text:'Isometric game art'},
+  ]},
+
+  Q25: { title:'Image Size', type:'single', options:[
+    {id:'1', text:'Square — 1:1'},
+    {id:'2', text:'Portrait — tall 2:3'},
+    {id:'3', text:'Landscape — wide 3:2'},
+    {id:'4', text:'Cinematic wide 16:9'},
+    {id:'5', text:'Ultra-wide 21:9'},
+    {id:'6', text:'Vertical story 9:16'},
+    {id:'7', text:'Medium format 4:5'},
+  ]},
+};
+
+
+/* ============================================================
+   JS: PRESETS
+   ============================================================ */
+const PRESETS = {
+  cyberpunk:    { Q1:'1', Q3:['2'], Q4:['3'], Q5:['9'], Q6:['2','5'], Q7:['3','16'], Q8:['2','3'], Q9:'6', Q10:['1'], QSL:['2'], Q17:'4', Q18:'3', Q19:'3', Q20:['2','4'], Q21:'2', Q22:'4', Q23:['3','7'], Q24:'3', Q25:'4' },
+  steampunk:    { Q1:'1', Q3:['3','6'], Q4:['4'], Q5:['7'], Q6:['2','9'], Q7:['2'], Q8:['8','9'], Q9:'3', Q10:['3','19'], QSL:['8'], Q17:'3', Q18:'2', Q19:'4', Q20:['4'], Q21:'2', Q22:'3', Q23:['5'], Q24:'3', Q25:'3' },
+  alienBio:     { Q1:'2', Q11:['1','9','13'], Q12:['6','4'], Q13:['3'], Q14:['2','9'], Q15:['4'], Q16:['4'], QAI:['3'], Q17:'3', Q18:'3', Q19:'2', Q20:['4','6'], Q21:'1', Q22:'3', Q23:['9'], Q24:'5', Q25:'2' },
+  mixed:        { Q1:'3', Q3:['5'], Q4:['2'], Q5:['6'], Q6:['1'], Q7:['5'], Q8:['3'], Q9:'3', Q10:['7'], QSL:['2'], Q11:['2'], Q12:['3'], Q13:['7'], Q14:['8'], Q15:['1'], Q16:['2'], QAI:['2'], Q17:'3', Q18:'2', Q19:'2', Q20:['4'], Q21:'2', Q22:'3', Q23:['7'], Q24:'3', Q25:'3' },
+  medievalCity: { Q1:'1', Q3:['13'], Q4:['12'], Q5:['3'], Q6:['1','9'], Q7:['14','15'], Q8:['7','8'], Q9:'4', Q10:['4','16','13'], QSL:['8','7'], Q17:'3', Q18:'3', Q19:'3', Q20:['2','4'], Q21:'2', Q22:'3', Q23:['5'], Q24:'8', Q25:'3' },
+  solarpunk:    { Q1:'1', Q3:['5'], Q4:['5'], Q5:['6'], Q6:['1'], Q7:['13'], Q8:['15','4'], Q9:'4', Q10:['14'], QSL:['12','7'], Q17:'3', Q18:'2', Q19:'3', Q20:['6'], Q21:'2', Q22:'2', Q23:['9','13'], Q24:'5', Q25:'3' },
+  ruinedMetro:  { Q1:'1', Q3:['1'], Q4:['17'], Q5:['8'], Q6:['3','18'], Q7:['1'], Q8:['1'], Q9:'3', Q10:['11'], QSL:['9'], Q17:'1', Q18:'1', Q19:'3', Q20:['3','4'], Q21:'2', Q22:'6', Q23:['4','2'], Q24:'3', Q25:'4' },
+  colonialPort: { Q1:'1', Q3:['3'], Q4:['24'], Q5:['7'], Q6:['15','9'], Q7:['10'], Q8:['18','7'], Q9:'3', Q10:['8','6'], QSL:['8'], Q17:'3', Q18:'2', Q19:'3', Q20:['2'], Q21:'2', Q22:'3', Q23:['5','1'], Q24:'8', Q25:'3' },
+};
+
+
+/* ============================================================
+   JS: APP STATE
+   ============================================================ */
+let ST = {
+  answers:      {},
+  customInputs: {},
+  isRandom:     false,
+};
+
+
+/* ============================================================
+   JS: INIT
+   ============================================================ */
+function init() {
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updateWorldType();
+  updatePreview();
+
+  document.getElementById('Q26-input').addEventListener('input', () => {
+    if (!ST.isRandom) { ST.answers.Q26 = document.getElementById('Q26-input').value; }
+  });
+
+  const saved = localStorage.getItem('xaiApiKey');
+  if (saved) {
+    document.getElementById('xaiApiKey').value = saved;
+    document.getElementById('xaiSaveKey').checked = true;
+    updateGenBtn();
+  }
+
+  document.getElementById('xaiApiKey').addEventListener('input', updateGenBtn);
+}
+
+
+/* ============================================================
+   JS: FIELD RENDERER
+   ============================================================ */
+function renderField(qid) {
+  const q  = QUESTIONS[qid];
+  const el = document.getElementById(`${qid}-options`);
+  if (!q || !el) return;
+
+  el.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className   = 'option-btn';
+    btn.textContent = opt.text;
+    btn.dataset.id  = opt.id;
+
+    const cur = ST.answers[qid];
+    if (cur) {
+      const sel = Array.isArray(cur) ? cur.includes(opt.id) : cur === opt.id;
+      if (sel) btn.classList.add('selected');
+    }
+
+    btn.onclick = () => handleClick(qid, opt.id);
+    el.appendChild(btn);
+  });
+
+  renderTags(qid);
+}
+
+function handleClick(qid, optId) {
+  const q = QUESTIONS[qid];
+
+  if (q.type === 'single') {
+    ST.answers[qid] = optId;
+    document.querySelectorAll(`#${qid}-options .option-btn`)
+      .forEach(b => b.classList.toggle('selected', b.dataset.id === optId));
+    if (qid === 'Q1') updateWorldType();
+
+  } else {
+    let cur = ST.answers[qid] || [];
+    if (!Array.isArray(cur)) cur = [];
+
+    if (cur.includes(optId)) {
+      cur = cur.filter(id => id !== optId);
+      document.querySelector(`#${qid}-options .option-btn[data-id="${optId}"]`)?.classList.remove('selected');
+    } else {
+      if (cur.length >= q.max) {
+        showNotice(`Max ${q.max} selections for this field.`, 'err', 'actionNotice');
+        return;
+      }
+      cur = [...cur, optId];
+      document.querySelector(`#${qid}-options .option-btn[data-id="${optId}"]`)?.classList.add('selected');
+    }
+    ST.answers[qid] = cur;
+  }
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: CUSTOM TAGS
+   ============================================================ */
+function addCustom(qid) {
+  const inp = document.getElementById(`${qid}-custom`);
+  const val = inp.value.trim();
+  if (!val) return;
+  if (!ST.customInputs[qid]) ST.customInputs[qid] = [];
+  ST.customInputs[qid].push(val);
+  inp.value = '';
+  renderTags(qid);
+  updatePreview();
+}
+
+function removeCustom(qid, idx) {
+  ST.customInputs[qid].splice(idx, 1);
+  renderTags(qid);
+  updatePreview();
+}
+
+function renderTags(qid) {
+  const wrap = document.getElementById(`${qid}-tags`);
+  if (!wrap) return;
+  const items = ST.customInputs[qid] || [];
+  wrap.innerHTML = items.map((t, i) =>
+    `<span class="custom-tag">${t}<button onclick="removeCustom('${qid}',${i})">&#215;</button></span>`
+  ).join('');
+}
+
+
+/* ============================================================
+   JS: RANDOMIZE
+   ============================================================ */
+function randomizeField(qid) {
+  const q = QUESTIONS[qid];
+  if (!q || q.type === 'text') return;
+
+  if (q.type === 'single') {
+    const pick = q.options[Math.floor(Math.random() * q.options.length)].id;
+    ST.answers[qid] = pick;
+    document.querySelectorAll(`#${qid}-options .option-btn`)
+      .forEach(b => b.classList.toggle('selected', b.dataset.id === pick));
+    if (qid === 'Q1') updateWorldType();
+  } else {
+    const count = Math.floor(Math.random() * q.max) + 1;
+    const picks = [...q.options].sort(() => Math.random() - 0.5).slice(0, count).map(o => o.id);
+    ST.answers[qid] = picks;
+    document.querySelectorAll(`#${qid}-options .option-btn`)
+      .forEach(b => b.classList.toggle('selected', picks.includes(b.dataset.id)));
+  }
+  updatePreview();
+}
+
+function randomizeAll() {
+  ST.isRandom     = true;
+  ST.answers      = {};
+  ST.customInputs = {};
+
+  ST.answers.Q1 = QUESTIONS.Q1.options[Math.floor(Math.random() * QUESTIONS.Q1.options.length)].id;
+  updateWorldType();
+
+  const wt      = ST.answers.Q1;
+  const earthQs = ['Q3','Q4','Q5','Q6','Q7','Q8','Q9','Q10','QSL'];
+  const alienQs = ['Q11','Q12','Q13','Q14','Q15','Q16','QAI'];
+  const sharedQs = ['Q17','Q18','Q19','Q20','Q21','Q22','Q23','Q24','Q25'];
+
+  let toRand = [...sharedQs];
+  if (wt === '1') toRand = [...toRand, ...earthQs];
+  else if (wt === '2') toRand = [...toRand, ...alienQs];
+  else if (wt === '3') toRand = [...toRand, ...earthQs, ...alienQs];
+
+  toRand.forEach(qid => {
+    const q = QUESTIONS[qid];
+    if (!q) return;
+    if (q.type === 'single') {
+      ST.answers[qid] = q.options[Math.floor(Math.random() * q.options.length)].id;
+    } else {
+      const count = Math.floor(Math.random() * q.max) + 1;
+      ST.answers[qid] = [...q.options].sort(() => Math.random() - 0.5).slice(0, count).map(o => o.id);
+    }
+  });
+
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: PRESETS
+   ============================================================ */
+function applyPreset(name) {
+  const preset = PRESETS[name];
+  if (!preset) { randomizeAll(); return; }
+
+  ST.answers      = { ...preset };
+  ST.customInputs = {};
+  ST.isRandom     = false;
+
+  updateWorldType();
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: WORLD TYPE VISIBILITY
+   ============================================================ */
+function updateWorldType() {
+  const wt        = ST.answers.Q1;
+  const earthBody = document.getElementById('earth-body');
+  const alienBody = document.getElementById('alien-body');
+
+  earthBody.classList.toggle('disabled', wt !== '1' && wt !== '3');
+  alienBody.classList.toggle('disabled', wt !== '2' && wt !== '3');
+
+  if (wt === '1' || wt === '3') {
+    earthBody.classList.add('open');
+    document.querySelector('#earth-accordion .accordion-header').classList.add('open');
+  }
+  if (wt === '2' || wt === '3') {
+    alienBody.classList.add('open');
+    document.querySelector('#alien-accordion .accordion-header').classList.add('open');
+  }
+
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: ACCORDION TOGGLE
+   ============================================================ */
+function toggleAccordion(header) {
+  const body = header.nextElementSibling;
+  if (body.classList.contains('disabled')) return;
+  header.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+
+/* ============================================================
+   JS: PROMPT ASSEMBLY (raw preview)
+   ============================================================ */
+function getAns(qid) {
+  const q   = QUESTIONS[qid];
+  const ans = ST.answers[qid];
+  if (!q || !ans) return '';
+
+  const baseText = Array.isArray(ans)
+    ? ans.map(id => (q.options.find(o => o.id === id) || {}).text).filter(Boolean).join(', ')
+    : (q.options.find(o => o.id === ans) || {}).text || '';
+
+  const customs = ST.customInputs[qid] || [];
+  return [baseText, ...customs].filter(Boolean).join(', ');
+}
+
+function assemblePrompt() {
+  const wt      = ST.answers.Q1;
+  const isEarth = wt === '1' || wt === '3';
+  const isAlien = wt === '2' || wt === '3';
+  const parts   = [];
+
+  if (wt === '1')      parts.push('A realistic Earth-type cityscape');
+  else if (wt === '2') parts.push('An alien-type cityscape');
+  else if (wt === '3') parts.push('A mixed Earth + Alien cityscape');
+
+  if (isEarth) {
+    const city      = getAns('Q3');  if (city)      parts.push(`, featuring ${city.toLowerCase()} settlement`);
+    const era       = getAns('Q4');  if (era)        parts.push(`, in ${era.toLowerCase()} style`);
+    const time      = getAns('Q5');  if (time)       parts.push(`, at ${time.toLowerCase()}`);
+    const weather   = getAns('Q6');  if (weather)    parts.push(`, under ${weather.toLowerCase()} conditions`);
+    const layout    = getAns('Q7');  if (layout)     parts.push(`, with ${layout.toLowerCase()} layout`);
+    const transport = getAns('Q8');  if (transport)  parts.push(`, ${transport.toLowerCase()} transportation`);
+    const skyline   = getAns('Q9');  if (skyline)    parts.push(`, ${skyline.toLowerCase()} skyline`);
+    const focal     = getAns('Q10'); if (focal)      parts.push(`, ${focal.toLowerCase()} as focal element`);
+    const street    = getAns('QSL'); if (street)     parts.push(`, ${street.toLowerCase()} street life`);
+  }
+
+  if (isAlien) {
+    const arch      = getAns('Q11'); if (arch)      parts.push(`, with ${arch.toLowerCase()} alien architecture`);
+    const celestial = getAns('Q12'); if (celestial) parts.push(`, ${celestial.toLowerCase()} in the environment`);
+    const sky       = getAns('Q13'); if (sky)       parts.push(`, under ${sky.toLowerCase()}`);
+    const atmos     = getAns('Q14'); if (atmos)     parts.push(`, ${atmos.toLowerCase()} atmospheric effects`);
+    const anomalies = getAns('Q15'); if (anomalies) parts.push(`, ${anomalies.toLowerCase()} structural anomalies`);
+    const energy    = getAns('Q16'); if (energy)    parts.push(`, ${energy.toLowerCase()} energy systems`);
+    const inhab     = getAns('QAI'); if (inhab)     parts.push(`, inhabited by ${inhab.toLowerCase()}`);
+  }
+
+  const activity = getAns('Q17'); if (activity) parts.push(`, ${activity.toLowerCase()} activity level`);
+  const density  = getAns('Q18'); if (density)  parts.push(`, ${density.toLowerCase()} scene`);
+  const pov      = getAns('Q19'); if (pov)      parts.push(`, from ${pov.toLowerCase()} point of view`);
+  const comp     = getAns('Q20'); if (comp)     parts.push(`, ${comp.toLowerCase()} composition`);
+  const lens     = getAns('Q21'); if (lens)     parts.push(`, ${lens.toLowerCase()} lens`);
+  const contrast = getAns('Q22'); if (contrast) parts.push(`, ${contrast.toLowerCase()} contrast`);
+  const palette  = getAns('Q23'); if (palette)  parts.push(`, ${palette.toLowerCase()} color palette`);
+  const style    = getAns('Q24'); if (style)    parts.push(`, rendered in ${style.toLowerCase()}`);
+  const sz       = getAns('Q25'); if (sz)       parts.push(`, ${sz.toLowerCase()} aspect ratio`);
+
+  if (!ST.isRandom) {
+    const rev = (ST.answers.Q26 || document.getElementById('Q26-input')?.value || '').trim();
+    if (rev && rev.toLowerCase() !== 'none') parts.push(`. ${rev}`);
+  }
+
+  parts.push(`. Ultra-fine surface detail with building facades, window details, street texture, architectural ornamentation, and infrastructure elements. Sharp focus and clean edges. Cinematic physically plausible lighting. Dense but readable architectural and urban detail. Professional production-grade rendering.`);
+
+  const full = parts.join('');
+  return full.charAt(0).toUpperCase() + full.slice(1);
+}
+
+function updatePreview() {
+  const el = document.getElementById('livePreview');
+  if (!ST.answers.Q1) {
+    el.textContent = 'Select a World Type in Core Setup to begin.';
+    el.className = 'prompt-display empty';
+    return;
+  }
+  el.textContent = assemblePrompt();
+  el.className = 'prompt-display';
+}
+
+
+/* ============================================================
+   JS: COPY RAW PROMPT
+   ============================================================ */
+function copyPrompt() {
+  const text = document.getElementById('livePreview').textContent;
+  if (!text || text.includes('Select a World Type')) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById('copyConfirmInline');
+    el.textContent = '✓ Copied!';
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  });
+}
+
+
+/* ============================================================
+   JS: SAVE / LOAD / RESET
+   ============================================================ */
+function saveCurrent() {
+  const rev = document.getElementById('Q26-input').value.trim();
+  if (rev) ST.answers.Q26 = rev;
+  localStorage.setItem('cityscapeSave', JSON.stringify({ answers: ST.answers, customInputs: ST.customInputs }));
+  showNotice('Saved.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function loadSaved() {
+  const data = JSON.parse(localStorage.getItem('cityscapeSave') || 'null');
+  if (!data) { showNotice('No saved data found.', 'err', 'actionNotice'); return; }
+  ST.answers      = data.answers      || {};
+  ST.customInputs = data.customInputs || {};
+  ST.isRandom     = false;
+  if (ST.answers.Q26) document.getElementById('Q26-input').value = ST.answers.Q26;
+  updateWorldType();
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updatePreview();
+  showNotice('Loaded.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function clearSaved() {
+  localStorage.removeItem('cityscapeSave');
+  showNotice('Cleared.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function resetApp() {
+  ST = { answers: {}, customInputs: {}, isRandom: false };
+  document.getElementById('Q26-input').value = '';
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  document.getElementById('earth-body').classList.remove('open');
+  document.getElementById('alien-body').classList.remove('open');
+  document.querySelector('#earth-accordion .accordion-header').classList.remove('open');
+  document.querySelector('#alien-accordion .accordion-header').classList.remove('open');
+  updatePreview();
+  document.getElementById('narrativeOutput').classList.remove('visible');
+  document.getElementById('narrativeText').textContent = '';
+  setXaiStatus('Enter an API key above to enable generation.', '');
+}
+
+
+/* ============================================================
+   JS: NOTICE HELPERS
+   ============================================================ */
+function showNotice(msg, type, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'notice ' + type;
+}
+function hideNotice(id) {
+  const el = document.getElementById(id);
+  if (el) el.className = 'notice';
+}
+
+
+/* ============================================================
+   JS: xAI — KEY TOGGLE AND BUTTON STATE
+   ============================================================ */
+function toggleKeyVis() {
+  const inp = document.getElementById('xaiApiKey');
+  const btn = document.querySelector('.xai-toggle');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = 'HIDE'; }
+  else                         { inp.type = 'password'; btn.textContent = 'SHOW'; }
+}
+
+function updateGenBtn() {
+  const key = document.getElementById('xaiApiKey').value.trim();
+  document.getElementById('xaiGenBtn').disabled = !key;
+  if (!key) setXaiStatus('Enter an API key above to enable generation.', '');
+  else      setXaiStatus('Ready — build your cityscape above, then click Generate.', 'ok');
+}
+
+function setXaiStatus(msg, type) {
+  const el = document.getElementById('xaiStatus');
+  el.textContent = msg;
+  el.className   = 'xai-status' + (type ? ' ' + type : '');
+}
+
+
+/* ============================================================
+   JS: xAI — NARRATIVE PROMPT GENERATION
+   ============================================================ */
+async function generateNarrativePrompt() {
+  const key  = document.getElementById('xaiApiKey').value.trim();
+  const save = document.getElementById('xaiSaveKey').checked;
+
+  if (!key) { setXaiStatus('No API key entered.', 'err'); return; }
+
+  const rawPrompt = document.getElementById('livePreview').textContent;
+  if (!rawPrompt || rawPrompt.includes('Select a World Type')) {
+    setXaiStatus('Select a World Type in Core Setup to begin.', 'err');
+    return;
+  }
+
+  if (save) localStorage.setItem('xaiApiKey', key);
+  else      localStorage.removeItem('xaiApiKey');
+
+  const genBtn = document.getElementById('xaiGenBtn');
+  genBtn.disabled = true;
+  genBtn.innerHTML = '<span class="spinner"></span>Generating…';
+
+  document.getElementById('narrativeOutput').classList.remove('visible');
+  setXaiStatus('', 'run');
+  document.getElementById('xaiStatus').innerHTML =
+    '<span class="spinner"></span>Sending request to xAI…';
+
+  const clarification = (ST.answers.Q26 || document.getElementById('Q26-input')?.value || '').trim();
+  const fullPrompt = clarification
+    ? `${rawPrompt}\n\nAdditional context: ${clarification}`
+    : rawPrompt;
+
+  try {
+    const res = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'grok-4.3',
+        max_tokens: 700,
+        reasoning_effort: 'none',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert AI image-prompt writer specializing in urban environments, cityscapes, and architectural scenes. You receive a structured list of cityscape attributes and transform them into a single, richly evocative image-generation prompt. Write in vivid, cinematic language that captures the city\'s scale, atmosphere, and character. Describe architecture, lighting, street life, and environmental mood with specificity and density. Output only the prompt itself — no preamble, no explanation, no quotation marks.',
+          },
+          {
+            role: 'user',
+            content: `Convert these cityscape attributes into one rich, evocative image-generation prompt:\n\n${fullPrompt}`,
+          },
+        ],
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      const msg = data?.error?.message || `HTTP ${res.status}`;
+      setXaiStatus(`Error: ${msg}`, 'err');
+      return;
+    }
+
+    const text = data?.choices?.[0]?.message?.content?.trim() || '';
+    if (!text) { setXaiStatus('No response returned.', 'err'); return; }
+
+    document.getElementById('narrativeText').textContent = text;
+    document.getElementById('narrativeOutput').classList.add('visible');
+    setXaiStatus('Narrative prompt generated.', 'ok');
+
+  } catch (err) {
+    setXaiStatus(`Network error: ${err.message}`, 'err');
+  } finally {
+    genBtn.disabled = false;
+    genBtn.innerHTML = '&#9889; Generate Narrative Prompt';
+  }
+}
+
+
+/* ============================================================
+   JS: COPY NARRATIVE
+   ============================================================ */
+function copyNarrative() {
+  const text = document.getElementById('narrativeText').textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById('narrativeCopyConfirm');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  });
+}
+
+
+/* ============================================================
+   JS: BOOT
+   ============================================================ */
+window.onload = init;
+
+</script>
+</body>
+</html>

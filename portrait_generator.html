@@ -1,0 +1,1752 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Portrait and Figure Generator v2.0 — Cosmic Cowboy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root {
+  --dark-blue:   #023E8A;
+  --ocean-blue:  #0077B6;
+  --soft-cyan:   #90E0EF;
+  --pale-blue:   #CAF0F8;
+  --deepest:     #010E1F;
+  --surface:     rgba(0,119,182,0.09);
+  --surface2:    rgba(0,119,182,0.17);
+  --border:      rgba(144,224,239,0.22);
+  --border-hi:   rgba(144,224,239,0.50);
+  --dim:         rgba(202,240,248,0.45);
+  --green:       #4ade80;
+  --red:         #f87171;
+  --glow:        0 0 12px rgba(144,224,239,0.30);
+  --accent:      #FFD166;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  background: var(--deepest);
+  color: var(--pale-blue);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
+::-webkit-scrollbar              { width: 8px; height: 8px; }
+::-webkit-scrollbar-track        { background: rgba(0,0,0,0.15); border-radius: 4px; }
+::-webkit-scrollbar-thumb        { background: rgba(144,224,239,0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(144,224,239,0.6); }
+
+.header {
+  flex-shrink: 0;
+  height: 52px;
+  background: rgba(0,0,0,0.40);
+  border-bottom: 1px solid var(--border-hi);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 10;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
+  opacity: 0.5;
+}
+
+.hdr-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.10rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--pale-blue);
+  text-shadow: 0 0 18px rgba(144,224,239,0.4);
+}
+
+.hdr-sub {
+  font-size: 0.60rem;
+  color: var(--soft-cyan);
+  letter-spacing: 0.2em;
+  margin-top: 2px;
+}
+
+input[type="text"],
+textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 300;
+  border-radius: 4px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  width: 100%;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--soft-cyan);
+  box-shadow: var(--glow);
+}
+
+input::placeholder, textarea::placeholder { color: var(--dim); }
+
+.btn {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  padding: 6px 15px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--soft-cyan);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.btn:hover:not(:disabled) { border-color: var(--soft-cyan); background: rgba(144,224,239,0.10); }
+.btn:disabled              { opacity: 0.30; cursor: not-allowed; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: 0 3px 14px rgba(0,119,182,0.40);
+}
+
+.btn-rand {
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  color: var(--accent);
+  border-color: rgba(255,209,102,0.3);
+}
+.btn-rand:hover:not(:disabled) {
+  background: rgba(255,209,102,0.08);
+  border-color: var(--accent);
+}
+
+.btn-small { font-size: 0.66rem; padding: 5px 12px; }
+
+.page-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.section-head {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--border);
+}
+
+.presets-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.preset-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  padding: 5px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  transition: all 0.15s;
+}
+.preset-btn:hover { border-color: var(--soft-cyan); background: rgba(0,119,182,0.18); }
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+.preview-col { position: sticky; top: 20px; }
+
+.accordion {
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.accordion-header {
+  background: rgba(0,0,0,0.20);
+  padding: 11px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.84rem;
+  user-select: none;
+  gap: 10px;
+  color: var(--pale-blue);
+}
+.accordion-header:hover { background: rgba(0,0,0,0.30); }
+
+.accordion-chevron {
+  font-size: 0.70rem;
+  color: var(--dim);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.accordion-header.open .accordion-chevron { transform: rotate(180deg); }
+
+.accordion-body {
+  padding: 14px 16px;
+  background: var(--surface);
+  display: none;
+}
+.accordion-body.open { display: block; }
+
+.q-block { margin-bottom: 16px; }
+.q-block:last-child { margin-bottom: 0; }
+
+.q-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.q-title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--soft-cyan);
+  letter-spacing: 0.06em;
+}
+
+.multi-note { font-size: 0.70rem; color: var(--dim); font-style: italic; margin-top: 4px; }
+
+.warn-note {
+  font-size: 0.70rem;
+  color: var(--red);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+.hair-notice {
+  font-size: 0.72rem;
+  color: rgba(255,209,102,0.7);
+  padding: 6px 10px;
+  border-left: 2px solid rgba(255,209,102,0.4);
+  margin-bottom: 12px;
+  line-height: 1.45;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 6px;
+}
+
+.option-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  padding: 7px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 300;
+  transition: all 0.15s;
+  position: relative;
+  line-height: 1.35;
+}
+.option-btn:hover   { border-color: var(--soft-cyan); background: rgba(0,119,182,0.18); }
+.option-btn.selected {
+  background: rgba(0,119,182,0.28);
+  border-color: var(--soft-cyan);
+}
+.option-btn.selected::after {
+  content: '✓';
+  position: absolute; right: 7px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--soft-cyan); font-weight: bold; font-size: 0.75rem;
+}
+
+.custom-row {
+  display: flex;
+  gap: 7px;
+  margin-top: 8px;
+}
+.custom-row input { flex: 1; min-width: 0; }
+
+.tags-wrap { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+
+.custom-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0,119,182,0.22);
+  border: 1px solid rgba(144,224,239,0.35);
+  padding: 2px 9px;
+  border-radius: 18px;
+  font-size: 0.75rem;
+  color: var(--pale-blue);
+}
+.custom-tag button {
+  background: none; border: none;
+  color: var(--dim); cursor: pointer;
+  padding: 0; font-size: 0.9rem; line-height: 1;
+}
+.custom-tag button:hover { color: var(--red); }
+
+.preview-panel {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.preview-head {
+  padding: 8px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.20);
+}
+
+.prompt-display {
+  padding: 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 300;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 180px;
+  max-height: 460px;
+  overflow-y: auto;
+  color: var(--pale-blue);
+}
+.prompt-display.empty { color: var(--dim); font-style: italic; }
+
+.preview-actions {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+.preview-actions .btn { flex: 1; }
+
+.action-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.notice {
+  font-size: 0.78rem;
+  padding: 7px 11px;
+  border-radius: 4px;
+  margin-top: 8px;
+  display: none;
+}
+.notice.ok  { display: block; background: rgba(0,160,90,0.12);  border: 1px solid rgba(0,160,90,0.35);  color: var(--green); }
+.notice.err { display: block; background: rgba(200,30,30,0.15); border: 1px solid rgba(200,30,30,0.4);  color: var(--red); }
+
+@media (max-width: 860px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .preview-col  { position: static; }
+  .options-grid { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div>
+    <div class="hdr-title">&#9786; CLAUDE PORTRAIT AND FIGURE GENERATOR</div>
+    <div class="hdr-sub">v2.0 &mdash; COSMIC COWBOY'S AI WORLDBUILDERS</div>
+  </div>
+  <button class="btn" onclick="resetApp()">&#10022; RESET</button>
+</header>
+
+<div class="page-body">
+
+  <div class="section-head">Quick Start Presets</div>
+  <div class="presets-bar">
+    <button class="preset-btn" onclick="applyPreset('modernPro')">Modern Professional</button>
+    <button class="preset-btn" onclick="applyPreset('fantasyWarrior')">Fantasy Warrior</button>
+    <button class="preset-btn" onclick="applyPreset('royalPortrait')">Royal Portrait</button>
+    <button class="preset-btn" onclick="applyPreset('cyberpunk')">Cyberpunk</button>
+    <button class="preset-btn" onclick="applyPreset('fantasyMage')">Fantasy Mage</button>
+    <button class="preset-btn" onclick="applyPreset('medievalKnight')">Medieval Knight</button>
+    <button class="preset-btn" onclick="applyPreset('livingGold')">Living Gold Statue</button>
+    <button class="preset-btn" onclick="applyPreset('natureSpirit')">Nature Spirit</button>
+    <button class="preset-btn" onclick="applyPreset('celestialBeing')">Celestial Being</button>
+    <button class="preset-btn" onclick="applyPreset('voidWalker')">Void Walker</button>
+    <button class="preset-btn" onclick="randomizeAll()">&#9861; Random All</button>
+  </div>
+
+  <div class="main-layout">
+
+    <div>
+
+      <!-- Subject and Age -->
+      <div class="accordion">
+        <div class="accordion-header open" onclick="toggleAccordion(this)">
+          Subject and Age
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body open">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Subject Type</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q1')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q1-options"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Age Group</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q2')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q2-options"></div>
+            <p class="warn-note">Realistic full-body images of minors may not generate reliably. Use portrait framing or illustrative styles when depicting younger subjects.</p>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Identity -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Identity
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Gender</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3-options"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Facial Features -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Facial Features
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Eye Shape (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3A')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3A-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q3A-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q3A')">Add</button></div>
+            <div class="tags-wrap" id="Q3A-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Eye Color</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3B')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3B-options"></div>
+            <div class="custom-row"><input type="text" id="Q3B-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q3B')">Add</button></div>
+            <div class="tags-wrap" id="Q3B-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Nose Shape (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3C')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3C-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q3C-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q3C')">Add</button></div>
+            <div class="tags-wrap" id="Q3C-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Mouth and Lips (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3D')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3D-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q3D-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q3D')">Add</button></div>
+            <div class="tags-wrap" id="Q3D-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Jawline and Chin (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3E')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3E-options"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="Q3E-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q3E')">Add</button></div>
+            <div class="tags-wrap" id="Q3E-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Brows (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3F')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3F-options"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="Q3F-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q3F')">Add</button></div>
+            <div class="tags-wrap" id="Q3F-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Facial Hair</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3H')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3H-options"></div>
+            <div class="custom-row"><input type="text" id="Q3H-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q3H')">Add</button></div>
+            <div class="tags-wrap" id="Q3H-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Hair -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Hair
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="hair-notice">If hair appearance is critical, restate it in the Clarification field to prevent stylistic drift.</div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Length</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3G-length')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3G-length-options"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Texture</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3G-texture')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3G-texture-options"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Style</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3G-style')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3G-style-options"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Color</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3G-color')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3G-color-options"></div>
+            <div class="custom-row"><input type="text" id="Q3G-custom" placeholder="Or type full custom hair description..."><button class="btn btn-small" onclick="addCustom('Q3G')">Add</button></div>
+            <div class="tags-wrap" id="Q3G-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Body and Appearance -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Body and Appearance
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Skin / Body Surface Palette</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q4')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q4-options"></div>
+            <div class="custom-row"><input type="text" id="Q4-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q4')">Add</button></div>
+            <div class="tags-wrap" id="Q4-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Physical Build</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q4A')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q4A-options"></div>
+            <div class="custom-row"><input type="text" id="Q4A-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q4A')">Add</button></div>
+            <div class="tags-wrap" id="Q4A-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Distinguishing Marks (up to 4)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q4B')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q4B-options"></div>
+            <p class="multi-note">Select up to 4</p>
+            <div class="custom-row"><input type="text" id="Q4B-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q4B')">Add</button></div>
+            <div class="tags-wrap" id="Q4B-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Clothing and Environment -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Clothing and Environment
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Clothing / Adornment (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q5')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q5-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q5-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q5')">Add</button></div>
+            <div class="tags-wrap" id="Q5-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Background Environment (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q6')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q6-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q6-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q6')">Add</button></div>
+            <div class="tags-wrap" id="Q6-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Lighting / Atmosphere (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q7')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q7-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q7-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q7')">Add</button></div>
+            <div class="tags-wrap" id="Q7-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Environmental Details (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q8')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q8-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q8-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q8')">Add</button></div>
+            <div class="tags-wrap" id="Q8-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Pose and Expression -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Pose and Expression
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Pose (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q9')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q9-options"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="Q9-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q9')">Add</button></div>
+            <div class="tags-wrap" id="Q9-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Expression (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q10')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q10-options"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="Q10-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q10')">Add</button></div>
+            <div class="tags-wrap" id="Q10-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Style and Output -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Style and Output
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Art Style</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q12')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q12-options"></div>
+            <div class="custom-row"><input type="text" id="Q12-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q12')">Add</button></div>
+            <div class="tags-wrap" id="Q12-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Image Framing</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q13')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q13-options"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Image Size</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q14')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q14-options"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Clarification -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Clarification and Revision
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+          <div class="q-block">
+            <p style="font-size:0.76rem;color:var(--dim);margin-bottom:8px;">
+              All text entered here supersedes earlier selections. Use this to reinforce critical details like hair, age, skin texture, or any distinctive feature.
+            </p>
+            <textarea id="Q11-input" rows="4" placeholder="Clarifications, additions, removals, or overrides. Leave blank to skip."></textarea>
+          </div>
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-small" onclick="saveCurrent()">&#128190; Save</button>
+        <button class="btn btn-small" onclick="loadSaved()">&#128194; Load</button>
+        <button class="btn btn-small" onclick="clearSaved()">&#128465; Clear Saved</button>
+      </div>
+
+      <div class="notice" id="actionNotice"></div>
+
+    </div>
+
+    <!-- RIGHT: Live preview -->
+    <div class="preview-col">
+      <div class="preview-panel">
+        <div class="preview-head">Live Prompt Preview</div>
+        <div class="prompt-display empty" id="livePreview">
+          Fill in the form to see a live preview.
+        </div>
+        <div class="preview-actions">
+          <button class="btn btn-small" onclick="copyPrompt()">&#128203; Copy Prompt</button>
+        </div>
+        <div class="notice" id="copyNotice" style="margin:0 14px 10px;"></div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+
+<script>
+
+/* ============================================================
+   JS: QUESTION DATA
+   ============================================================ */
+const QUESTIONS = {
+
+  Q1: { title:'Subject Type', type:'single', options:[
+    {id:'1',  text:'Human'},
+    {id:'2',  text:'Human with fantasy features'},
+    {id:'3',  text:'Elf'},
+    {id:'4',  text:'Dwarf'},
+    {id:'5',  text:'Orc'},
+    {id:'9',  text:'Undead humanoid'},
+    {id:'10', text:'Golem'},
+    {id:'11', text:'Deity'},
+    {id:'12', text:'Alien'},
+    {id:'13', text:'Nature spirit'},
+    {id:'14', text:'Demigod'},
+  ]},
+
+  Q2: { title:'Age Group', type:'single', options:[
+    {id:'1', text:'Infant'},
+    {id:'2', text:'Child'},
+    {id:'3', text:'Teen'},
+    {id:'4', text:'Young adult'},
+    {id:'5', text:'Adult'},
+    {id:'6', text:'Middle-aged'},
+    {id:'7', text:'Elder'},
+    {id:'8', text:'Ageless — indeterminate'},
+  ]},
+
+  Q3: { title:'Gender', type:'single', options:[
+    {id:'1', text:'Male'},
+    {id:'2', text:'Female'},
+    {id:'3', text:'Nonbinary'},
+    {id:'4', text:'Androgynous'},
+    {id:'5', text:'Gender ambiguous'},
+  ]},
+
+  Q3A: { title:'Eye Shape', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Almond'},
+    {id:'2',  text:'Round'},
+    {id:'3',  text:'Hooded lids'},
+    {id:'4',  text:'Monolid'},
+    {id:'5',  text:'Heavy upper lid crease'},
+    {id:'6',  text:'Prominent lower lid'},
+    {id:'7',  text:'Deep-set'},
+    {id:'8',  text:'Prominent bulging'},
+    {id:'9',  text:'Upturned outer corners'},
+    {id:'10', text:'Downturned outer corners'},
+    {id:'11', text:'Wide-set'},
+    {id:'12', text:'Close-set'},
+    {id:'13', text:'Large'},
+    {id:'14', text:'Small and narrow'},
+    {id:'15', text:'Heavy dark circles'},
+    {id:'16', text:'Epicanthic fold'},
+    {id:'17', text:'Drooping lids'},
+  ]},
+
+  Q3B: { title:'Eye Color', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Brown'},
+    {id:'2',  text:'Hazel'},
+    {id:'3',  text:'Blue'},
+    {id:'4',  text:'Green'},
+    {id:'5',  text:'Gray'},
+    {id:'6',  text:'Amber'},
+    {id:'7',  text:'Mixed tones'},
+    {id:'8',  text:'Heterochromia'},
+    {id:'9',  text:'Violet'},
+    {id:'10', text:'Silver'},
+    {id:'11', text:'Gold'},
+    {id:'12', text:'Glowing white'},
+    {id:'13', text:'Solid black — no sclera'},
+    {id:'14', text:'Slit pupils'},
+    {id:'15', text:'Wholly glowing — no iris detail'},
+    {id:'16', text:'Iridescent, shifting color'},
+  ]},
+
+  Q3C: { title:'Nose Shape', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Straight'},
+    {id:'2',  text:'Aquiline'},
+    {id:'3',  text:'Roman high bridge'},
+    {id:'4',  text:'Low bridge'},
+    {id:'5',  text:'Crooked asymmetrical'},
+    {id:'6',  text:'Hooked'},
+    {id:'7',  text:'Upturned'},
+    {id:'8',  text:'Downturned'},
+    {id:'9',  text:'Wide base'},
+    {id:'10', text:'Narrow base'},
+    {id:'11', text:'Rounded tip'},
+    {id:'12', text:'Pointed tip'},
+    {id:'13', text:'Bulbous'},
+    {id:'14', text:'Flat'},
+    {id:'15', text:'Button'},
+  ]},
+
+  Q3D: { title:'Mouth and Lips', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Thin upper lip'},
+    {id:'2',  text:'Thin lower lip'},
+    {id:'3',  text:'Full upper lip'},
+    {id:'4',  text:'Full lower lip'},
+    {id:'5',  text:'Pouty'},
+    {id:'6',  text:'Bow-shaped'},
+    {id:'7',  text:'Upturned corners'},
+    {id:'8',  text:'Downturned corners'},
+    {id:'9',  text:'Asymmetrical'},
+    {id:'10', text:'Wide mouth'},
+    {id:'11', text:'Narrow mouth'},
+    {id:'12', text:'Small'},
+    {id:'13', text:'Large'},
+    {id:'14', text:'Slightly parted'},
+    {id:'15', text:'Teeth visible'},
+  ]},
+
+  Q3E: { title:'Jawline and Chin', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1',  text:'Strong jawline'},
+    {id:'2',  text:'Weak jawline'},
+    {id:'3',  text:'Soft rounded jawline'},
+    {id:'4',  text:'Angular jawline'},
+    {id:'5',  text:'Broad jaw'},
+    {id:'6',  text:'Narrow jaw'},
+    {id:'7',  text:'Square chin'},
+    {id:'8',  text:'Pointed chin'},
+    {id:'9',  text:'Receded chin'},
+    {id:'10', text:'Protruding chin'},
+    {id:'11', text:'Cleft chin'},
+    {id:'12', text:'Double chin'},
+  ]},
+
+  Q3F: { title:'Brows', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1',  text:'Straight'},
+    {id:'2',  text:'Arched'},
+    {id:'3',  text:'Soft arch'},
+    {id:'4',  text:'Angled'},
+    {id:'5',  text:'Thick'},
+    {id:'6',  text:'Thin'},
+    {id:'7',  text:'Bushy'},
+    {id:'8',  text:'Sparse'},
+    {id:'9',  text:'Wide-set brows'},
+    {id:'10', text:'Close-set brows'},
+    {id:'11', text:'Unibrow'},
+    {id:'12', text:'Feathered or wispy'},
+  ]},
+
+  Q3H: { title:'Facial Hair', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'None — clean-shaven'},
+    {id:'2',  text:'Light stubble'},
+    {id:'3',  text:'Heavy stubble'},
+    {id:'4',  text:'Short neat beard'},
+    {id:'5',  text:'Full beard'},
+    {id:'6',  text:'Long flowing beard'},
+    {id:'7',  text:'Braided beard'},
+    {id:'8',  text:'Goatee'},
+    {id:'9',  text:'Mustache'},
+    {id:'10', text:'Handlebar mustache'},
+    {id:'11', text:'Mutton chops'},
+    {id:'12', text:'Patchy beard'},
+    {id:'13', text:'Not applicable'},
+  ]},
+
+  'Q3G-length': { title:'Hair Length', type:'single', options:[
+    {id:'1', text:'Shaved or nearly bare'},
+    {id:'2', text:'Very short — cropped'},
+    {id:'3', text:'Short'},
+    {id:'4', text:'Medium — jaw length'},
+    {id:'5', text:'Long — shoulder length'},
+    {id:'6', text:'Very long — mid-back'},
+    {id:'7', text:'Extremely long — waist or below'},
+  ]},
+
+  'Q3G-texture': { title:'Hair Texture', type:'single', options:[
+    {id:'1', text:'Straight and sleek'},
+    {id:'2', text:'Straight and coarse'},
+    {id:'3', text:'Wavy'},
+    {id:'4', text:'Loosely curly'},
+    {id:'5', text:'Tightly curled'},
+    {id:'6', text:'Coiled'},
+    {id:'7', text:'Fine and wispy'},
+    {id:'8', text:'Thick and heavy'},
+    {id:'9', text:'Wiry and unruly'},
+  ]},
+
+  'Q3G-style': { title:'Hair Style', type:'single', options:[
+    {id:'1',  text:'Loose and free'},
+    {id:'2',  text:'Ponytail — high'},
+    {id:'3',  text:'Ponytail — low'},
+    {id:'4',  text:'Bun or topknot'},
+    {id:'5',  text:'Braided — single'},
+    {id:'6',  text:'Braided — multiple'},
+    {id:'7',  text:'Tied back'},
+    {id:'8',  text:'Bangs or fringe'},
+    {id:'9',  text:'Shaved sides'},
+    {id:'10', text:'Afro'},
+    {id:'11', text:'Locs or dreadlocks'},
+    {id:'12', text:'Pixie cut'},
+    {id:'13', text:'Mohawk or fauxhawk'},
+    {id:'14', text:'Swept back'},
+    {id:'15', text:'Half up half down'},
+    {id:'16', text:'Wild and windswept'},
+    {id:'17', text:'Matted and tangled'},
+  ]},
+
+  'Q3G-color': { title:'Hair Color', type:'single', options:[
+    {id:'1',  text:'Black'},
+    {id:'2',  text:'Dark brown'},
+    {id:'3',  text:'Medium brown'},
+    {id:'4',  text:'Light brown'},
+    {id:'5',  text:'Blonde'},
+    {id:'6',  text:'Platinum blonde'},
+    {id:'7',  text:'Red'},
+    {id:'8',  text:'Auburn'},
+    {id:'9',  text:'Gray'},
+    {id:'10', text:'White'},
+    {id:'11', text:'Salt and pepper'},
+    {id:'12', text:'Dyed — bold single color'},
+    {id:'13', text:'Highlights or lowlights'},
+    {id:'14', text:'Streaks'},
+    {id:'15', text:'Gradient ombre'},
+    {id:'16', text:'Two tone'},
+    {id:'17', text:'Fantasy colors — vivid unnatural'},
+    {id:'18', text:'Metallic sheen'},
+  ]},
+
+  Q4: { title:'Skin / Body Surface Palette', type:'single', allowCustom:true, options:[
+    /* Natural human */
+    {id:'1',  text:'Natural — fair, cool porcelain undertones'},
+    {id:'2',  text:'Natural — fair, warm peachy with light freckling'},
+    {id:'3',  text:'Natural — medium golden tan, warm undertones'},
+    {id:'4',  text:'Natural — medium olive, Mediterranean tones'},
+    {id:'5',  text:'Natural — warm caramel brown'},
+    {id:'6',  text:'Natural — rich chocolate brown'},
+    {id:'7',  text:'Natural — deep ebony, cool blue-black undertone'},
+    {id:'8',  text:'Natural — warm golden South or East Asian tone'},
+    /* Fantasy */
+    {id:'9',  text:'Fantasy — arcane violet with silver veins'},
+    {id:'10', text:'Fantasy — infernal crimson, charcoal shadows'},
+    {id:'11', text:'Fantasy — celestial ivory, luminous inner glow'},
+    {id:'12', text:'Fantasy — fey silver-blue, cool shimmer'},
+    {id:'13', text:'Fantasy — undead grey-green, chalk mottled patches'},
+    {id:'14', text:'Fantasy — shadow void, deep light-absorbing black'},
+    {id:'15', text:'Fantasy — aquatic pale teal, translucent scale hints'},
+    {id:'16', text:'Fantasy — draconic scaled, metallic sheen'},
+    {id:'17', text:'Fantasy — elemental fire, ember orange crackling glow'},
+    {id:'18', text:'Fantasy — elemental ice, crystal blue-white frost'},
+    {id:'19', text:'Fantasy — starfield, dark with pinpoint luminous specks'},
+    /* Metallic */
+    {id:'20', text:'Metallic — living gold, burnished warm liquid sheen'},
+    {id:'21', text:'Metallic — living silver, cool mirror-reflective surface'},
+    {id:'22', text:'Metallic — bronze with green patina oxidation'},
+    {id:'23', text:'Metallic — warm reddish copper'},
+    {id:'24', text:'Metallic — cold platinum, bright silver-white'},
+    {id:'25', text:'Metallic — iridescent chrome, rainbow-shifting tones'},
+    /* Wood and organic */
+    {id:'26', text:'Wood — dark bark, rough grain texture and deep brown'},
+    {id:'27', text:'Wood — pale birch, visible grain lines and knots'},
+    {id:'28', text:'Wood — driftwood grey-tan, weathered and smoothed'},
+    {id:'29', text:'Wood — ebony wood, dense black with fine grain'},
+    {id:'30', text:'Organic — living moss, mottled green soft texture'},
+    /* Gemstone */
+    {id:'31', text:'Gemstone — sapphire deep royal blue, translucent depth'},
+    {id:'32', text:'Gemstone — emerald rich jewel green, crystalline surface'},
+    {id:'33', text:'Gemstone — ruby deep crimson, inner luminescence'},
+    {id:'34', text:'Gemstone — amethyst rich purple, faceted quality'},
+    {id:'35', text:'Gemstone — onyx pure matte black, smooth and dense'},
+    {id:'36', text:'Gemstone — opal white with shifting rainbow iridescence'},
+    {id:'37', text:'Gemstone — jade soft warm green, slightly translucent'},
+    {id:'38', text:'Gemstone — turquoise blue-green with dark matrix veining'},
+    {id:'39', text:'Gemstone — amber warm golden-orange, translucent'},
+    {id:'40', text:'Gemstone — obsidian volcanic glass black, sharp reflective edges'},
+  ]},
+
+  Q4A: { title:'Physical Build', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Emaciated — gaunt and skeletal'},
+    {id:'2',  text:'Very thin — slight and lean'},
+    {id:'3',  text:'Slender and wiry'},
+    {id:'4',  text:'Average build'},
+    {id:'5',  text:'Athletic and toned'},
+    {id:'6',  text:'Muscular'},
+    {id:'7',  text:'Powerfully built — bodybuilder'},
+    {id:'8',  text:'Stocky and compact'},
+    {id:'9',  text:'Heavyset and broad'},
+    {id:'10', text:'Portly or rotund'},
+    {id:'11', text:'Petite and slight'},
+    {id:'12', text:'Tall and lanky'},
+    {id:'13', text:'Imposingly large — giant-like scale'},
+  ]},
+
+  Q4B: { title:'Distinguishing Marks', type:'multi', max:4, allowCustom:true, options:[
+    {id:'1',  text:'Facial scar'},
+    {id:'2',  text:'Multiple body scars'},
+    {id:'3',  text:'Battle wounds — recent or healing'},
+    {id:'4',  text:'Ritual tattoos'},
+    {id:'5',  text:'Decorative tattoos'},
+    {id:'6',  text:'Birthmarks'},
+    {id:'7',  text:'Facial piercings'},
+    {id:'8',  text:'Freckles or sun spots'},
+    {id:'9',  text:'Vitiligo patches'},
+    {id:'10', text:'Glowing arcane markings'},
+    {id:'11', text:'Runic inscriptions on skin'},
+    {id:'12', text:'Horns'},
+    {id:'13', text:'Wings — partial or full'},
+    {id:'14', text:'Tail'},
+    {id:'15', text:'Pointed ears'},
+    {id:'16', text:'Extra eyes or unusual eye placement'},
+    {id:'17', text:'Missing limb'},
+    {id:'18', text:'Mechanical or magical prosthetic'},
+    {id:'19', text:'Scales or patches of scales'},
+    {id:'20', text:'Fangs or unusual teeth'},
+  ]},
+
+  Q5: { title:'Clothing / Adornment', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Casual modern — everyday wear'},
+    {id:'2',  text:'Formal professional — suit or equivalent'},
+    {id:'3',  text:'Outdoor utilitarian — practical layering'},
+    {id:'4',  text:'Athletic or activewear'},
+    {id:'5',  text:'Cultural traditional — ethnic or regional dress'},
+    {id:'6',  text:'Fantasy magical robes or attire'},
+    {id:'7',  text:'Plate armor'},
+    {id:'8',  text:'Chainmail armor'},
+    {id:'9',  text:'Minimal — undergarment or wraps'},
+    {id:'10', text:'Ornate decorative — jewels, embroidery, ceremony'},
+    {id:'11', text:'Organic or improvised — hide, bone, vine'},
+    {id:'12', text:'Noble courtly — silk, velvet, emblem'},
+    {id:'13', text:'Military uniform'},
+    {id:'14', text:'Monastic or clerical robes'},
+    {id:'15', text:'Steampunk — gears, goggles, brass fittings'},
+    {id:'16', text:'Sci-fi — sleek bodysuit or tactical exo-suit'},
+    {id:'17', text:'Gothic — dark velvet, lace, silver clasps'},
+    {id:'18', text:'Sea-worn — oilskin, rope, weathered cloth'},
+    {id:'19', text:'Nomadic desert — linen wraps, face veil, layered cloth'},
+    {id:'20', text:'Bare — unclothed or near-unclothed figure'},
+    {id:'21', text:'Leather armor'},
+  ]},
+
+  Q6: { title:'Background Environment', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Dense forest'},
+    {id:'2',  text:'Grassland or open savanna'},
+    {id:'3',  text:'Desert — dunes and rock'},
+    {id:'4',  text:'Mountain terrain'},
+    {id:'5',  text:'Coastal shore'},
+    {id:'6',  text:'Open ocean'},
+    {id:'7',  text:'Tundra and ice fields'},
+    {id:'8',  text:'Wetland or swamp'},
+    {id:'9',  text:'Temperate woodland'},
+    {id:'10', text:'Urban environment — streets or rooftops'},
+    {id:'11', text:'Indoor — interior space'},
+    {id:'12', text:'Agricultural — fields or farmland'},
+    {id:'13', text:'Ancient ruins'},
+    {id:'14', text:'Castle or fortress'},
+    {id:'15', text:'Cave or cavern'},
+    {id:'17', text:'Library or archive'},
+    {id:'18', text:'Laboratory or workshop'},
+    {id:'19', text:'Prehistoric or primordial landscape'},
+    {id:'20', text:'Volcanic or lava field'},
+    {id:'21', text:'Low orbit space station'},
+    {id:'22', text:'Deep space exterior'},
+    {id:'23', text:'Void — empty black nothingness'},
+    {id:'24', text:'None — neutral or plain backdrop'},
+  ]},
+
+  Q7: { title:'Lighting / Atmosphere', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Bright midday sunlight'},
+    {id:'2',  text:'Golden hour sunset'},
+    {id:'3',  text:'Blue-hour dawn'},
+    {id:'4',  text:'Overcast — flat soft light'},
+    {id:'5',  text:'Harsh desert sun — bleached and sharp'},
+    {id:'6',  text:'Fog or mist — diffuse and flat'},
+    {id:'7',  text:'Stormy — dramatic cloud-filtered'},
+    {id:'8',  text:'Underwater caustic light'},
+    {id:'9',  text:'Interior ambient — warm room lighting'},
+    {id:'10', text:'Candlelit or firelit — warm flickering'},
+    {id:'11', text:'Torchlit — warm directional orange'},
+    {id:'12', text:'Cold blue moonlight'},
+    {id:'13', text:'Bioluminescent — cool green-blue glow'},
+    {id:'14', text:'Neon — vivid artificial color cast'},
+    {id:'15', text:'Magical glow — arcane luminescence'},
+    {id:'16', text:'Eclipse — corona rim light only'},
+    {id:'17', text:'Rim lighting — dramatic edge highlight'},
+    {id:'18', text:'Chiaroscuro — deep shadow and bright highlight contrast'},
+    {id:'19', text:'None — neutral even lighting'},
+  ]},
+
+  Q8: { title:'Environmental Details', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Rocks or boulders'},
+    {id:'2',  text:'Grasses or brush'},
+    {id:'3',  text:'Trees or branches'},
+    {id:'4',  text:'Flowing water or river'},
+    {id:'5',  text:'Snow'},
+    {id:'6',  text:'Rain'},
+    {id:'7',  text:'Mist or low cloud'},
+    {id:'8',  text:'Dust or debris'},
+    {id:'9',  text:'Fallen leaves'},
+    {id:'10', text:'Ice sheets'},
+    {id:'11', text:'Prehistoric flora'},
+    {id:'12', text:'Ruins — crumbled stone and overgrowth'},
+    {id:'13', text:'Magical particles or floating embers'},
+    {id:'14', text:'Smoke or steam'},
+    {id:'15', text:'Scattered bones or skulls'},
+    {id:'16', text:'Weapon or equipment leaned nearby'},
+    {id:'17', text:'Architectural detail — columns, arches, carved stone'},
+    {id:'18', text:'Roots or vines'},
+    {id:'19', text:'None — no environmental detail'},
+  ]},
+
+  Q9: { title:'Pose', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1',  text:'Standing — relaxed'},
+    {id:'2',  text:'Standing — commanding or formal'},
+    {id:'3',  text:'Walking'},
+    {id:'4',  text:'Running or leaping'},
+    {id:'5',  text:'Working at a task'},
+    {id:'6',  text:'Carrying or holding something'},
+    {id:'7',  text:'Turning or looking back over shoulder'},
+    {id:'8',  text:'Resting or reclining'},
+    {id:'9',  text:'Speaking or vocalizing'},
+    {id:'10', text:'Defensive or wary stance'},
+    {id:'11', text:'Hunting or stalking'},
+    {id:'12', text:'Sitting'},
+    {id:'13', text:'Kneeling — one knee'},
+    {id:'14', text:'Kneeling — both knees'},
+    {id:'15', text:'Crouching or coiled'},
+    {id:'16', text:'Arms raised or outstretched'},
+    {id:'17', text:'Reaching or grasping'},
+    {id:'18', text:'Floating or hovering'},
+    {id:'19', text:'Dramatically falling or off-balance'},
+    {id:'20', text:'Playing or interacting with something'},
+  ]},
+
+  Q10: { title:'Expression', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1',  text:'Neutral'},
+    {id:'2',  text:'Calm and composed'},
+    {id:'3',  text:'Focused intensity'},
+    {id:'4',  text:'Curious or inquisitive'},
+    {id:'5',  text:'Determined'},
+    {id:'6',  text:'Joyful or laughing'},
+    {id:'7',  text:'Sorrowful or grieving'},
+    {id:'8',  text:'Angry or wrathful'},
+    {id:'9',  text:'Concerned or worried'},
+    {id:'10', text:'Expressionless — blank'},
+    {id:'11', text:'Smug or confident'},
+    {id:'12', text:'Fearful'},
+    {id:'13', text:'Awe or wonder'},
+    {id:'14', text:'Stoic — unreadable'},
+    {id:'15', text:'Fierce or threatening'},
+    {id:'16', text:'Gentle and warm'},
+    {id:'17', text:'Distant or lost in thought'},
+    {id:'18', text:'Sardonic or wry'},
+  ]},
+
+  Q12: { title:'Art Style', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Photorealism'},
+    {id:'2',  text:'Hyper realism'},
+    {id:'3',  text:'Cinematic realism'},
+    {id:'4',  text:'Fantasy realism'},
+    {id:'5',  text:'Surrealism'},
+    {id:'6',  text:'Digital painting or concept art'},
+    {id:'7',  text:'Impressionistic realism'},
+    {id:'8',  text:'Classical oil painting'},
+    {id:'9',  text:'Anime or manga stylized'},
+    {id:'10', text:'Low-poly stylized'},
+    {id:'11', text:'Dark fantasy — grim and desaturated'},
+    {id:'12', text:'Art Nouveau — flowing organic ornament'},
+    {id:'13', text:'Gothic illustration'},
+    {id:'14', text:'Baroque — dramatic shadow and grandeur'},
+    {id:'15', text:'Comic book — bold outlines and flat color'},
+    {id:'16', text:'Watercolor — soft washes and translucent edges'},
+    {id:'17', text:'Ink and line art — detailed crosshatching'},
+    {id:'18', text:'Storybook illustration — warm and inviting'},
+  ]},
+
+  Q13: { title:'Image Framing', type:'single', options:[
+    {id:'1', text:'Portrait — head and shoulders only'},
+    {id:'2', text:'Half body — waist up'},
+    {id:'3', text:'Three-quarter body'},
+    {id:'4', text:'Full body — complete figure'},
+    {id:'5', text:'Dramatic low angle — looking upward at subject'},
+    {id:'6', text:'Over-the-shoulder — from behind'},
+    {id:'7', text:'Environmental — figure in context of setting'},
+  ]},
+
+  Q14: { title:'Image Size', type:'single', options:[
+    {id:'1', text:'Square (1:1)'},
+    {id:'2', text:'Portrait (2:3)'},
+    {id:'3', text:'Landscape (3:2)'},
+  ]},
+};
+
+
+/* ============================================================
+   JS: PRESETS
+   ============================================================ */
+const PRESETS = {
+  modernPro: {
+    Q1:'1', Q2:'5', Q3:'1',
+    Q3A:['1','7'], Q3B:'3', Q3C:['1','11'], Q3D:['3','7'], Q3E:['1','7'], Q3F:['2','5'], Q3H:'1',
+    'Q3G-length':'3', 'Q3G-texture':'1', 'Q3G-style':'1', 'Q3G-color':'2',
+    Q4:'3', Q4A:'4', Q4B:[],
+    Q5:['2'], Q6:['10'], Q7:['9'], Q8:['19'],
+    Q9:['1'], Q10:['3'],
+    Q12:'3', Q13:'1', Q14:'2',
+  },
+  fantasyWarrior: {
+    Q1:'2', Q2:'5', Q3:'2',
+    Q3A:['1','9'], Q3B:'4', Q3C:['2'], Q3D:['4'], Q3E:['1','8'], Q3F:['4','7'], Q3H:'13',
+    'Q3G-length':'5', 'Q3G-texture':'4', 'Q3G-style':'6', 'Q3G-color':'7',
+    Q4:'5', Q4A:'6', Q4B:['1','4'],
+    Q5:['7','5'], Q6:['4'], Q7:['1'], Q8:['3'],
+    Q9:['2','6'], Q10:['5'],
+    Q12:'4', Q13:'3', Q14:'2',
+  },
+  royalPortrait: {
+    Q1:'1', Q2:'5', Q3:'2',
+    Q3A:['1','13'], Q3B:'3', Q3C:['3'], Q3D:['3','6'], Q3E:['4','11'], Q3F:['2','5'], Q3H:'13',
+    'Q3G-length':'5', 'Q3G-texture':'3', 'Q3G-style':'4', 'Q3G-color':'5',
+    Q4:'3', Q4A:'11', Q4B:[],
+    Q5:['2','10'], Q6:['11'], Q7:['9'], Q8:['19'],
+    Q9:['2'], Q10:['2'],
+    Q12:'8', Q13:'2', Q14:'2',
+  },
+  cyberpunk: {
+    Q1:'1', Q2:'4', Q3:'3',
+    Q3A:['8','12'], Q3B:'7', Q3C:['5'], Q3D:['9'], Q3E:['4'], Q3F:['4'], Q3H:'1',
+    'Q3G-length':'3', 'Q3G-texture':'1', 'Q3G-style':'9', 'Q3G-color':'12',
+    Q4:'1', Q4A:'5', Q4B:['10'],
+    Q5:['16','1'], Q6:['10'], Q7:['14'], Q8:['14'],
+    Q9:['3'], Q10:['3'],
+    Q12:'3', Q13:'4', Q14:'2',
+  },
+  fantasyMage: {
+    Q1:'2', Q2:'7', Q3:'1',
+    Q3A:['7','13'], Q3B:'6', Q3C:['2'], Q3D:['5'], Q3E:['3'], Q3F:['3','8'], Q3H:'7',
+    'Q3G-length':'6', 'Q3G-texture':'6', 'Q3G-style':'1', 'Q3G-color':'10',
+    Q4:'9', Q4A:'2', Q4B:['11'],
+    Q5:['6'], Q6:['19'], Q7:['3'], Q8:['13'],
+    Q9:['8'], Q10:['17'],
+    Q12:'4', Q13:'4', Q14:'2',
+  },
+  medievalKnight: {
+    Q1:'1', Q2:'5', Q3:'1',
+    Q3A:['1','7'], Q3B:'2', Q3C:['1'], Q3D:['1'], Q3E:['1','7'], Q3F:['1','5'], Q3H:'4',
+    'Q3G-length':'3', 'Q3G-texture':'3', 'Q3G-style':'1', 'Q3G-color':'2',
+    Q4:'3', Q4A:'6', Q4B:['1'],
+    Q5:['7'], Q6:['4'], Q7:['1'], Q8:['3'],
+    Q9:['2'], Q10:['5'],
+    Q12:'3', Q13:'3', Q14:'2',
+  },
+  livingGold: {
+    Q1:'10', Q2:'8', Q3:'5',
+    Q3A:['1','6'], Q3B:'11', Q3C:['3'], Q3D:['6'], Q3E:['4'], Q3F:['2'],  Q3H:'13',
+    'Q3G-length':'6', 'Q3G-texture':'1', 'Q3G-style':'1', 'Q3G-color':'18',
+    Q4:'20', Q4A:'5', Q4B:['10'],
+    Q5:['10'], Q6:['14'], Q7:['17'], Q8:['17'],
+    Q9:['2'], Q10:['14'],
+    Q12:'2', Q13:'3', Q14:'2',
+  },
+  natureSpirit: {
+    Q1:'13', Q2:'8', Q3:'2',
+    Q3A:['3','9'], Q3B:'4', Q3C:['7'], Q3D:['3','7'], Q3E:['3'], Q3F:['3','7'], Q3H:'13',
+    'Q3G-length':'7', 'Q3G-texture':'4', 'Q3G-style':'6', 'Q3G-color':'17',
+    Q4:'29', Q4A:'3', Q4B:['15','13','18'],
+    Q5:['11'], Q6:['1'], Q7:['3'], Q8:['3','18'],
+    Q9:['8'], Q10:['13'],
+    Q12:'4', Q13:'4', Q14:'2',
+  },
+  celestialBeing: {
+    Q1:'11', Q2:'8', Q3:'2',
+    Q3A:['1','5'], Q3B:'12', Q3C:['1'], Q3D:['6','3'], Q3E:['4'], Q3F:['2','5'], Q3H:'13',
+    'Q3G-length':'6', 'Q3G-texture':'3', 'Q3G-style':'1', 'Q3G-color':'6',
+    Q4:'11', Q4A:'3', Q4B:['13','10'],
+    Q5:['14','10'], Q6:['23'], Q7:['15'], Q8:['13'],
+    Q9:['18'], Q10:['13'],
+    Q12:'4', Q13:'4', Q14:'2',
+  },
+  voidWalker: {
+    Q1:'12', Q2:'8', Q3:'5',
+    Q3A:['8','11'], Q3B:'13', Q3C:['5'], Q3D:['10'], Q3E:['4'], Q3F:['4'], Q3H:'13',
+    'Q3G-length':'1', 'Q3G-texture':'1', 'Q3G-style':'1', 'Q3G-color':'1',
+    Q4:'14', Q4A:'2', Q4B:['16','10'],
+    Q5:['6'], Q6:['23'], Q7:['18'], Q8:['13'],
+    Q9:['19'], Q10:['10'],
+    Q12:'5', Q13:'4', Q14:'1',
+  },
+};
+
+
+/* ============================================================
+   JS: APP STATE
+   ============================================================ */
+let ST = {
+  answers:      {},
+  customInputs: {},
+};
+
+
+/* ============================================================
+   JS: INIT
+   ============================================================ */
+function init() {
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updatePreview();
+  document.getElementById('Q11-input').addEventListener('input', () => {
+    ST.answers.Q11 = document.getElementById('Q11-input').value;
+    updatePreview();
+  });
+}
+
+
+/* ============================================================
+   JS: FIELD RENDERER
+   ============================================================ */
+function renderField(qid) {
+  const q  = QUESTIONS[qid];
+  const el = document.getElementById(`${qid}-options`);
+  if (!q || !el) return;
+
+  el.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className   = 'option-btn';
+    btn.textContent = opt.text;
+    btn.dataset.id  = opt.id;
+
+    const cur = ST.answers[qid];
+    if (cur) {
+      const sel = Array.isArray(cur) ? cur.includes(opt.id) : cur === opt.id;
+      if (sel) btn.classList.add('selected');
+    }
+
+    btn.onclick = () => handleClick(qid, opt.id);
+    el.appendChild(btn);
+  });
+
+  renderTags(qid);
+}
+
+function handleClick(qid, optId) {
+  const q = QUESTIONS[qid];
+
+  if (q.type === 'single') {
+    ST.answers[qid] = optId;
+    document.querySelectorAll(`#${qid}-options .option-btn`)
+      .forEach(b => b.classList.toggle('selected', b.dataset.id === optId));
+  } else {
+    let cur = ST.answers[qid] || [];
+    if (!Array.isArray(cur)) cur = [];
+    if (cur.includes(optId)) {
+      cur = cur.filter(id => id !== optId);
+      document.querySelector(`#${qid}-options .option-btn[data-id="${optId}"]`)?.classList.remove('selected');
+    } else {
+      if (cur.length >= q.max) {
+        showNotice(`Max ${q.max} selections for this field.`, 'err', 'actionNotice');
+        return;
+      }
+      cur = [...cur, optId];
+      document.querySelector(`#${qid}-options .option-btn[data-id="${optId}"]`)?.classList.add('selected');
+    }
+    ST.answers[qid] = cur;
+  }
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: CUSTOM TAGS
+   ============================================================ */
+function addCustom(qid) {
+  const inp = document.getElementById(`${qid}-custom`);
+  const val = inp.value.trim();
+  if (!val) return;
+  if (!ST.customInputs[qid]) ST.customInputs[qid] = [];
+  ST.customInputs[qid].push(val);
+  inp.value = '';
+  renderTags(qid);
+  updatePreview();
+}
+
+function removeCustom(qid, idx) {
+  ST.customInputs[qid].splice(idx, 1);
+  renderTags(qid);
+  updatePreview();
+}
+
+function renderTags(qid) {
+  const wrap = document.getElementById(`${qid}-tags`);
+  if (!wrap) return;
+  const items = ST.customInputs[qid] || [];
+  wrap.innerHTML = items.map((t, i) =>
+    `<span class="custom-tag">${t}<button onclick="removeCustom('${qid}',${i})">&#215;</button></span>`
+  ).join('');
+}
+
+
+/* ============================================================
+   JS: RANDOMIZE
+   ============================================================ */
+function randomizeField(qid) {
+  const q = QUESTIONS[qid]; if (!q) return;
+
+  if (q.type === 'single') {
+    const pick = q.options[Math.floor(Math.random() * q.options.length)].id;
+    ST.answers[qid] = pick;
+    document.querySelectorAll(`#${qid}-options .option-btn`)
+      .forEach(b => b.classList.toggle('selected', b.dataset.id === pick));
+  } else {
+    const count = Math.floor(Math.random() * q.max) + 1;
+    const picks = [...q.options].sort(() => Math.random() - 0.5).slice(0, count).map(o => o.id);
+    ST.answers[qid] = picks;
+    document.querySelectorAll(`#${qid}-options .option-btn`)
+      .forEach(b => b.classList.toggle('selected', picks.includes(b.dataset.id)));
+  }
+  updatePreview();
+}
+
+function randomizeAll() {
+  const allQids = ['Q1','Q2','Q3','Q3A','Q3B','Q3C','Q3D','Q3E','Q3F','Q3H',
+                   'Q3G-length','Q3G-texture','Q3G-style','Q3G-color',
+                   'Q4','Q4A','Q4B','Q5','Q6','Q7','Q8','Q9','Q10','Q12','Q13','Q14'];
+  allQids.forEach(qid => {
+    const q = QUESTIONS[qid]; if (!q) return;
+    if (q.type === 'single') {
+      ST.answers[qid] = q.options[Math.floor(Math.random() * q.options.length)].id;
+    } else {
+      const count = Math.floor(Math.random() * q.max) + 1;
+      ST.answers[qid] = [...q.options].sort(() => Math.random() - 0.5).slice(0, count).map(o => o.id);
+    }
+  });
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: PRESETS
+   ============================================================ */
+function applyPreset(name) {
+  const preset = PRESETS[name];
+  if (!preset) { randomizeAll(); return; }
+  ST.answers      = { ...preset };
+  ST.customInputs = {};
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: ANSWER HELPER
+   ============================================================ */
+function getAns(qid) {
+  const q   = QUESTIONS[qid];
+  const ans = ST.answers[qid];
+  if (!q || ans === undefined || ans === null || (Array.isArray(ans) && ans.length === 0)) return '';
+
+  const base = Array.isArray(ans)
+    ? ans.map(id => (q.options.find(o => o.id === id) || {}).text).filter(Boolean).join(', ')
+    : (q.options.find(o => o.id === ans) || {}).text || '';
+
+  const customs = ST.customInputs[qid] || [];
+  return [base, ...customs].filter(Boolean).join(', ');
+}
+
+function getHairDesc() {
+  const parts = [];
+  const len = getAns('Q3G-length'); if (len) parts.push(len);
+  const tex = getAns('Q3G-texture'); if (tex) parts.push(tex);
+  const sty = getAns('Q3G-style');   if (sty) parts.push(sty);
+  const col = getAns('Q3G-color');   if (col) parts.push(col);
+  const custom = ST.customInputs['Q3G'] || [];
+  return [parts.join(' '), ...custom].filter(Boolean).join(', ');
+}
+
+
+/* ============================================================
+   JS: PROMPT ASSEMBLY
+   ============================================================ */
+function assemblePrompt() {
+  const parts = [];
+
+  const subjectType = getAns('Q1') || 'figure';
+  const age    = getAns('Q2');
+  const gender = getAns('Q3');
+
+  const subjectDesc = [age, gender, subjectType].filter(Boolean).map(s => s.toLowerCase()).join(' ');
+  parts.push(`A ${subjectDesc}`);
+
+  const eyes     = getAns('Q3A'); if (eyes)     parts.push(` with ${eyes.toLowerCase()} eyes`);
+  const eyeColor = getAns('Q3B'); if (eyeColor) parts.push(`, ${eyeColor.toLowerCase()} in color`);
+  const nose     = getAns('Q3C'); if (nose)     parts.push(`, ${nose.toLowerCase()} nose`);
+  const mouth    = getAns('Q3D'); if (mouth)    parts.push(`, ${mouth.toLowerCase()} mouth`);
+  const jaw      = getAns('Q3E'); if (jaw)      parts.push(`, ${jaw.toLowerCase()} jawline`);
+  const brows    = getAns('Q3F'); if (brows)    parts.push(`, ${brows.toLowerCase()} brows`);
+
+  const facialHair = getAns('Q3H');
+  if (facialHair && !facialHair.toLowerCase().includes('none') && !facialHair.toLowerCase().includes('not applicable')) {
+    parts.push(`, ${facialHair.toLowerCase()}`);
+  }
+
+  const hair = getHairDesc(); if (hair) parts.push(`, ${hair.toLowerCase()} hair`);
+
+  const palette = getAns('Q4');  if (palette) parts.push(`, ${palette.toLowerCase()} skin and body surface`);
+  const build   = getAns('Q4A'); if (build)   parts.push(`, ${build.toLowerCase()} build`);
+
+  const marks = getAns('Q4B');
+  if (marks) parts.push(`, with distinguishing features: ${marks.toLowerCase()}`);
+
+  const clothing = getAns('Q5'); if (clothing) parts.push(`, wearing ${clothing.toLowerCase()}`);
+  const bg       = getAns('Q6'); if (bg)       parts.push(`, set against a ${bg.toLowerCase()} background`);
+  const lighting = getAns('Q7'); if (lighting) parts.push(`, lit by ${lighting.toLowerCase()}`);
+  const details  = getAns('Q8'); if (details)  parts.push(`, with ${details.toLowerCase()} in the surroundings`);
+
+  const pose = getAns('Q9');  if (pose) parts.push(`, ${pose.toLowerCase()}`);
+  const expr = getAns('Q10'); if (expr) parts.push(`, with a ${expr.toLowerCase()} expression`);
+
+  const artStyle = getAns('Q12'); if (artStyle) parts.push(`, rendered in ${artStyle.toLowerCase()} style`);
+  const imgStyle = getAns('Q13'); if (imgStyle) parts.push(`, ${imgStyle.toLowerCase()} framing`);
+  const imgSize  = getAns('Q14'); if (imgSize)  parts.push(`, ${imgSize.toLowerCase()} aspect ratio`);
+
+  const rev = (ST.answers.Q11 || '').trim();
+  if (rev && rev.toLowerCase() !== 'none') parts.push(`. ${rev}`);
+
+  parts.push(`. Ultra-fine surface detail with skin texture, hair definition, fabric weave, facial feature precision, and anatomical detail. Sharp focus and clean edges. Cinematic physically plausible lighting. Dense but readable detail. Professional production-grade rendering.`);
+
+  const full = parts.join('');
+  return full.charAt(0).toUpperCase() + full.slice(1);
+}
+
+function updatePreview() {
+  const el = document.getElementById('livePreview');
+  const hasAny = ST.answers.Q1 || ST.answers.Q2 || ST.answers.Q3;
+  if (!hasAny) {
+    el.textContent = 'Fill in the form to see a live preview.';
+    el.className = 'prompt-display empty';
+    return;
+  }
+  el.textContent = assemblePrompt();
+  el.className = 'prompt-display';
+}
+
+
+/* ============================================================
+   JS: ACCORDION TOGGLE
+   ============================================================ */
+function toggleAccordion(header) {
+  header.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
+}
+
+
+/* ============================================================
+   JS: COPY PROMPT
+   ============================================================ */
+function copyPrompt() {
+  const text = document.getElementById('livePreview').textContent;
+  if (!text || text.includes('Fill in the form')) return;
+  navigator.clipboard.writeText(text).then(() => {
+    showNotice('Prompt copied to clipboard.', 'ok', 'copyNotice');
+    setTimeout(() => hideNotice('copyNotice'), 2000);
+  });
+}
+
+
+/* ============================================================
+   JS: SAVE / LOAD / RESET
+   ============================================================ */
+function saveCurrent() {
+  const rev = document.getElementById('Q11-input').value.trim();
+  if (rev) ST.answers.Q11 = rev;
+  localStorage.setItem('cc_portrait_v2', JSON.stringify({ answers: ST.answers, customInputs: ST.customInputs }));
+  showNotice('Saved.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function loadSaved() {
+  const data = JSON.parse(localStorage.getItem('cc_portrait_v2') || 'null');
+  if (!data) { showNotice('No saved data found.', 'err', 'actionNotice'); return; }
+  ST.answers      = data.answers      || {};
+  ST.customInputs = data.customInputs || {};
+  if (ST.answers.Q11) document.getElementById('Q11-input').value = ST.answers.Q11;
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updatePreview();
+  showNotice('Loaded.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function clearSaved() {
+  localStorage.removeItem('cc_portrait_v2');
+  showNotice('Cleared.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function resetApp() {
+  ST = { answers: {}, customInputs: {} };
+  document.getElementById('Q11-input').value = '';
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: NOTICE HELPERS
+   ============================================================ */
+function showNotice(msg, type, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'notice ' + type;
+}
+function hideNotice(id) {
+  const el = document.getElementById(id);
+  if (el) el.className = 'notice';
+}
+
+
+window.onload = init;
+
+</script>
+</body>
+</html>
