@@ -1,0 +1,2000 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- ============================================================
+     HEAD: Page metadata and Google Fonts import
+     ============================================================ -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spaceship Generator v2.0 — Cosmic Cowboy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* ============================================================
+   CSS: VARIABLES
+   ============================================================ */
+:root {
+  --dark-blue:   #023E8A;
+  --ocean-blue:  #0077B6;
+  --soft-cyan:   #90E0EF;
+  --pale-blue:   #CAF0F8;
+  --deepest:     #010E1F;
+  --surface:     rgba(0,119,182,0.09);
+  --surface2:    rgba(0,119,182,0.17);
+  --border:      rgba(144,224,239,0.22);
+  --border-hi:   rgba(144,224,239,0.50);
+  --dim:         rgba(202,240,248,0.45);
+  --green:       #4ade80;
+  --red:         #f87171;
+  --glow:        0 0 12px rgba(144,224,239,0.30);
+  --accent:      #FFD166;
+}
+
+/* ============================================================
+   CSS: RESET AND BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  background: var(--deepest);
+  color: var(--pale-blue);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
+/* ============================================================
+   CSS: SCROLLBARS
+   ============================================================ */
+::-webkit-scrollbar              { width: 8px; height: 8px; }
+::-webkit-scrollbar-track        { background: rgba(0,0,0,0.15); border-radius: 4px; }
+::-webkit-scrollbar-thumb        { background: rgba(144,224,239,0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(144,224,239,0.6); }
+
+/* ============================================================
+   CSS: HEADER
+   ============================================================ */
+.header {
+  flex-shrink: 0;
+  height: 52px;
+  background: rgba(0,0,0,0.40);
+  border-bottom: 1px solid var(--border-hi);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 10;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
+  opacity: 0.5;
+}
+
+.hdr-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.10rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--pale-blue);
+  text-shadow: 0 0 18px rgba(144,224,239,0.4);
+}
+
+.hdr-sub {
+  font-size: 0.60rem;
+  color: var(--soft-cyan);
+  letter-spacing: 0.2em;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   CSS: SHARED FORM INPUTS
+   ============================================================ */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+textarea,
+select {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 300;
+  border-radius: 4px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  width: 100%;
+}
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--soft-cyan);
+  box-shadow: var(--glow);
+}
+
+input::placeholder, textarea::placeholder { color: var(--dim); }
+
+/* ============================================================
+   CSS: SHARED BUTTONS
+   ============================================================ */
+.btn {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  padding: 6px 15px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--soft-cyan);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.btn:hover:not(:disabled) { border-color: var(--soft-cyan); background: rgba(144,224,239,0.10); }
+.btn:disabled              { opacity: 0.30; cursor: not-allowed; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: 0 3px 14px rgba(0,119,182,0.40);
+}
+
+.btn-rand {
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  color: var(--accent);
+  border-color: rgba(255,209,102,0.3);
+}
+.btn-rand:hover:not(:disabled) {
+  background: rgba(255,209,102,0.08);
+  border-color: var(--accent);
+}
+
+.btn-small { font-size: 0.66rem; padding: 5px 12px; }
+
+.btn-xai {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
+  font-size: 0.80rem;
+  padding: 9px 20px;
+}
+.btn-xai:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: var(--glow);
+}
+.btn-xai:disabled { opacity: 0.4; }
+
+/* ============================================================
+   CSS: PAGE BODY
+   ============================================================ */
+.page-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  max-width: 1300px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   CSS: SECTION HEADING
+   ============================================================ */
+.section-head {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* ============================================================
+   CSS: PRESETS BAR
+   ============================================================ */
+.presets-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 20px;
+  padding: 12px 14px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+}
+
+.preset-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  padding: 5px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  transition: all 0.15s;
+}
+.preset-btn:hover { border-color: var(--soft-cyan); background: rgba(0,119,182,0.18); }
+
+/* ============================================================
+   CSS: MAIN TWO-COLUMN LAYOUT
+   ============================================================ */
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+  align-items: start;
+}
+
+.preview-col { position: sticky; top: 20px; }
+
+/* ============================================================
+   CSS: ACCORDION SECTIONS
+   ============================================================ */
+.accordion {
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.accordion-header {
+  background: rgba(0,0,0,0.20);
+  padding: 11px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.84rem;
+  user-select: none;
+  gap: 10px;
+  color: var(--pale-blue);
+}
+.accordion-header:hover { background: rgba(0,0,0,0.30); }
+
+.accordion-chevron {
+  font-size: 0.70rem;
+  color: var(--dim);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.accordion-header.open .accordion-chevron { transform: rotate(180deg); }
+
+.accordion-body {
+  padding: 14px 16px;
+  background: var(--surface);
+  display: none;
+}
+.accordion-body.open     { display: block; }
+.accordion-body.disabled { opacity: 0.35; pointer-events: none; }
+
+/* Disabled accordion header styling */
+.accordion-disabled .accordion-header {
+  opacity: 0.45;
+  cursor: default;
+}
+.accordion-disabled .accordion-header:hover { background: rgba(0,0,0,0.20); }
+
+/* ============================================================
+   CSS: QUESTION BLOCKS
+   ============================================================ */
+.q-block { margin-bottom: 18px; }
+.q-block:last-child { margin-bottom: 0; }
+
+.q-title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.q-title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--soft-cyan);
+  letter-spacing: 0.06em;
+}
+
+.multi-note {
+  font-size: 0.70rem;
+  color: var(--dim);
+  font-style: italic;
+  margin-top: 4px;
+}
+
+/* ============================================================
+   CSS: OPTION BUTTONS
+   ============================================================ */
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(155px, 1fr));
+  gap: 5px;
+}
+
+.option-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  padding: 6px 9px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 300;
+  transition: all 0.15s;
+  position: relative;
+  line-height: 1.30;
+}
+.option-btn:hover  { border-color: var(--soft-cyan); background: rgba(0,119,182,0.18); }
+.option-btn.selected {
+  background: rgba(0,119,182,0.28);
+  border-color: var(--soft-cyan);
+}
+.option-btn.selected::after {
+  content: '✓';
+  position: absolute; right: 6px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--soft-cyan); font-weight: bold; font-size: 0.72rem;
+}
+
+/* ============================================================
+   CSS: CUSTOM INPUT ROW
+   ============================================================ */
+.custom-row {
+  display: flex;
+  gap: 7px;
+  margin-top: 8px;
+}
+.custom-row input { flex: 1; min-width: 0; }
+
+.tags-wrap { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+
+.custom-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0,119,182,0.22);
+  border: 1px solid rgba(144,224,239,0.35);
+  padding: 2px 9px;
+  border-radius: 18px;
+  font-size: 0.75rem;
+  color: var(--pale-blue);
+}
+.custom-tag button {
+  background: none; border: none;
+  color: var(--dim); cursor: pointer;
+  padding: 0; font-size: 0.9rem; line-height: 1;
+}
+.custom-tag button:hover { color: var(--red); }
+
+/* ============================================================
+   CSS: PREVIEW PANEL
+   ============================================================ */
+.preview-panel {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.preview-head {
+  padding: 8px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.20);
+}
+
+.prompt-display {
+  padding: 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 300;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 160px;
+  max-height: 340px;
+  overflow-y: auto;
+  color: var(--pale-blue);
+}
+.prompt-display.empty { color: var(--dim); font-style: italic; }
+
+.preview-actions {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.copy-confirm {
+  font-size: 0.72rem;
+  color: var(--green);
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
+.copy-confirm.show { opacity: 1; }
+
+/* ============================================================
+   CSS: xAI NARRATIVE PANEL
+   ============================================================ */
+.xai-panel {
+  margin-top: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.xai-head {
+  padding: 8px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.20);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.xai-body { padding: 14px; }
+
+.xai-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+.xai-row label {
+  font-size: 0.74rem;
+  color: var(--soft-cyan);
+  white-space: nowrap;
+  min-width: 68px;
+  font-weight: 500;
+}
+
+.xai-key-wrap {
+  position: relative;
+  flex: 1;
+}
+.xai-key-wrap input { padding-right: 60px; }
+
+.xai-toggle {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--dim); font-size: 0.70rem; font-family: 'Exo 2', sans-serif;
+  font-weight: 600; letter-spacing: 0.05em; padding: 2px 4px;
+}
+.xai-toggle:hover { color: var(--soft-cyan); }
+
+.xai-status {
+  font-size: 0.74rem;
+  color: var(--dim);
+  margin-top: 8px;
+  min-height: 1.2em;
+}
+.xai-status.ok  { color: var(--green); }
+.xai-status.err { color: var(--red); }
+.xai-status.run { color: var(--soft-cyan); }
+
+.narrative-output {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+  display: none;
+  background: rgba(0,0,0,0.25);
+}
+.narrative-output.visible { display: block; }
+
+.narrative-text {
+  padding: 12px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--pale-blue);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 260px;
+  overflow-y: auto;
+  min-height: 160px;
+}
+
+.narrative-actions {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--border);
+  align-items: center;
+}
+
+.narrative-copy-confirm {
+  font-size: 0.72rem;
+  color: var(--green);
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
+.narrative-copy-confirm.show { opacity: 1; }
+
+/* ============================================================
+   CSS: SPINNER
+   ============================================================ */
+.spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid rgba(144,224,239,0.20);
+  border-top-color: var(--soft-cyan);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   CSS: ACTION BAR
+   ============================================================ */
+.action-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* ============================================================
+   CSS: NOTICE
+   ============================================================ */
+.notice {
+  font-size: 0.78rem;
+  padding: 7px 11px;
+  border-radius: 4px;
+  margin-top: 8px;
+  display: none;
+}
+.notice.ok  { display: block; background: rgba(0,160,90,0.12);  border: 1px solid rgba(0,160,90,0.35);  color: var(--green); }
+.notice.err { display: block; background: rgba(200,30,30,0.15); border: 1px solid rgba(200,30,30,0.4);  color: var(--red); }
+
+/* ============================================================
+   CSS: RESPONSIVE
+   ============================================================ */
+@media (max-width: 900px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .preview-col  { position: static; }
+  .options-grid { grid-template-columns: repeat(auto-fill, minmax(130px, 1fr)); }
+}
+@media (max-width: 500px) {
+  .options-grid { grid-template-columns: 1fr 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HTML: HEADER
+     ============================================================ -->
+<header class="header">
+  <div>
+    <div class="hdr-title">&#9658; SPACESHIP GENERATOR</div>
+    <div class="hdr-sub">v2.0 &mdash; COSMIC COWBOY'S AI WORLDBUILDERS</div>
+  </div>
+  <button class="btn" onclick="resetApp()">&#10022; RESET</button>
+</header>
+
+<!-- ============================================================
+     HTML: SCROLLABLE PAGE BODY
+     ============================================================ -->
+<div class="page-body">
+
+  <!-- Presets -->
+  <div class="section-head">Quick Start Presets</div>
+  <div class="presets-bar">
+    <button class="preset-btn" onclick="applyPreset('fighter')">Fighter Interceptor</button>
+    <button class="preset-btn" onclick="applyPreset('cargo')">Cargo Hauler</button>
+    <button class="preset-btn" onclick="applyPreset('bridge')">Bridge Interior</button>
+    <button class="preset-btn" onclick="applyPreset('alien')">Alien Exotic</button>
+    <button class="preset-btn" onclick="applyPreset('dreadnought')">Dreadnought</button>
+    <button class="preset-btn" onclick="applyPreset('reactorRoom')">Reactor Room</button>
+    <button class="preset-btn" onclick="applyPreset('ancientArk')">Ancient Ark</button>
+    <button class="preset-btn" onclick="applyPreset('cryoPodBay')">Cryo Pod Bay</button>
+    <button class="preset-btn" onclick="randomizeAll()">&#9861; Random All</button>
+  </div>
+
+  <!-- Two-column layout -->
+  <div class="main-layout">
+
+    <!-- LEFT: Question accordions -->
+    <div>
+
+      <!-- Core Setup -->
+      <div class="accordion">
+        <div class="accordion-header open" onclick="toggleAccordion(this)">
+          Core Setup
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body open">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q1 &mdash; Spaceship Type</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q1')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q1-options"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q3 &mdash; Scene Context</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q3')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q3-options"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Exterior Ship Scene -->
+      <div class="accordion" id="exterior-accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Exterior Ship Scene
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body disabled" id="exterior-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q4 &mdash; Ship Role</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q4')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q4-options"></div>
+            <div class="custom-row"><input type="text" id="Q4-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q4')">Add</button></div>
+            <div class="tags-wrap" id="Q4-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q5 &mdash; Hull Design (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q5')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q5-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q5-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q5')">Add</button></div>
+            <div class="tags-wrap" id="Q5-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q6 &mdash; Engine State (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q6')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q6-options"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="Q6-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q6')">Add</button></div>
+            <div class="tags-wrap" id="Q6-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q7 &mdash; Combat State and Wear</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q7')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q7-options"></div>
+            <div class="custom-row"><input type="text" id="Q7-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q7')">Add</button></div>
+            <div class="tags-wrap" id="Q7-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q8 &mdash; Weapons Visibility (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q8')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q8-options"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="Q8-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q8')">Add</button></div>
+            <div class="tags-wrap" id="Q8-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q9 &mdash; Environmental Conditions (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q9')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q9-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q9-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q9')">Add</button></div>
+            <div class="tags-wrap" id="Q9-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q10 &mdash; Activity Level</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q10')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q10-options"></div>
+            <div class="custom-row"><input type="text" id="Q10-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q10')">Add</button></div>
+            <div class="tags-wrap" id="Q10-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q11 &mdash; Point of View</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q11')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q11-options"></div>
+            <div class="custom-row"><input type="text" id="Q11-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q11')">Add</button></div>
+            <div class="tags-wrap" id="Q11-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Interior Ship Scene -->
+      <div class="accordion" id="interior-accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Interior Ship Scene
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body disabled" id="interior-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q12 &mdash; Compartment Type</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q12')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q12-options"></div>
+            <div class="custom-row"><input type="text" id="Q12-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q12')">Add</button></div>
+            <div class="tags-wrap" id="Q12-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q13 &mdash; Architectural Style (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q13')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q13-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q13-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q13')">Add</button></div>
+            <div class="tags-wrap" id="Q13-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q14 &mdash; Lighting State (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q14')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q14-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q14-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q14')">Add</button></div>
+            <div class="tags-wrap" id="Q14-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q15 &mdash; Environmental Conditions (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q15')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q15-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q15-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q15')">Add</button></div>
+            <div class="tags-wrap" id="Q15-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q16 &mdash; Activity Level</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q16')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q16-options"></div>
+            <div class="custom-row"><input type="text" id="Q16-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q16')">Add</button></div>
+            <div class="tags-wrap" id="Q16-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q17 &mdash; Point of View</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q17')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q17-options"></div>
+            <div class="custom-row"><input type="text" id="Q17-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q17')">Add</button></div>
+            <div class="tags-wrap" id="Q17-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Shared: Framing and Composition -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Framing and Composition
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q18 &mdash; Framing Modifiers (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q18')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q18-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q18-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q18')">Add</button></div>
+            <div class="tags-wrap" id="Q18-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q19 &mdash; Composition Layout (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q19')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q19-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q19-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q19')">Add</button></div>
+            <div class="tags-wrap" id="Q19-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q20 &mdash; Lens or Field</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q20')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q20-options"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Shared: Visual Style -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Visual Style
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q21 &mdash; Contrast (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q21')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q21-options"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="Q21-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q21')">Add</button></div>
+            <div class="tags-wrap" id="Q21-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q22 &mdash; Color Palette (up to 3)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q22')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q22-options"></div>
+            <p class="multi-note">Select up to 3</p>
+            <div class="custom-row"><input type="text" id="Q22-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q22')">Add</button></div>
+            <div class="tags-wrap" id="Q22-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q23 &mdash; Style</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q23')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q23-options"></div>
+            <div class="custom-row"><input type="text" id="Q23-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q23')">Add</button></div>
+            <div class="tags-wrap" id="Q23-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Q25 &mdash; Image Size</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('Q25')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="Q25-options"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Action bar -->
+      <div class="action-bar">
+        <button class="btn btn-small" onclick="saveCurrent()">&#128190; Save</button>
+        <button class="btn btn-small" onclick="loadSaved()">&#128194; Load</button>
+        <button class="btn btn-small" onclick="clearSaved()">&#128465; Clear Saved</button>
+      </div>
+
+      <div class="notice" id="actionNotice"></div>
+
+    </div><!-- end left col -->
+
+    <!-- RIGHT: Live preview + xAI panel -->
+    <div class="preview-col">
+
+      <!-- Prompt preview -->
+      <div class="preview-panel">
+        <div class="preview-head">Live Prompt Preview</div>
+        <div class="prompt-display empty" id="livePreview">
+          Select Ship Type and Scene Context to begin.
+        </div>
+        <div class="preview-actions">
+          <button class="btn btn-small" onclick="copyPrompt()">&#128203; Copy Raw Prompt</button>
+          <span class="copy-confirm" id="copyConfirmInline"></span>
+        </div>
+      </div>
+
+      <!-- xAI Narrative Prompt panel -->
+      <div class="xai-panel">
+        <div class="xai-head">
+          &#9889; AI Narrative Prompt
+        </div>
+        <div class="xai-body">
+
+          <div class="xai-row">
+            <label>API Key</label>
+            <div class="xai-key-wrap">
+              <input type="password" id="xaiApiKey" autocomplete="off" placeholder="Enter your xAI API key">
+              <button class="xai-toggle" onclick="toggleKeyVis()">SHOW</button>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+            <input type="checkbox" id="xaiSaveKey" style="width:auto;accent-color:var(--soft-cyan);">
+            <label for="xaiSaveKey" style="font-size:0.74rem;color:var(--dim);margin:0;cursor:pointer;">
+              Save key to browser
+            </label>
+          </div>
+
+          <div style="margin-top:12px;">
+            <button class="btn btn-xai" id="xaiGenBtn" onclick="generateNarrativePrompt()" disabled>
+              &#9889; Generate Narrative Prompt
+            </button>
+          </div>
+
+          <div class="xai-status" id="xaiStatus">Enter an API key above to enable generation.</div>
+
+          <div class="narrative-output" id="narrativeOutput">
+            <div class="narrative-text" id="narrativeText"></div>
+            <div class="narrative-actions">
+              <button class="btn btn-small" onclick="copyNarrative()">&#128203; Copy</button>
+              <span class="narrative-copy-confirm" id="narrativeCopyConfirm">&#10003; Copied!</span>
+            </div>
+          </div>
+
+          <div class="notice" id="xaiNotice"></div>
+
+        </div>
+      </div>
+
+    </div><!-- end preview-col -->
+
+  </div><!-- end main-layout -->
+
+</div><!-- end page-body -->
+
+
+<script>
+
+/* ============================================================
+   JS: QUESTION DATA
+   ============================================================ */
+const QUESTIONS = {
+
+  Q1: { title:'Spaceship Type', type:'single', options:[
+    {id:'1', text:'Hard-Sci Human'},
+    {id:'2', text:'Alien Exotic'},
+    {id:'3', text:'Hybrid Human-Alien'},
+    {id:'4', text:'Ancient or derelict unknown origin'},
+    {id:'5', text:'Biological or grown ship'},
+    {id:'6', text:'Mechanical drone or AI vessel'},
+    {id:'7', text:'Generational colony ship'},
+    {id:'8', text:'Dimensional or phase-shifted'},
+  ]},
+
+  Q3: { title:'Scene Context', type:'single', options:[
+    {id:'1', text:'Exterior ship scene'},
+    {id:'2', text:'Interior ship scene'},
+  ]},
+
+  // --- EXTERIOR ---
+
+  Q4: { title:'Ship Role', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Fighter or interceptor'},
+    {id:'2',  text:'Frigate or corvette'},
+    {id:'3',  text:'Hauler or cargo transport'},
+    {id:'4',  text:'Cruiser or battleship'},
+    {id:'5',  text:'Dreadnought or capital ship'},
+    {id:'6',  text:'Scout or reconnaissance'},
+    {id:'7',  text:'Mining or industrial ship'},
+    {id:'8',  text:'Civilian shuttle or yacht'},
+    {id:'9',  text:'Carrier or mothership'},
+    {id:'10', text:'Stealth or black ops vessel'},
+    {id:'11', text:'Medical or hospital ship'},
+    {id:'12', text:'Diplomatic envoy craft'},
+    {id:'13', text:'Science or exploration vessel'},
+    {id:'14', text:'Prison or detention ship'},
+    {id:'15', text:'Ancient relic or ark ship'},
+    {id:'16', text:'Drone swarm controller'},
+  ]},
+
+  Q5: { title:'Hull Design', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Sleek aerodynamic'},
+    {id:'2',  text:'Industrial utilitarian'},
+    {id:'3',  text:'Organic grown architecture'},
+    {id:'4',  text:'Crystalline geometric'},
+    {id:'5',  text:'Modular blocky assembly'},
+    {id:'6',  text:'Fragmented asymmetric'},
+    {id:'7',  text:'Streamlined racing profile'},
+    {id:'8',  text:'Spherical'},
+    {id:'9',  text:'Cathedral or gothic spires'},
+    {id:'10', text:'Nautical naval hull form'},
+    {id:'11', text:'Insectoid chitin plating'},
+    {id:'12', text:'Lattice or open-frame skeleton'},
+    {id:'13', text:'Mirror or reflective surface'},
+    {id:'14', text:'Cloaked in shadow fields'},
+    {id:'15', text:'Heavily armored siege form'},
+    {id:'16', text:'Ring or toroidal structure'},
+    {id:'17', text:'Disc or saucer profile'},
+    {id:'18', text:'Elongated needle profile'},
+  ]},
+
+  Q6: { title:'Engine State', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1',  text:'Full burn acceleration'},
+    {id:'2',  text:'Cruising speed'},
+    {id:'3',  text:'Slow burn'},
+    {id:'4',  text:'Idle drift'},
+    {id:'5',  text:'Braking thrust'},
+    {id:'6',  text:'Damaged failing engines'},
+    {id:'7',  text:'Exotic propulsion glow'},
+    {id:'8',  text:'Warp or FTL transition'},
+    {id:'9',  text:'Emergency thrust full power'},
+    {id:'10', text:'Silent running no thrust'},
+    {id:'11', text:'Reverse thrust deceleration'},
+    {id:'12', text:'Quantum tunneling shimmer'},
+    {id:'13', text:'Plasma trail streaming'},
+    {id:'14', text:'Cold engine powered down'},
+  ]},
+
+  Q7: { title:'Combat State and Wear', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Pristine condition'},
+    {id:'2',  text:'Light wear and tear'},
+    {id:'3',  text:'Heavy wear and tear'},
+    {id:'4',  text:'Battle-scarred'},
+    {id:'5',  text:'Heavily damaged'},
+    {id:'6',  text:'Critical damage venting'},
+    {id:'7',  text:'Destroyed derelict'},
+    {id:'8',  text:'Fresh from drydock factory-new'},
+    {id:'9',  text:'Patched and field-repaired'},
+    {id:'10', text:'Ancient and corroded'},
+    {id:'11', text:'Alien overgrowth or corruption'},
+    {id:'12', text:'Radiation burned'},
+    {id:'13', text:'Partially dismantled salvage'},
+    {id:'14', text:'Ceremonially decorated'},
+  ]},
+
+  Q8: { title:'Weapons Visibility', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1',  text:'Weapons retracted or concealed'},
+    {id:'2',  text:'Weapons deployed'},
+    {id:'3',  text:'Weapons firing'},
+    {id:'4',  text:'Missile or torpedo launch'},
+    {id:'5',  text:'Point defense active'},
+    {id:'6',  text:'No visible weapons'},
+    {id:'7',  text:'Energy lance or beam array charging'},
+    {id:'8',  text:'Railgun or kinetic battery aimed'},
+    {id:'9',  text:'Drone swarm launched'},
+    {id:'10', text:'Shield generator glowing'},
+    {id:'11', text:'Mines deployed'},
+    {id:'12', text:'Boarding pods launching'},
+  ]},
+
+  Q9: { title:'Environmental Conditions (Exterior)', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Clean vacuum'},
+    {id:'2',  text:'Debris field navigation'},
+    {id:'3',  text:'Atmospheric entry or exit'},
+    {id:'4',  text:'Gas cloud or nebula'},
+    {id:'5',  text:'Plasma storm or energy field'},
+    {id:'6',  text:'Ice crystal formation'},
+    {id:'7',  text:'Exhaust trails or contrails'},
+    {id:'8',  text:'Asteroid belt threading'},
+    {id:'9',  text:'Binary star system glare'},
+    {id:'10', text:'Planet close approach'},
+    {id:'11', text:'Hyperspatial rift nearby'},
+    {id:'12', text:'Wreckage field of destroyed fleet'},
+    {id:'13', text:'Accretion disk proximity'},
+    {id:'14', text:'Comet tail debris'},
+    {id:'15', text:'Solar wind gust'},
+    {id:'16', text:'Ancient space structure nearby'},
+    {id:'17', text:'Alien megastructure backdrop'},
+    {id:'18', text:'Stargate or portal activation'},
+  ]},
+
+  Q10: { title:'Activity Level (Exterior)', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Solo vessel'},
+    {id:'2',  text:'Small formation (2-3 ships)'},
+    {id:'3',  text:'Squadron (4-8 ships)'},
+    {id:'4',  text:'Fleet engagement'},
+    {id:'5',  text:'Surrounded by enemy vessels'},
+    {id:'6',  text:'Abandoned derelict alone'},
+    {id:'7',  text:'Escorted by smaller craft'},
+    {id:'8',  text:'Docked at space station'},
+    {id:'9',  text:'Launch from planetary surface'},
+    {id:'10', text:'Recovery or salvage operation'},
+  ]},
+
+  Q11: { title:'Point of View (Exterior)', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Wide space view'},
+    {id:'2',  text:'Medium distance framing'},
+    {id:'3',  text:'Close hull proximity'},
+    {id:'4',  text:'Pursuit angle'},
+    {id:'5',  text:'Head-on approach'},
+    {id:'6',  text:'Cockpit or bridge external view'},
+    {id:'7',  text:'Orbital overview from above'},
+    {id:'8',  text:'Underside looking up'},
+    {id:'9',  text:'Stern engine view'},
+    {id:'10', text:'Dramatic banking roll'},
+    {id:'11', text:'Emergency pod jettison POV'},
+    {id:'12', text:'Drone tracking shot'},
+  ]},
+
+  // --- INTERIOR ---
+
+  Q12: { title:'Compartment Type', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Bridge or cockpit'},
+    {id:'2',  text:'Engineering or reactor room'},
+    {id:'3',  text:'Cargo bay or hangar'},
+    {id:'4',  text:'Medical bay or lab'},
+    {id:'5',  text:'Living quarters or mess hall'},
+    {id:'6',  text:'Weapons control or armory'},
+    {id:'7',  text:'Alien habitat chamber'},
+    {id:'8',  text:'Maintenance corridor'},
+    {id:'9',  text:'Observation deck or lounge'},
+    {id:'10', text:'Cryogenic pod bay'},
+    {id:'11', text:'AI core or data vault'},
+    {id:'12', text:'Docking or airlock vestibule'},
+    {id:'13', text:'Science or research laboratory'},
+    {id:'14', text:'Detention or brig'},
+    {id:'15', text:'Ceremonial or command hall'},
+    {id:'16', text:'Power conduit or relay junction'},
+  ]},
+
+  Q13: { title:'Architectural Style', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Hard-sci utilitarian'},
+    {id:'2',  text:'Clean corporate or luxury'},
+    {id:'3',  text:'Heavy industrial machinery'},
+    {id:'4',  text:'Organic biomechanical'},
+    {id:'5',  text:'Crystalline geometric alien'},
+    {id:'6',  text:'Hybrid human-alien'},
+    {id:'7',  text:'Military spartan'},
+    {id:'8',  text:'Salvaged or jury-rigged'},
+    {id:'9',  text:'Ancient pre-human construction'},
+    {id:'10', text:'Art Deco or retro-futurist'},
+    {id:'11', text:'Gothic vaulted chambers'},
+    {id:'12', text:'Minimalist white clean-room'},
+    {id:'13', text:'Overgrown biological corruption'},
+    {id:'14', text:'Flooded or submerged'},
+    {id:'15', text:'Pressurized habitat dome'},
+    {id:'16', text:'Modular container grid'},
+    {id:'17', text:'Steampunk industrial retrofit'},
+    {id:'18', text:'Neon-lit cyberpunk aesthetic'},
+  ]},
+
+  Q14: { title:'Lighting State (Interior)', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Standard operational'},
+    {id:'2',  text:'Bridge or cockpit displays'},
+    {id:'3',  text:'Industrial work'},
+    {id:'4',  text:'Low power conservation'},
+    {id:'5',  text:'Emergency alert'},
+    {id:'6',  text:'Combat stations red alert'},
+    {id:'7',  text:'Alien bioluminescence'},
+    {id:'8',  text:'Damaged flickering lights'},
+    {id:'9',  text:'Harsh surgical white'},
+    {id:'10', text:'Warm crew habitat amber'},
+    {id:'11', text:'Cold blue cryogenic'},
+    {id:'12', text:'Reactor glow green'},
+    {id:'13', text:'Holographic projections fill room'},
+    {id:'14', text:'Total darkness only emergency strips'},
+    {id:'15', text:'Sunrise through viewport'},
+    {id:'16', text:'Engine plasma backlit'},
+  ]},
+
+  Q15: { title:'Environmental Conditions (Interior)', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Clean controlled atmosphere'},
+    {id:'2',  text:'Light haze or dust'},
+    {id:'3',  text:'Heavy vapor or smoke'},
+    {id:'4',  text:'Steam or coolant discharge'},
+    {id:'5',  text:'Microgravity particulate drift'},
+    {id:'6',  text:'Frost condensation'},
+    {id:'7',  text:'Zero-g fluid globules'},
+    {id:'8',  text:'Sparks or electrical discharge'},
+    {id:'9',  text:'Depressurization in progress'},
+    {id:'10', text:'Flooding or leak'},
+    {id:'11', text:'Alien spore cloud'},
+    {id:'12', text:'Nanite swarm visible'},
+    {id:'13', text:'Fire or oxygen burn'},
+    {id:'14', text:'Radioactive glow'},
+    {id:'15', text:'Holographic ghosts or echoes'},
+    {id:'16', text:'Bio-contamination fog'},
+  ]},
+
+  Q16: { title:'Activity Level (Interior)', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Abandoned derelict'},
+    {id:'2',  text:'Skeleton crew'},
+    {id:'3',  text:'Normal operations'},
+    {id:'4',  text:'Busy or crowded'},
+    {id:'5',  text:'Combat stations all hands'},
+    {id:'6',  text:'Silent automated only'},
+    {id:'7',  text:'Evacuation in progress'},
+    {id:'8',  text:'First contact or alien encounter'},
+    {id:'9',  text:'Medical emergency triage'},
+    {id:'10', text:'Celebration or ceremony'},
+  ]},
+
+  Q17: { title:'Point of View (Interior)', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Eye-level corridor'},
+    {id:'2',  text:'Bridge command perspective'},
+    {id:'3',  text:'Engineering floor level'},
+    {id:'4',  text:'Elevated catwalk or gantry'},
+    {id:'5',  text:'Cockpit pilot perspective'},
+    {id:'6',  text:'Crawlspace or access tunnel'},
+    {id:'7',  text:'Observation window looking out'},
+    {id:'8',  text:'Ceiling looking down'},
+    {id:'9',  text:'Hatchway threshold framing'},
+    {id:'10', text:'Behind console or workstation'},
+    {id:'11', text:'Reactor core center'},
+    {id:'12', text:'Airlock interior'},
+  ]},
+
+  // --- SHARED ---
+
+  Q18: { title:'Framing Modifiers', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Foreground framing'},
+    {id:'2',  text:'Environmental tunnel framing'},
+    {id:'3',  text:'Silhouette emphasis'},
+    {id:'4',  text:'Foreground obstruction depth'},
+    {id:'5',  text:'Clean unobstructed view'},
+    {id:'6',  text:'Lens flare from engine or star'},
+    {id:'7',  text:'Motion blur speed effect'},
+    {id:'8',  text:'Reflection in hull or glass'},
+    {id:'9',  text:'Scale reference (human figure)'},
+    {id:'10', text:'Energy field distortion'},
+    {id:'11', text:'Camera shake handheld feel'},
+    {id:'12', text:'Extreme crop or partial view'},
+  ]},
+
+  Q19: { title:'Composition Layout', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Centralized focus'},
+    {id:'2',  text:'Diagonal perspective'},
+    {id:'3',  text:'Asymmetric layout'},
+    {id:'4',  text:'Layered depth'},
+    {id:'5',  text:'Panoramic sweep'},
+    {id:'6',  text:'Rule of thirds placement'},
+    {id:'7',  text:'Symmetrical mirrored'},
+    {id:'8',  text:'Radial convergence'},
+    {id:'9',  text:'Frame within frame'},
+    {id:'10', text:'Negative space dominant'},
+    {id:'11', text:'Crowded dense composition'},
+    {id:'12', text:'Minimalist single subject'},
+  ]},
+
+  Q20: { title:'Lens or Field', type:'single', options:[
+    {id:'1', text:'Ultra-wide'},
+    {id:'2', text:'Wide'},
+    {id:'3', text:'Normal'},
+    {id:'4', text:'Telephoto'},
+    {id:'5', text:'Fisheye extreme distortion'},
+    {id:'6', text:'Macro close-up detail'},
+    {id:'7', text:'Anamorphic cinematic'},
+    {id:'8', text:'Tilt-shift miniature effect'},
+  ]},
+
+  Q21: { title:'Contrast', type:'multi', max:2, allowCustom:true, options:[
+    {id:'1', text:'Low'},
+    {id:'2', text:'Neutral'},
+    {id:'3', text:'High'},
+    {id:'4', text:'Chiaroscuro'},
+    {id:'5', text:'HDR extreme dynamic range'},
+    {id:'6', text:'Flat matte'},
+    {id:'7', text:'Blown-out overexposed highlights'},
+    {id:'8', text:'Deep underexposed shadow fill'},
+  ]},
+
+  Q22: { title:'Color Palette', type:'multi', max:3, allowCustom:true, options:[
+    {id:'1',  text:'Warm artificial light'},
+    {id:'2',  text:'Cool industrial tones'},
+    {id:'3',  text:'Neon spectrum'},
+    {id:'4',  text:'Muted grayscale'},
+    {id:'5',  text:'Metallic reflections'},
+    {id:'6',  text:'High saturation'},
+    {id:'7',  text:'Engine glow dominance'},
+    {id:'8',  text:'Deep space black and starlight'},
+    {id:'9',  text:'Bioluminescent alien greens'},
+    {id:'10', text:'Rust and amber decay'},
+    {id:'11', text:'Ice blue cryogenic'},
+    {id:'12', text:'Blood red alert'},
+    {id:'13', text:'Gold and ivory ceremonial'},
+    {id:'14', text:'Rainbow prismatic iridescence'},
+    {id:'15', text:'Monochrome stark'},
+    {id:'16', text:'Thermal infrared heat map'},
+  ]},
+
+  Q23: { title:'Style', type:'single', allowCustom:true, options:[
+    {id:'1',  text:'Photorealism'},
+    {id:'2',  text:'Hyper realism'},
+    {id:'3',  text:'Cinematic realism'},
+    {id:'4',  text:'Surrealism'},
+    {id:'5',  text:'Fantasy realism'},
+    {id:'6',  text:'Digital painting or concept art'},
+    {id:'7',  text:'Anime or manga sci-fi'},
+    {id:'8',  text:'Retro sci-fi magazine cover'},
+    {id:'9',  text:'Technical blueprint schematic'},
+    {id:'10', text:'Oil painting or classical'},
+    {id:'11', text:'Comic book or graphic novel'},
+    {id:'12', text:'Dark fantasy illustration'},
+    {id:'13', text:'Propaganda constructivist'},
+    {id:'14', text:'Gritty pulp fiction art'},
+  ]},
+
+  Q25: { title:'Image Size', type:'single', options:[
+    {id:'1', text:'Square (1:1)'},
+    {id:'2', text:'Portrait (2:3)'},
+    {id:'3', text:'Landscape (3:2)'},
+  ]},
+
+};
+
+
+/* ============================================================
+   JS: PRESETS
+   ============================================================ */
+const PRESETS = {
+  fighter: {
+    Q1:'1', Q3:'1',
+    Q4:'1', Q5:['1','7'], Q6:['1','9'], Q7:'2', Q8:['2','3'], Q9:['1','7'], Q10:'1', Q11:'4',
+    Q18:['5'], Q19:['2'], Q20:'2', Q21:['3'], Q22:['5','3'], Q23:'3', Q25:'3'
+  },
+  cargo: {
+    Q1:'1', Q3:'1',
+    Q4:'3', Q5:['2','5'], Q6:['2'], Q7:'2', Q8:['1'], Q9:['1'], Q10:'1', Q11:'2',
+    Q18:['1'], Q19:['1'], Q20:'2', Q21:['2'], Q22:['2','4'], Q23:'1', Q25:'3'
+  },
+  bridge: {
+    Q1:'1', Q3:'2',
+    Q12:'1', Q13:['1','2'], Q14:['1','2'], Q15:['1'], Q16:'3', Q17:'2',
+    Q18:['5'], Q19:['1'], Q20:'3', Q21:['2'], Q22:['1','2'], Q23:'3', Q25:'3'
+  },
+  alien: {
+    Q1:'2', Q3:'1',
+    Q4:'2', Q5:['3','4'], Q6:['7'], Q7:'1', Q8:['6'], Q9:['4','5'], Q10:'1', Q11:'1',
+    Q18:['3'], Q19:['3'], Q20:'1', Q21:['4'], Q22:['9','6'], Q23:'6', Q25:'3'
+  },
+  dreadnought: {
+    Q1:'1', Q3:'1',
+    Q4:'5', Q5:['1','15'], Q6:['1','13'], Q7:'4', Q8:['2','3'], Q9:['2','12'], Q10:'4', Q11:'1',
+    Q18:['6','4'], Q19:['4'], Q20:'1', Q21:['3','4'], Q22:['8','12'], Q23:'3', Q25:'3'
+  },
+  reactorRoom: {
+    Q1:'1', Q3:'2',
+    Q12:'2', Q13:['3','1'], Q14:['3','12'], Q15:['4','8'], Q16:'3', Q17:'3',
+    Q18:['2'], Q19:['4'], Q20:'3', Q21:['3'], Q22:['12','2'], Q23:'2', Q25:'3'
+  },
+  ancientArk: {
+    Q1:'4', Q3:'1',
+    Q4:'15', Q5:['3','6'], Q6:['14'], Q7:'10', Q8:['6'], Q9:['4','16'], Q10:'6', Q11:'1',
+    Q18:['3'], Q19:['3'], Q20:'1', Q21:['4'], Q22:['4','9'], Q23:'6', Q25:'3'
+  },
+  cryoPodBay: {
+    Q1:'7', Q3:'2',
+    Q12:'10', Q13:['12','4'], Q14:['11','14'], Q15:['6','5'], Q16:'1', Q17:'1',
+    Q18:['1'], Q19:['1'], Q20:'3', Q21:['1'], Q22:['11','4'], Q23:'3', Q25:'3'
+  },
+};
+
+
+/* ============================================================
+   JS: APP STATE
+   ============================================================ */
+let ST = {
+  answers:      {},
+  customInputs: {},
+};
+
+// Exterior-only question IDs
+const EXT_QIDS = ['Q4','Q5','Q6','Q7','Q8','Q9','Q10','Q11'];
+// Interior-only question IDs
+const INT_QIDS = ['Q12','Q13','Q14','Q15','Q16','Q17'];
+// Shared question IDs (always shown)
+const SHARED_QIDS = ['Q18','Q19','Q20','Q21','Q22','Q23','Q25'];
+
+
+/* ============================================================
+   JS: INIT
+   ============================================================ */
+function init() {
+  // Render all question fields
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+
+  // Scene toggle initial state
+  updateSceneToggle();
+  updatePreview();
+
+  // Restore saved xAI key
+  const savedKey = localStorage.getItem('xaiKey_spaceship');
+  if (savedKey) {
+    document.getElementById('xaiApiKey').value = savedKey;
+    document.getElementById('xaiSaveKey').checked = true;
+    updateGenBtn();
+  }
+
+  document.getElementById('xaiApiKey').addEventListener('input', updateGenBtn);
+}
+
+
+/* ============================================================
+   JS: SCENE TOGGLE
+   ============================================================ */
+function updateSceneToggle() {
+  const isExt = ST.answers.Q3 === '1';
+  const isInt = ST.answers.Q3 === '2';
+
+  const extBody = document.getElementById('exterior-body');
+  const intBody = document.getElementById('interior-body');
+
+  extBody.classList.toggle('disabled', !isExt);
+  intBody.classList.toggle('disabled', !isInt);
+}
+
+
+/* ============================================================
+   JS: FIELD RENDERER
+   ============================================================ */
+function renderField(qid) {
+  const q  = QUESTIONS[qid];
+  const el = document.getElementById(`${qid}-options`);
+  if (!q || !el) return;
+
+  el.innerHTML = '';
+  q.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className   = 'option-btn';
+    btn.textContent = opt.text;
+    btn.dataset.id  = opt.id;
+
+    const cur = ST.answers[qid];
+    if (cur) {
+      const sel = Array.isArray(cur) ? cur.includes(opt.id) : cur === opt.id;
+      if (sel) btn.classList.add('selected');
+    }
+
+    btn.onclick = () => handleClick(qid, opt.id);
+    el.appendChild(btn);
+  });
+
+  renderTags(qid);
+}
+
+
+/* ============================================================
+   JS: CLICK HANDLER
+   ============================================================ */
+function handleClick(qid, optId) {
+  const q = QUESTIONS[qid];
+
+  if (q.type === 'single') {
+    ST.answers[qid] = optId;
+    document.querySelectorAll(`#${qid}-options .option-btn`)
+      .forEach(b => b.classList.toggle('selected', b.dataset.id === optId));
+
+    if (qid === 'Q3') {
+      updateSceneToggle();
+    }
+
+  } else {
+    let cur = ST.answers[qid] || [];
+    if (!Array.isArray(cur)) cur = [];
+
+    if (cur.includes(optId)) {
+      cur = cur.filter(id => id !== optId);
+      document.querySelector(`#${qid}-options .option-btn[data-id="${optId}"]`)?.classList.remove('selected');
+    } else {
+      if (cur.length >= q.max) {
+        showNotice(`Max ${q.max} selections for this field.`, 'err', 'actionNotice');
+        setTimeout(() => hideNotice('actionNotice'), 2000);
+        return;
+      }
+      cur = [...cur, optId];
+      document.querySelector(`#${qid}-options .option-btn[data-id="${optId}"]`)?.classList.add('selected');
+    }
+    ST.answers[qid] = cur;
+  }
+
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: CUSTOM TAGS
+   ============================================================ */
+function addCustom(qid) {
+  const inp = document.getElementById(`${qid}-custom`);
+  if (!inp) return;
+  const val = inp.value.trim();
+  if (!val) return;
+  if (!ST.customInputs[qid]) ST.customInputs[qid] = [];
+  ST.customInputs[qid].push(val);
+  inp.value = '';
+  renderTags(qid);
+  updatePreview();
+}
+
+function removeCustom(qid, idx) {
+  ST.customInputs[qid].splice(idx, 1);
+  renderTags(qid);
+  updatePreview();
+}
+
+function renderTags(qid) {
+  const wrap = document.getElementById(`${qid}-tags`);
+  if (!wrap) return;
+  const items = ST.customInputs[qid] || [];
+  wrap.innerHTML = items.map((t, i) =>
+    `<span class="custom-tag">${t}<button onclick="removeCustom('${qid}',${i})">&#215;</button></span>`
+  ).join('');
+}
+
+
+/* ============================================================
+   JS: ACCORDION TOGGLE
+   ============================================================ */
+function toggleAccordion(header) {
+  const body = header.nextElementSibling;
+  if (body.classList.contains('disabled')) return;
+  header.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+
+/* ============================================================
+   JS: RANDOMIZE FIELD
+   ============================================================ */
+function randomizeField(qid) {
+  const q = QUESTIONS[qid];
+  if (!q) return;
+
+  if (q.type === 'single') {
+    const pick = q.options[Math.floor(Math.random() * q.options.length)].id;
+    ST.answers[qid] = pick;
+    document.querySelectorAll(`#${qid}-options .option-btn`)
+      .forEach(b => b.classList.toggle('selected', b.dataset.id === pick));
+    if (qid === 'Q3') updateSceneToggle();
+  } else {
+    const count = Math.min(Math.floor(Math.random() * q.max) + 1, q.options.length);
+    const picks = [...q.options].sort(() => Math.random() - 0.5).slice(0, count).map(o => o.id);
+    ST.answers[qid] = picks;
+    document.querySelectorAll(`#${qid}-options .option-btn`)
+      .forEach(b => b.classList.toggle('selected', picks.includes(b.dataset.id)));
+  }
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: RANDOMIZE ALL
+   ============================================================ */
+function randomizeAll() {
+  ST.answers      = {};
+  ST.customInputs = {};
+
+  // Pick ship type and scene context first
+  ST.answers.Q1 = QUESTIONS.Q1.options[Math.floor(Math.random() * QUESTIONS.Q1.options.length)].id;
+  ST.answers.Q3 = QUESTIONS.Q3.options[Math.floor(Math.random() * QUESTIONS.Q3.options.length)].id;
+
+  const isExt = ST.answers.Q3 === '1';
+
+  // Pick fields relevant to chosen scene
+  const activeQids = isExt
+    ? [...EXT_QIDS, ...SHARED_QIDS]
+    : [...INT_QIDS, ...SHARED_QIDS];
+
+  activeQids.forEach(qid => {
+    const q = QUESTIONS[qid];
+    if (!q) return;
+    if (q.type === 'single') {
+      ST.answers[qid] = q.options[Math.floor(Math.random() * q.options.length)].id;
+    } else {
+      const count = Math.min(Math.floor(Math.random() * q.max) + 1, q.options.length);
+      ST.answers[qid] = [...q.options].sort(() => Math.random() - 0.5).slice(0, count).map(o => o.id);
+    }
+  });
+
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updateSceneToggle();
+
+  // Open the active accordion, close the inactive one
+  const extBody = document.getElementById('exterior-body');
+  const intBody = document.getElementById('interior-body');
+  const extHdr  = extBody ? extBody.previousElementSibling : null;
+  const intHdr  = intBody ? intBody.previousElementSibling : null;
+
+  if (isExt) {
+    if (extHdr && !extHdr.classList.contains('open')) {
+      extHdr.classList.add('open');
+      extBody.classList.add('open');
+    }
+    if (intHdr) intHdr.classList.remove('open');
+    if (intBody) intBody.classList.remove('open');
+  } else {
+    if (intHdr && !intHdr.classList.contains('open')) {
+      intHdr.classList.add('open');
+      intBody.classList.add('open');
+    }
+    if (extHdr) extHdr.classList.remove('open');
+    if (extBody) extBody.classList.remove('open');
+  }
+
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: APPLY PRESET
+   ============================================================ */
+function applyPreset(name) {
+  const preset = PRESETS[name];
+  if (!preset) { randomizeAll(); return; }
+
+  ST.customInputs = {};
+  ST.answers = { ...preset };
+
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updateSceneToggle();
+
+  // Open the accordion that matches the preset's scene context
+  const isExt = ST.answers.Q3 === '1';
+  const extBody = document.getElementById('exterior-body');
+  const intBody = document.getElementById('interior-body');
+  const extHdr  = extBody ? extBody.previousElementSibling : null;
+  const intHdr  = intBody ? intBody.previousElementSibling : null;
+
+  if (isExt) {
+    if (extHdr && !extHdr.classList.contains('open')) {
+      extHdr.classList.add('open');
+      extBody.classList.add('open');
+    }
+    if (intHdr) intHdr.classList.remove('open');
+    if (intBody) intBody.classList.remove('open');
+  } else {
+    if (intHdr && !intHdr.classList.contains('open')) {
+      intHdr.classList.add('open');
+      intBody.classList.add('open');
+    }
+    if (extHdr) extHdr.classList.remove('open');
+    if (extBody) extBody.classList.remove('open');
+  }
+
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: GET ANSWER TEXT
+   ============================================================ */
+function getAns(qid) {
+  const q   = QUESTIONS[qid];
+  const ans = ST.answers[qid];
+  if (!q || !ans || (Array.isArray(ans) && ans.length === 0)) return '';
+
+  const baseText = Array.isArray(ans)
+    ? ans.map(id => (q.options.find(o => o.id === id) || {}).text).filter(Boolean).join(', ')
+    : (q.options.find(o => o.id === ans) || {}).text || '';
+
+  const customs = ST.customInputs[qid] || [];
+  return [baseText, ...customs].filter(Boolean).join(', ');
+}
+
+
+/* ============================================================
+   JS: ASSEMBLE PROMPT
+   ============================================================ */
+function assemblePrompt() {
+  const isExt = ST.answers.Q3 === '1';
+  const isInt = ST.answers.Q3 === '2';
+  const parts = [];
+
+  const shipType = getAns('Q1') || 'spaceship';
+  parts.push(`A ${shipType}`);
+
+  if (isExt) {
+    parts.push(`${getAns('Q4') || 'vessel'}`);
+    parts.push(`exterior scene`);
+    if (getAns('Q5')) parts.push(`hull designed as ${getAns('Q5')}`);
+    if (getAns('Q6')) parts.push(`engines in ${getAns('Q6')} state`);
+    if (getAns('Q7')) parts.push(`${getAns('Q7')}`);
+    if (getAns('Q8')) parts.push(`${getAns('Q8')}`);
+    if (getAns('Q9')) parts.push(`environment: ${getAns('Q9')}`);
+    if (getAns('Q10')) parts.push(`${getAns('Q10')}`);
+    if (getAns('Q11')) parts.push(`viewed from ${getAns('Q11')}`);
+  } else if (isInt) {
+    parts.push(`interior — ${getAns('Q12') || 'compartment'}`);
+    if (getAns('Q13')) parts.push(`architectural style: ${getAns('Q13')}`);
+    if (getAns('Q14')) parts.push(`lighting: ${getAns('Q14')}`);
+    if (getAns('Q15')) parts.push(`atmosphere: ${getAns('Q15')}`);
+    if (getAns('Q16')) parts.push(`crew activity: ${getAns('Q16')}`);
+    if (getAns('Q17')) parts.push(`POV: ${getAns('Q17')}`);
+  }
+
+  // Shared fields
+  if (getAns('Q18')) parts.push(`framing: ${getAns('Q18')}`);
+  if (getAns('Q19')) parts.push(`composition: ${getAns('Q19')}`);
+  if (getAns('Q20')) parts.push(`${getAns('Q20')} lens`);
+  if (getAns('Q21')) parts.push(`${getAns('Q21')} contrast`);
+  if (getAns('Q22')) parts.push(`color palette: ${getAns('Q22')}`);
+  if (getAns('Q23')) parts.push(`rendered in ${getAns('Q23')} style`);
+
+  parts.push(`ultra-fine surface detail, material texture, mechanical joints`);
+  parts.push(`sharp focus, cinematic physically plausible lighting`);
+  parts.push(`professional production-grade rendering`);
+  if (getAns('Q25')) parts.push(`${getAns('Q25')} aspect ratio`);
+
+  const full = parts.join(', ');
+  return full.charAt(0).toUpperCase() + full.slice(1) + '.';
+}
+
+
+/* ============================================================
+   JS: UPDATE PREVIEW
+   ============================================================ */
+function updatePreview() {
+  const el = document.getElementById('livePreview');
+  if (!ST.answers.Q1 || !ST.answers.Q3) {
+    el.textContent = 'Select Ship Type and Scene Context to begin.';
+    el.className = 'prompt-display empty';
+    return;
+  }
+  el.textContent = assemblePrompt();
+  el.className = 'prompt-display';
+}
+
+
+/* ============================================================
+   JS: COPY RAW PROMPT
+   ============================================================ */
+function copyPrompt() {
+  const text = document.getElementById('livePreview').textContent;
+  if (!text || text.includes('Select Ship Type')) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById('copyConfirmInline');
+    el.textContent = '✓ Copied!';
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  });
+}
+
+
+/* ============================================================
+   JS: SAVE / LOAD / RESET
+   ============================================================ */
+function saveCurrent() {
+  const saveData = {
+    answers:      ST.answers,
+    customInputs: ST.customInputs,
+  };
+  localStorage.setItem('spaceshipSave', JSON.stringify(saveData));
+  showNotice('Saved.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function loadSaved() {
+  const data = JSON.parse(localStorage.getItem('spaceshipSave') || 'null');
+  if (!data) { showNotice('No saved data found.', 'err', 'actionNotice'); return; }
+  ST.answers      = data.answers      || {};
+  ST.customInputs = data.customInputs || {};
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updateSceneToggle();
+  updatePreview();
+  showNotice('Loaded.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function clearSaved() {
+  localStorage.removeItem('spaceshipSave');
+  showNotice('Cleared.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function resetApp() {
+  ST = { answers: {}, customInputs: {} };
+  Object.keys(QUESTIONS).forEach(qid => renderField(qid));
+  updateSceneToggle();
+  updatePreview();
+  document.getElementById('narrativeOutput').classList.remove('visible');
+  document.getElementById('narrativeText').textContent = '';
+  setXaiStatus('Enter an API key above to enable generation.', '');
+  hideNotice('xaiNotice');
+}
+
+
+/* ============================================================
+   JS: NOTICE HELPERS
+   ============================================================ */
+function showNotice(msg, type, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'notice ' + type;
+}
+function hideNotice(id) {
+  const el = document.getElementById(id);
+  if (el) el.className = 'notice';
+}
+
+
+/* ============================================================
+   JS: xAI — KEY TOGGLE AND BUTTON STATE
+   ============================================================ */
+function toggleKeyVis() {
+  const inp = document.getElementById('xaiApiKey');
+  const btn = document.querySelector('.xai-toggle');
+  if (inp.type === 'password') { inp.type = 'text';     btn.textContent = 'HIDE'; }
+  else                         { inp.type = 'password'; btn.textContent = 'SHOW'; }
+}
+
+function updateGenBtn() {
+  const key = document.getElementById('xaiApiKey').value.trim();
+  document.getElementById('xaiGenBtn').disabled = !key;
+  if (!key) setXaiStatus('Enter an API key above to enable generation.', '');
+  else      setXaiStatus('Ready — build your spaceship above, then click Generate.', 'ok');
+}
+
+function setXaiStatus(msg, type) {
+  const el = document.getElementById('xaiStatus');
+  el.textContent = msg;
+  el.className   = 'xai-status' + (type ? ' ' + type : '');
+}
+
+
+/* ============================================================
+   JS: xAI — NARRATIVE PROMPT GENERATION
+   ============================================================ */
+async function generateNarrativePrompt() {
+  const key  = document.getElementById('xaiApiKey').value.trim();
+  const save = document.getElementById('xaiSaveKey').checked;
+
+  if (!key)  { showNotice('Enter your xAI API key.', 'err', 'xaiNotice'); return; }
+  if (!ST.answers.Q1) { showNotice('Select a Ship Type first.', 'err', 'xaiNotice'); return; }
+
+  if (save) localStorage.setItem('xaiKey_spaceship', key);
+  else      localStorage.removeItem('xaiKey_spaceship');
+
+  const fullPrompt = assemblePrompt();
+
+  const genBtn = document.getElementById('xaiGenBtn');
+  genBtn.disabled = true;
+  genBtn.innerHTML = '<span class="spinner"></span>Generating…';
+
+  document.getElementById('narrativeOutput').classList.remove('visible');
+  hideNotice('xaiNotice');
+  document.getElementById('xaiStatus').innerHTML =
+    '<span class="spinner"></span>Sending request to xAI…';
+  document.getElementById('xaiStatus').className = 'xai-status run';
+
+  try {
+    const res = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'grok-4.3',
+        max_tokens: 700,
+        reasoning_effort: 'none',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert AI image-prompt writer specializing in science fiction spacecraft, space environments, and starship interiors and exteriors. Given structured spaceship attributes, craft one rich, vivid, cinematic image-generation prompt. Be specific about hull materials, engine glow, lighting, atmospheric conditions, and spatial scale. Do not explain or comment. Output only the prompt.',
+          },
+          {
+            role: 'user',
+            content: `Convert these spaceship attributes into one rich, evocative image-generation prompt:\n\n${fullPrompt}`,
+          },
+        ],
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      const msg = data?.error?.message || `HTTP ${res.status}`;
+      setXaiStatus('', '');
+      showNotice(`Error: ${msg}`, 'err', 'xaiNotice');
+      return;
+    }
+
+    const text = data?.choices?.[0]?.message?.content?.trim() || '';
+    if (!text) {
+      setXaiStatus('', '');
+      showNotice('No response returned.', 'err', 'xaiNotice');
+      return;
+    }
+
+    document.getElementById('narrativeText').textContent = text;
+    document.getElementById('narrativeOutput').classList.add('visible');
+    setXaiStatus('Narrative prompt generated.', 'ok');
+
+  } catch (err) {
+    setXaiStatus('', '');
+    showNotice(`Network error: ${err.message}`, 'err', 'xaiNotice');
+  } finally {
+    genBtn.disabled = false;
+    genBtn.innerHTML = '&#9889; Generate Narrative Prompt';
+  }
+}
+
+
+/* ============================================================
+   JS: COPY NARRATIVE
+   ============================================================ */
+function copyNarrative() {
+  const text = document.getElementById('narrativeText').textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById('narrativeCopyConfirm');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  });
+}
+
+
+/* ============================================================
+   JS: BOOT
+   ============================================================ */
+window.onload = init;
+
+</script>
+</body>
+</html>

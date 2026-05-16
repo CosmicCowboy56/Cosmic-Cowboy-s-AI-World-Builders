@@ -1,0 +1,1346 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fantasy Items Generator v2.0 - Cosmic Cowboy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deepest:    #010E1F;
+  --ocean-blue: #0077B6;
+  --soft-cyan:  #90E0EF;
+  --pale-blue:  #CAF0F8;
+  --accent:     #FFD166;
+  --surface:    rgba(0,119,182,0.09);
+  --surface2:   rgba(0,119,182,0.17);
+  --border:     rgba(144,224,239,0.22);
+  --border-hi:  rgba(144,224,239,0.50);
+  --dim:        rgba(202,240,248,0.45);
+  --green:      #4ade80;
+  --red:        #f87171;
+  --glow:       0 0 12px rgba(144,224,239,0.30);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  background: var(--deepest);
+  color: var(--pale-blue);
+}
+
+::-webkit-scrollbar              { width: 8px; height: 8px; }
+::-webkit-scrollbar-track        { background: rgba(0,0,0,0.15); }
+::-webkit-scrollbar-thumb        { background: rgba(144,224,239,0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(144,224,239,0.6); }
+
+/* HEADER */
+.header {
+  height: 52px;
+  background: rgba(0,0,0,0.50);
+  border-bottom: 1px solid var(--border-hi);
+  padding: 0 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
+  opacity: 0.5;
+}
+.hdr-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.05rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--pale-blue);
+  text-shadow: 0 0 18px rgba(144,224,239,0.4);
+}
+.hdr-sub {
+  font-size: 0.62rem;
+  color: var(--soft-cyan);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+}
+
+/* PAGE TITLE BLOCK */
+.page-title {
+  text-align: center;
+  padding: 32px 24px 20px;
+  border-bottom: 1px solid var(--border);
+}
+.page-title h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  color: var(--pale-blue);
+  text-shadow: 0 0 24px rgba(144,224,239,0.35);
+  margin-bottom: 4px;
+}
+.page-title .v-tag {
+  font-size: 0.72rem;
+  color: var(--soft-cyan);
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+
+/* API KEY BAND */
+.api-band {
+  background: rgba(0,0,0,0.35);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 24px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.api-band label {
+  font-size: 0.75rem;
+  color: var(--soft-cyan);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.api-band input {
+  flex: 1;
+  min-width: 260px;
+  background: rgba(0,0,0,0.40);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.85rem;
+  padding: 6px 10px;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.api-band input:focus { border-color: var(--soft-cyan); }
+.api-status {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+.api-status.ok  { background: rgba(74,222,128,0.15); color: var(--green); border: 1px solid rgba(74,222,128,0.3); }
+.api-status.bad { background: rgba(248,113,113,0.15); color: var(--red);   border: 1px solid rgba(248,113,113,0.3); }
+
+/* MAIN LAYOUT */
+.main-wrap {
+  display: grid;
+  grid-template-columns: 1fr 400px;
+  gap: 0;
+  min-height: calc(100vh - 52px);
+  align-items: start;
+}
+.form-col {
+  padding: 24px;
+  border-right: 1px solid var(--border);
+}
+.output-col {
+  padding: 24px;
+  position: sticky;
+  top: 52px;
+  max-height: calc(100vh - 52px);
+  overflow-y: auto;
+}
+
+/* SECTION PANELS */
+.section {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 16px;
+  overflow: hidden;
+}
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--soft-cyan);
+  padding: 10px 16px;
+  background: rgba(0,0,0,0.25);
+  border-bottom: 1px solid var(--border);
+}
+.section-body { padding: 16px; }
+
+/* FIELD LABEL */
+.field-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--soft-cyan);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.field-label .multi-note {
+  font-size: 0.65rem;
+  color: var(--dim);
+  text-transform: none;
+  letter-spacing: 0.05em;
+}
+.field-wrap { margin-bottom: 14px; }
+
+/* OPTIONS GRID */
+.options-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.opt-btn {
+  background: rgba(0,0,0,0.30);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.80rem;
+  font-weight: 400;
+  padding: 5px 11px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  text-align: left;
+}
+.opt-btn:hover { background: var(--surface2); border-color: var(--soft-cyan); color: var(--pale-blue); }
+.opt-btn.selected {
+  background: rgba(0,119,182,0.35);
+  border-color: var(--soft-cyan);
+  color: var(--pale-blue);
+  box-shadow: 0 0 6px rgba(144,224,239,0.2);
+}
+
+/* TEXT INPUTS */
+.text-input {
+  width: 100%;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.85rem;
+  padding: 7px 10px;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.text-input:focus { border-color: var(--soft-cyan); }
+textarea.text-input { resize: vertical; min-height: 72px; }
+
+/* CUSTOM TAG ROW */
+.custom-row { display: flex; gap: 6px; margin-top: 6px; }
+.custom-row .text-input { flex: 1; }
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0,119,182,0.25);
+  border: 1px solid rgba(144,224,239,0.35);
+  color: var(--soft-cyan);
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.tag button {
+  background: none; border: none; color: var(--dim);
+  cursor: pointer; font-size: 0.85rem; padding: 0; line-height: 1;
+}
+.tag button:hover { color: var(--red); }
+
+/* DICE BTN */
+.dice-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--soft-cyan);
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dice-btn:hover { background: var(--surface2); }
+
+/* PRESETS */
+.presets-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.preset-btn {
+  background: rgba(255,209,102,0.08);
+  border: 1px solid rgba(255,209,102,0.30);
+  color: var(--accent);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  padding: 5px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.preset-btn:hover { background: rgba(255,209,102,0.18); }
+
+/* SAVE/LOAD ROW */
+.save-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.sec-btn {
+  background: rgba(0,0,0,0.30);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.sec-btn:hover { background: var(--surface2); color: var(--pale-blue); }
+
+/* OUTPUT COLUMN */
+.out-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--soft-cyan);
+  margin-bottom: 8px;
+}
+.live-preview {
+  background: rgba(0,0,0,0.40);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 14px;
+  font-size: 0.82rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  min-height: 120px;
+  color: var(--pale-blue);
+  margin-bottom: 14px;
+}
+
+/* GENERATE BTN */
+.gen-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--ocean-blue), rgba(0,119,182,0.7));
+  border: 1px solid var(--soft-cyan);
+  color: var(--pale-blue);
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  box-shadow: var(--glow);
+}
+.gen-btn:hover { background: linear-gradient(135deg, rgba(0,119,182,0.9), var(--ocean-blue)); box-shadow: 0 0 20px rgba(144,224,239,0.4); }
+.gen-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+/* ACTION ROW */
+.action-row { display: flex; gap: 6px; margin-top: 8px; }
+.copy-btn, .reset-btn {
+  flex: 1;
+  background: rgba(0,0,0,0.30);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.75rem;
+  padding: 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.copy-btn:hover, .reset-btn:hover { background: var(--surface2); color: var(--pale-blue); }
+
+/* OUTPUT SECTIONS */
+.out-section {
+  margin-top: 14px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.out-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding: 7px 12px;
+  background: rgba(0,0,0,0.30);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.out-section-body {
+  padding: 12px;
+  font-size: 0.82rem;
+  line-height: 1.70;
+  white-space: pre-wrap;
+  color: var(--pale-blue);
+}
+.copy-sec-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: 'Exo 2', sans-serif;
+}
+.copy-sec-btn:hover { color: var(--pale-blue); border-color: var(--soft-cyan); }
+
+/* SPINNER */
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(144,224,239,0.2); border-top-color: var(--soft-cyan); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* NOTICE */
+.notice {
+  background: rgba(0,119,182,0.12);
+  border-left: 2px solid var(--soft-cyan);
+  padding: 8px 12px;
+  border-radius: 0 4px 4px 0;
+  font-size: 0.78rem;
+  color: var(--dim);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.notice strong { color: var(--soft-cyan); font-weight: 600; }
+
+/* ERR */
+.err-msg { font-size: 0.75rem; color: var(--red); padding: 6px 10px; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); border-radius: 3px; margin-top: 8px; display: none; }
+
+/* FOOTER */
+footer {
+  text-align: center;
+  padding: 18px;
+  font-size: 0.72rem;
+  color: var(--dim);
+  border-top: 1px solid var(--border);
+  letter-spacing: 0.08em;
+}
+
+/* RESPONSIVE */
+@media (max-width: 920px) {
+  .main-wrap { grid-template-columns: 1fr; }
+  .form-col { border-right: none; border-bottom: 1px solid var(--border); }
+  .output-col { position: static; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <span class="hdr-title">COSMIC COWBOY'S AI WORLDBUILDERS</span>
+  <span class="hdr-sub">Fantasy Items Generator v2.0</span>
+</header>
+
+<!-- PAGE TITLE -->
+<div class="page-title">
+  <h1>FANTASY ITEMS GENERATOR</h1>
+  <div class="v-tag">v2.0 - xAI Powered - Stats, Lore &amp; Visual Prompt</div>
+</div>
+
+<!-- API KEY BAND -->
+<div class="api-band">
+  <label>xAI API Key</label>
+  <input type="password" id="api-key" placeholder="xai-..." autocomplete="off">
+  <span class="api-status" id="api-status" style="display:none"></span>
+</div>
+
+<!-- MAIN LAYOUT -->
+<div class="main-wrap">
+
+  <!-- FORM COLUMN -->
+  <div class="form-col">
+
+    <!-- Quick Start -->
+    <div class="section">
+      <div class="section-title">Quick Start Presets</div>
+      <div class="section-body">
+        <p style="font-size:0.78rem;color:var(--dim);margin-bottom:10px">Click any preset to auto-fill. Modify freely, then generate.</p>
+        <div class="presets-row">
+          <button class="preset-btn" onclick="applyPreset('enchantedWeapon')">Enchanted Weapon</button>
+          <button class="preset-btn" onclick="applyPreset('arcaneRing')">Arcane Ring</button>
+          <button class="preset-btn" onclick="applyPreset('legendaryCloak')">Legendary Cloak</button>
+          <button class="preset-btn" onclick="applyPreset('cursedArtifact')">Cursed Artifact</button>
+          <button class="preset-btn" onclick="applyPreset('divineScepter')">Divine Scepter</button>
+          <button class="preset-btn" onclick="applyPreset('voidDagger')">Void Dagger</button>
+          <button class="preset-btn" onclick="applyPreset('random')">Randomize All</button>
+        </div>
+        <div class="save-row">
+          <button class="sec-btn" onclick="saveCurrent()">Save</button>
+          <button class="sec-btn" onclick="loadSaved()">Load</button>
+          <button class="sec-btn" onclick="clearSaved()">Clear Saved</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Core Setup -->
+    <div class="section">
+      <div class="section-title">Core Setup</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Rule Set
+            <button class="dice-btn" onclick="randField('Q1a')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q1a-opts"></div>
+          <div class="notice" style="margin-top:10px;margin-bottom:0">
+            <strong>DnD 5e / 2024 / OSR</strong> - numeric bonuses, attunement, charges, action economy.<br>
+            <strong>System Neutral</strong> - narrative-only bonuses, no numeric values.
+          </div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Item Category
+            <button class="dice-btn" onclick="randField('Q2')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q2-opts"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">Base Item Type</div>
+          <input type="text" class="text-input" id="Q3-input" placeholder="e.g. longsword, cloak, ring, shield, lockpicks...">
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Item Name
+            <button class="dice-btn" onclick="randField('Q18')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q18-opts"></div>
+          <div id="Q18-name-wrap" style="display:none;margin-top:6px">
+            <input type="text" class="text-input" id="Q18-input" placeholder="Enter item name...">
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Power and Mechanics -->
+    <div class="section">
+      <div class="section-title">Power and Mechanics</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Power Level
+            <button class="dice-btn" onclick="randField('Q4')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q4-opts"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Rarity Classification
+            <button class="dice-btn" onclick="randField('Q20')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q20-opts"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Bonus Type <span class="multi-note">up to 3</span>
+            <button class="dice-btn" onclick="randField('Q5')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q5-opts"></div>
+          <div class="custom-row">
+            <input type="text" class="text-input" id="Q5-custom" placeholder="Custom bonus...">
+            <button class="sec-btn" onclick="addCustom('Q5')">Add</button>
+          </div>
+          <div class="tags-wrap" id="Q5-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Special Abilities <span class="multi-note">up to 3</span>
+            <button class="dice-btn" onclick="randField('Q6')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q6-opts"></div>
+          <div class="custom-row">
+            <input type="text" class="text-input" id="Q6-custom" placeholder="Custom ability...">
+            <button class="sec-btn" onclick="addCustom('Q6')">Add</button>
+          </div>
+          <div class="tags-wrap" id="Q6-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            User Requirement
+            <button class="dice-btn" onclick="randField('Q15')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q15-opts"></div>
+          <div class="custom-row">
+            <input type="text" class="text-input" id="Q15-custom" placeholder="Custom requirement...">
+            <button class="sec-btn" onclick="addCustom('Q15')">Add</button>
+          </div>
+          <div class="tags-wrap" id="Q15-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Special Condition
+            <button class="dice-btn" onclick="randField('Q14')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q14-opts"></div>
+          <div class="custom-row">
+            <input type="text" class="text-input" id="Q14-custom" placeholder="Custom condition...">
+            <button class="sec-btn" onclick="addCustom('Q14')">Add</button>
+          </div>
+          <div class="tags-wrap" id="Q14-tags"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Materials and Craft -->
+    <div class="section">
+      <div class="section-title">Materials and Craft</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Materials <span class="multi-note">up to 3</span>
+            <button class="dice-btn" onclick="randField('Q7')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q7-opts"></div>
+          <div class="custom-row">
+            <input type="text" class="text-input" id="Q7-custom" placeholder="Custom material...">
+            <button class="sec-btn" onclick="addCustom('Q7')">Add</button>
+          </div>
+          <div class="tags-wrap" id="Q7-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Cultural or Origin Style
+            <button class="dice-btn" onclick="randField('Q8')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q8-opts"></div>
+          <div class="custom-row">
+            <input type="text" class="text-input" id="Q8-custom" placeholder="Custom origin...">
+            <button class="sec-btn" onclick="addCustom('Q8')">Add</button>
+          </div>
+          <div class="tags-wrap" id="Q8-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Item Condition or Age
+            <button class="dice-btn" onclick="randField('Q9')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q9-opts"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Size or Form Factor
+            <button class="dice-btn" onclick="randField('Q10')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q10-opts"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Visual Design -->
+    <div class="section">
+      <div class="section-title">Visual Design</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Visual Design Language <span class="multi-note">up to 2</span>
+            <button class="dice-btn" onclick="randField('Q11')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q11-opts"></div>
+          <div class="custom-row">
+            <input type="text" class="text-input" id="Q11-custom" placeholder="Custom design language...">
+            <button class="sec-btn" onclick="addCustom('Q11')">Add</button>
+          </div>
+          <div class="tags-wrap" id="Q11-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Distinctive Features <span class="multi-note">up to 3</span>
+            <button class="dice-btn" onclick="randField('Q12')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q12-opts"></div>
+          <div class="custom-row">
+            <input type="text" class="text-input" id="Q12-custom" placeholder="Custom feature...">
+            <button class="sec-btn" onclick="addCustom('Q12')">Add</button>
+          </div>
+          <div class="tags-wrap" id="Q12-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Lore or Reputation
+            <button class="dice-btn" onclick="randField('Q13')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q13-opts"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Color Palette <span class="multi-note">up to 2</span>
+            <button class="dice-btn" onclick="randField('Q16')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q16-opts"></div>
+          <div class="custom-row">
+            <input type="text" class="text-input" id="Q16-custom" placeholder="Custom palette...">
+            <button class="sec-btn" onclick="addCustom('Q16')">Add</button>
+          </div>
+          <div class="tags-wrap" id="Q16-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Presentation Context
+            <button class="dice-btn" onclick="randField('Q17')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q17-opts"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Art Style
+            <button class="dice-btn" onclick="randField('Q19')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q19-opts"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Image Aspect Ratio
+            <button class="dice-btn" onclick="randField('Q21')">Randomize</button>
+          </div>
+          <div class="options-grid" id="Q21-opts"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Clarifications -->
+    <div class="section">
+      <div class="section-title">Clarifications and Overrides</div>
+      <div class="section-body">
+        <p style="font-size:0.78rem;color:var(--dim);margin-bottom:10px">Text entered here is authoritative. Specify exact bonuses, curse details, lore specifics, or anything else. Overrides all earlier selections where there is conflict.</p>
+        <textarea class="text-input" id="Q22-input" rows="4" placeholder="Enter clarifications, additions, or overrides. Leave blank if none."></textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- OUTPUT COLUMN -->
+  <div class="output-col">
+
+    <div class="out-label">Live Preview</div>
+    <div class="live-preview" id="live-preview">Fill in the form to see a live summary...</div>
+
+    <button class="gen-btn" id="gen-btn" onclick="generateFinal()">Generate Item</button>
+    <div class="err-msg" id="err-msg"></div>
+
+    <div class="action-row">
+      <button class="copy-btn" onclick="copySection('visual')">Copy Visual Prompt</button>
+      <button class="reset-btn" onclick="resetApp()">Reset All</button>
+    </div>
+
+    <div id="out-stats" class="out-section" style="display:none">
+      <div class="out-section-title">
+        Item Statistics
+        <button class="copy-sec-btn" onclick="copySection('stats')">Copy</button>
+      </div>
+      <div class="out-section-body" id="stats-body"></div>
+    </div>
+
+    <div id="out-lore" class="out-section" style="display:none">
+      <div class="out-section-title">
+        Item Lore and History
+        <button class="copy-sec-btn" onclick="copySection('lore')">Copy</button>
+      </div>
+      <div class="out-section-body" id="lore-body"></div>
+    </div>
+
+    <div id="out-visual" class="out-section" style="display:none">
+      <div class="out-section-title">
+        Visual Prompt
+        <button class="copy-sec-btn" onclick="copySection('visual')">Copy</button>
+      </div>
+      <div class="out-section-body" id="visual-body"></div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  r/CCsAIWorldBuilders - Cosmic Cowboy's AI Worldbuilders - Single unified item only
+</footer>
+
+<script>
+// ============================================================
+// QUESTION DATA
+// ============================================================
+const Q = {
+  Q1a: { type:'single', opts:[
+    'DnD 5e','DnD 2024 Revision','OSR Generic Fantasy','System Neutral'
+  ]},
+  Q2: { type:'single', opts:[
+    'Weapon','Armor or Shield','Worn Accessory','Tool or Utility',
+    'Consumable','Book or Relic','Artifact or Legendary Object',
+    'Mundane Item with Bonus','Hybrid or Unusual Item',
+    'Siege or Vehicle Weapon','Ship or Mount Equipment','Set Item or Matched Pair'
+  ]},
+  Q4: { type:'single', opts:[
+    'Mundane','Minor Enhancement','Moderate Magic',
+    'Major Enchantment','Legendary Item','Artifact-Level Relic'
+  ]},
+  Q5: { type:'multi', max:3, opts:[
+    'Attack or Damage Bonus','AC or Defense Bonus','Ability Score Bonus',
+    'Skill Check Bonus','Saving Throw Bonus','Elemental Damage or Resistance',
+    'Condition Immunity','Movement Enhancement','Perception or Awareness',
+    'Stealth or Concealment','Spellcasting Enhancement','Resource Regeneration',
+    'Utility or Quality-of-Life','Situational or Conditional','None (Narrative Only)'
+  ]},
+  Q6: { type:'multi', max:3, opts:[
+    'Activated Ability (Charges)','Passive Ongoing Effect','Reactive Effect (Triggered)',
+    'Transformation or Mode Shift','Summons or Conjures','Sentient or Semi-Aware',
+    'Scaling with User','Linked to Environment','Cursed Drawback',
+    'Blessing or Restriction','Time-Limited Effect','Single-Use Burst',
+    'Stored Spell or Effect','Adaptive or Evolving','None Beyond Bonuses'
+  ]},
+  Q7: { type:'multi', max:3, opts:[
+    'Steel or Iron','Silver or Gold','Bronze or Brass','Mithril or Rare Alloy',
+    'Adamantine','Crystal or Gemstone','Ancient or Living Wood',
+    'Bone, Horn, or Scale','Starmetal or Celestial','Shadow-Infused',
+    'Elemental Substance','Master-Crafted Mundane','Unknown or Lost Material',
+    'Dragonbone or Dragonscale','Void Stone or Dark Matter','Living Metal or Animated Steel',
+    'Petrified Mythwood','Moonstone or Sunstone','Forged Lightning',
+    'Sea-Glass or Coral Steel','Volcanic Obsidian'
+  ]},
+  Q8: { type:'single', opts:[
+    'Human Medieval','Human Eastern or Asian','Human Nomadic or Tribal',
+    'Elvish','Dwarven','Orcish or Brutalist','Fey or Otherworldly',
+    'Celestial','Infernal','Arcane or Wizard-Crafted',
+    'Ancient Lost Civilization','Unknown or Mysterious',
+    'Gnomish Clockwork','Halfling Practical','Dragonborn or Draconic',
+    'Sea or Coastal Culture','Underdark or Subterranean','Planar Traveler Craft'
+  ]},
+  Q9: { type:'single', opts:[
+    'Newly Made','Well-Maintained','Worn but Functional',
+    'Ancient but Preserved','Scarred Battle-Tested','Partially Damaged',
+    'Reforged or Repaired','Corrupted or Tainted','Dormant or Sealed','Awakening or Evolving',
+    'Mythically Pristine','Actively Deteriorating','Phase-Shifted Unstable'
+  ]},
+  Q10: { type:'single', opts:[
+    'Standard for Item Type','Compact or Concealed','Oversized',
+    'Lightweight','Heavy or Cumbersome','Variable or Shifting','Miniature','Massive or Imposing',
+    'Folding or Collapsible','Animated or Self-Moving','Worn as Tattoo or Brand','Liquid or Gas Form'
+  ]},
+  Q11: { type:'multi', max:2, opts:[
+    'Elegant Ornate','Brutal Functional','Minimalist','Organic or Living',
+    'Geometric or Precise','Asymmetric','Layered Construction',
+    'Seamless Integration','Runic or Inscribed','Crystalline or Faceted',
+    'Weathered or Scarred','Smooth or Polished',
+    'Void or Negative Space','Bioluminescent','Fractal or Recursive Pattern','Ceremonial Mask-Like'
+  ]},
+  Q12: { type:'multi', max:3, opts:[
+    'Glowing Runes or Markings','Embedded Gem or Core','Visible Energy Flow',
+    'Subtle Aura or Sheen','Shifting Color or Texture','Living Components',
+    'Unusual Weight or Balance','Iconic Silhouette','None (Understated)',
+    'Leaves Residue or Trail','Speaks or Makes Sound','Casts No Shadow or Reflection',
+    'Ages or Changes Over Time','Absorbs or Reflects Light'
+  ]},
+  Q13: { type:'single', opts:[
+    'No Known History','Minor Local Reputation','Regionally Known',
+    'Widely Famous','Legendary with Myths','Feared or Cursed',
+    'Holy or Revered','Prophesied','Lost and Rediscovered','Unknown Origin',
+    'Actively Hunted by Faction','Recently Emerged or Reactivated',
+    'Debated - Some Deny Its Existence','Part of an Incomplete Set'
+  ]},
+  Q14: { type:'single', opts:[
+    'None','Sentient','Cursed','Blessed','Soul-Bound',
+    'Dual-Natured','Sleeping or Sealed','Fragmentary',
+    'Alive','Time-Displaced','Planar','Hunted or Sought After',
+    'Oath-Bound','Phase-Locked to Location','Symbiotic with Wielder','Feeds on Something'
+  ]},
+  Q15: { type:'single', opts:[
+    'No Requirements','Minimum Ability Requirement','Class Restriction',
+    'Alignment Restriction','Ritual Attunement','Bloodline Bound',
+    'Trial or Test Required','Chosen Wielder','Conditional Activation',
+    'Profession or Background Required','Mortal Wound Attunement',
+    'Willing Sacrifice Required','Remembrance or Memory Bond','Spoken Command Phrase'
+  ]},
+  Q16: { type:'multi', max:2, opts:[
+    'Silver and Blue','Black and Crimson','Gold and White',
+    'Obsidian and Green','Bronze and Amber','Purple and Silver',
+    'Natural Wood Tones','Bone and Shadow','Prismatic or Iridescent',
+    'Rust and Copper Verdigris','Ice Blue and White','Emerald and Midnight Black',
+    'Ash Grey and Void Purple','Amber and Dark Honey','Rose Gold and Pale Pink',
+    'Storm Blue and Lightning White'
+  ]},
+  Q17: { type:'single', opts:[
+    'Item Alone on Neutral Background','Held or Worn by User',
+    'Displayed on Stand or Altar','Embedded in Environment',
+    'In Use or Activated','Technical or Schematic View','Historical or Forging Scene',
+    'Underwater or Submerged','Mid-Air or Floating','Shattered or Exploding'
+  ]},
+  Q18: { type:'single', opts:['Auto-Generate Name','Enter Custom Name'] },
+  Q19: { type:'single', opts:[
+    'Photorealism','Hyper Realism','Cinematic Realism','Fantasy Realism',
+    'Digital Painting Concept Art','Technical Illustration',
+    'Classic Fantasy Illustration','Dark Fantasy or Gothic',
+    'Watercolor Wash','Ink and Crosshatch','Retro Pulp Fantasy',
+    'Museum Display Quality','Heraldic or Emblematic'
+  ]},
+  Q20: { type:'single', opts:[
+    'Common','Uncommon','Rare','Very Rare','Legendary','Artifact','Unique'
+  ]},
+  Q21: { type:'single', opts:['Square','Portrait Tall','Landscape Wide'] },
+};
+
+// STATE
+let state = { ans:{}, custom:{} };
+
+// PRESETS
+const PRESETS = {
+  enchantedWeapon: { Q1a:'DnD 5e', Q2:'Weapon', Q3:'longsword', Q4:'Major Enchantment', Q5:['Attack or Damage Bonus','Elemental Damage or Resistance'], Q6:['Activated Ability (Charges)','Passive Ongoing Effect'], Q7:['Mithril or Rare Alloy','Crystal or Gemstone'], Q8:'Elvish', Q9:'Well-Maintained', Q10:'Standard for Item Type', Q11:['Elegant Ornate','Runic or Inscribed'], Q12:['Glowing Runes or Markings','Visible Energy Flow'], Q13:'Legendary with Myths', Q14:'Blessed', Q15:'Class Restriction', Q16:['Gold and White','Purple and Silver'], Q17:'Held or Worn by User', Q18:'Auto-Generate Name', Q19:'Cinematic Realism', Q20:'Legendary', Q21:'Portrait Tall' },
+  arcaneRing: { Q1a:'DnD 2024 Revision', Q2:'Worn Accessory', Q3:'ring', Q4:'Moderate Magic', Q5:['Spellcasting Enhancement','Resource Regeneration'], Q6:['Passive Ongoing Effect','Stored Spell or Effect'], Q7:['Crystal or Gemstone','Starmetal or Celestial'], Q8:'Arcane or Wizard-Crafted', Q9:'Ancient but Preserved', Q10:'Compact or Concealed', Q11:['Geometric or Precise','Crystalline or Faceted'], Q12:['Embedded Gem or Core','Subtle Aura or Sheen'], Q13:'Prophesied', Q14:'Sleeping or Sealed', Q15:'Ritual Attunement', Q16:['Purple and Silver','Prismatic or Iridescent'], Q17:'Displayed on Stand or Altar', Q18:'Auto-Generate Name', Q19:'Digital Painting Concept Art', Q20:'Very Rare', Q21:'Square' },
+  legendaryCloak: { Q1a:'DnD 5e', Q2:'Worn Accessory', Q3:'cloak', Q4:'Legendary Item', Q5:['Movement Enhancement','Stealth or Concealment'], Q6:['Transformation or Mode Shift','Scaling with User'], Q7:['Ancient or Living Wood','Shadow-Infused'], Q8:'Fey or Otherworldly', Q9:'Awakening or Evolving', Q10:'Variable or Shifting', Q11:['Organic or Living','Seamless Integration'], Q12:['Shifting Color or Texture','Living Components'], Q13:'Legendary with Myths', Q14:'Alive', Q15:'Chosen Wielder', Q16:['Bone and Shadow','Prismatic or Iridescent'], Q17:'Held or Worn by User', Q18:'Auto-Generate Name', Q19:'Fantasy Realism', Q20:'Legendary', Q21:'Portrait Tall' },
+  cursedArtifact: { Q1a:'OSR Generic Fantasy', Q2:'Artifact or Legendary Object', Q3:'ancient amulet', Q4:'Artifact-Level Relic', Q5:['Ability Score Bonus','Condition Immunity'], Q6:['Sentient or Semi-Aware','Cursed Drawback','Time-Limited Effect'], Q7:['Bone, Horn, or Scale','Shadow-Infused','Unknown or Lost Material'], Q8:'Infernal', Q9:'Corrupted or Tainted', Q10:'Standard for Item Type', Q11:['Brutal Functional','Weathered or Scarred'], Q12:['Glowing Runes or Markings'], Q13:'Feared or Cursed', Q14:'Cursed', Q15:'Alignment Restriction', Q16:['Black and Crimson','Bone and Shadow'], Q17:'Displayed on Stand or Altar', Q18:'Auto-Generate Name', Q19:'Dark Fantasy or Gothic', Q20:'Artifact', Q21:'Portrait Tall' },
+  divineScepter: { Q1a:'DnD 5e', Q2:'Artifact or Legendary Object', Q3:'scepter', Q4:'Artifact-Level Relic', Q5:['Spellcasting Enhancement','Condition Immunity'], Q6:['Activated Ability (Charges)','Sentient or Semi-Aware','Blessing or Restriction'], Q7:['Starmetal or Celestial','Crystal or Gemstone'], Q8:'Celestial', Q9:'Mythically Pristine', Q10:'Massive or Imposing', Q11:['Elegant Ornate','Seamless Integration'], Q12:['Glowing Runes or Markings','Visible Energy Flow'], Q13:'Holy or Revered', Q14:'Oath-Bound', Q15:'Alignment Restriction', Q16:['Gold and White','Ice Blue and White'], Q17:'Displayed on Stand or Altar', Q18:'Auto-Generate Name', Q19:'Cinematic Realism', Q20:'Artifact', Q21:'Portrait Tall' },
+  voidDagger: { Q1a:'OSR Generic Fantasy', Q2:'Weapon', Q3:'dagger', Q4:'Legendary Item', Q5:['Attack or Damage Bonus','Stealth or Concealment'], Q6:['Transformation or Mode Shift','Cursed Drawback','Passive Ongoing Effect'], Q7:['Void Stone or Dark Matter','Shadow-Infused'], Q8:'Unknown or Mysterious', Q9:'Time-Displaced', Q10:'Compact or Concealed', Q11:['Void or Negative Space','Asymmetric'], Q12:['Casts No Shadow or Reflection','Shifting Color or Texture'], Q13:'Feared or Cursed', Q14:'Symbiotic with Wielder', Q15:'Mortal Wound Attunement', Q16:['Black and Crimson','Ash Grey and Void Purple'], Q17:'Item Alone on Neutral Background', Q18:'Auto-Generate Name', Q19:'Dark Fantasy or Gothic', Q20:'Legendary', Q21:'Portrait Tall' },
+};
+
+// ============================================================
+// RENDER
+// ============================================================
+function renderAll() {
+  Object.keys(Q).forEach(qid => renderField(qid));
+}
+
+function renderField(qid) {
+  const q = Q[qid];
+  if (!q) return;
+  const cont = document.getElementById(`${qid}-opts`);
+  if (!cont) return;
+  cont.innerHTML = '';
+  q.opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt;
+    const sel = state.ans[qid];
+    if (sel) {
+      if (Array.isArray(sel) && sel.includes(opt)) btn.classList.add('selected');
+      else if (sel === opt) btn.classList.add('selected');
+    }
+    btn.onclick = () => handleClick(qid, opt);
+    cont.appendChild(btn);
+  });
+
+  // Name field toggle
+  if (qid === 'Q18') {
+    const sel = state.ans.Q18;
+    document.getElementById('Q18-name-wrap').style.display =
+      sel === 'Enter Custom Name' ? 'block' : 'none';
+  }
+
+  renderTags(qid);
+}
+
+function handleClick(qid, opt) {
+  const q = Q[qid];
+  if (q.type === 'single') {
+    state.ans[qid] = opt;
+  } else {
+    let cur = state.ans[qid] || [];
+    if (!Array.isArray(cur)) cur = [];
+    if (cur.includes(opt)) {
+      state.ans[qid] = cur.filter(v => v !== opt);
+    } else if (cur.length < q.max) {
+      state.ans[qid] = [...cur, opt];
+    } else {
+      return; // max reached
+    }
+  }
+  renderField(qid);
+  updatePreview();
+}
+
+function addCustom(qid) {
+  const inp = document.getElementById(`${qid}-custom`);
+  const val = inp.value.trim();
+  if (!val) return;
+  if (!state.custom[qid]) state.custom[qid] = [];
+  state.custom[qid].push(val);
+  inp.value = '';
+  renderTags(qid);
+  updatePreview();
+}
+
+function removeCustom(qid, idx) {
+  state.custom[qid].splice(idx, 1);
+  renderTags(qid);
+  updatePreview();
+}
+
+function renderTags(qid) {
+  const wrap = document.getElementById(`${qid}-tags`);
+  if (!wrap) return;
+  const tags = state.custom[qid] || [];
+  wrap.innerHTML = tags.map((t, i) =>
+    `<span class="tag">${t}<button onclick="removeCustom('${qid}',${i})">x</button></span>`
+  ).join('');
+}
+
+function randField(qid) {
+  const q = Q[qid];
+  if (!q) return;
+  if (q.type === 'single') {
+    state.ans[qid] = q.opts[Math.floor(Math.random() * q.opts.length)];
+  } else {
+    const count = Math.floor(Math.random() * q.max) + 1;
+    state.ans[qid] = [...q.opts].sort(() => 0.5 - Math.random()).slice(0, count);
+  }
+  renderField(qid);
+  updatePreview();
+}
+
+// ============================================================
+// PRESETS
+// ============================================================
+function applyPreset(name) {
+  if (name === 'random') { randomizeAll(); return; }
+  const p = PRESETS[name];
+  if (!p) return;
+  state.ans = {};
+  Object.assign(state.ans, p);
+  if (p.Q3) document.getElementById('Q3-input').value = p.Q3;
+  renderAll();
+  updatePreview();
+}
+
+function randomizeAll() {
+  state.ans = {};
+  const baseItems = ['longsword','cloak','ring','shield','lockpicks','lantern',
+    'tome','gauntlet','mask','amulet','boots','belt','crown','dagger','staff',
+    'chalice','crown','scepter','flask','compass','mirror','tapestry','key',
+    'box or coffer','figurine','horn','quiver','bracer','gorget','pauldron',
+    'helm','circlet','brooch','pendant','locket','tome','scroll','wand','orb','rod'];
+  document.getElementById('Q3-input').value = baseItems[Math.floor(Math.random() * baseItems.length)];
+  Object.keys(Q).forEach(qid => {
+    if (qid === 'Q18') { state.ans.Q18 = 'Auto-Generate Name'; return; }
+    const q = Q[qid];
+    if (q.type === 'single') {
+      state.ans[qid] = q.opts[Math.floor(Math.random() * q.opts.length)];
+    } else {
+      const count = Math.floor(Math.random() * q.max) + 1;
+      state.ans[qid] = [...q.opts].sort(() => 0.5 - Math.random()).slice(0, count);
+    }
+  });
+  renderAll();
+  updatePreview();
+}
+
+// ============================================================
+// HELPERS
+// ============================================================
+function getAns(qid) {
+  const a = state.ans[qid];
+  const customs = state.custom[qid] || [];
+  if (!a && customs.length === 0) return '';
+  const base = Array.isArray(a) ? a.join(', ') : (a || '');
+  return [base, ...customs].filter(Boolean).join(', ');
+}
+
+function updatePreview() {
+  const parts = [];
+  const cat = getAns('Q2'); if (cat) parts.push(`Category: ${cat}`);
+  const base = document.getElementById('Q3-input').value.trim(); if (base) parts.push(`Item: ${base}`);
+  const rules = getAns('Q1a'); if (rules) parts.push(`Rules: ${rules}`);
+  const power = getAns('Q4'); if (power) parts.push(`Power: ${power}`);
+  const rarity = getAns('Q20'); if (rarity) parts.push(`Rarity: ${rarity}`);
+  const bonuses = getAns('Q5'); if (bonuses) parts.push(`Bonuses: ${bonuses}`);
+  const abilities = getAns('Q6'); if (abilities) parts.push(`Abilities: ${abilities}`);
+  const mats = getAns('Q7'); if (mats) parts.push(`Materials: ${mats}`);
+  const culture = getAns('Q8'); if (culture) parts.push(`Origin: ${culture}`);
+  const condition = getAns('Q14'); if (condition && condition !== 'None') parts.push(`Condition: ${condition}`);
+  const lore = getAns('Q13'); if (lore) parts.push(`Lore standing: ${lore}`);
+  const style = getAns('Q19'); if (style) parts.push(`Art style: ${style}`);
+  document.getElementById('live-preview').textContent =
+    parts.length ? parts.join('\n') : 'Fill in the form to see a live summary...';
+}
+
+// ============================================================
+// GENERATE
+// ============================================================
+async function generateFinal() {
+  const apiKey = document.getElementById('api-key').value.trim();
+  if (!apiKey) { showErr('Enter your xAI API key above.'); return; }
+
+  const ruleSet = getAns('Q1a') || 'System Neutral';
+  const category = getAns('Q2') || 'item';
+  const baseItem = document.getElementById('Q3-input').value.trim() || 'item';
+  const customName = document.getElementById('Q18-input')?.value.trim() || '';
+  const nameMode = state.ans.Q18 || 'Auto-Generate Name';
+  const power = getAns('Q4');
+  const rarity = getAns('Q20');
+  const bonuses = getAns('Q5');
+  const abilities = getAns('Q6');
+  const materials = getAns('Q7');
+  const culture = getAns('Q8');
+  const condition9 = getAns('Q9');
+  const size = getAns('Q10');
+  const design = getAns('Q11');
+  const features = getAns('Q12');
+  const lore = getAns('Q13');
+  const specialCond = getAns('Q14');
+  const requirements = getAns('Q15');
+  const palette = getAns('Q16');
+  const presentation = getAns('Q17');
+  const artStyle = getAns('Q19');
+  const aspect = getAns('Q21');
+  const clarifications = document.getElementById('Q22-input').value.trim();
+
+  const systemPrompt = `You are a fantasy item designer and game master who produces structured item output for tabletop RPGs and AI art generation.
+
+RULE SYSTEM: ${ruleSet}
+${ruleSet === 'System Neutral'
+  ? 'System Neutral items use ONLY narrative descriptions. No numeric values, no +X bonuses, no numeric AC, no specific charges counts, no dice notation. All effects are described qualitatively.'
+  : ruleSet.startsWith('DnD') || ruleSet === 'DnD 5e' || ruleSet.includes('2024')
+    ? 'Use D&D 5e/2024 conventions: attunement where appropriate, numeric bonuses (+1/+2/+3), specific charges (e.g. 3 charges, regain 1d3 at dawn), action economy (bonus action, reaction, action), saving throw DCs, spell slots. Scale bonuses to the power level and rarity provided.'
+    : 'OSR conventions: simple numeric bonuses, rugged descriptions, old-school flavor. Use turn-based language. Keep mechanics sparse and referee-friendly. Avoid complex condition tracking.'
+}
+
+Return ONLY a JSON object with exactly these three keys. No preamble, no markdown, no backticks:
+{
+  "stats": "...",
+  "lore": "...",
+  "visual_prompt": "..."
+}
+
+stats: 5-12 lines of formatted item statistics. Include item name, category, rarity, power level, materials, and all applicable mechanical bonuses/abilities/requirements in the correct format for the chosen rule system. If cursed or sentient, include appropriate game mechanics.
+
+lore: 3-4 sentences of evocative in-world history, origin, and reputation. Specific names, events, and places are encouraged. Match the tone to the rule system (high fantasy for DnD, grittier for OSR, purely descriptive for System Neutral).
+
+visual_prompt: A single dense paragraph optimized for AI image generation. Include the item type, materials, construction details, visual design language, distinctive features, color palette, presentation context, and art style. End with: "Ultra-fine surface detail. Cinematic physically plausible lighting. Single unified item, all effects integrated into the item itself, no floating or detached elements. Professional production-grade rendering."`;
+
+  const userMsg = `Generate a fantasy item with the following specifications:
+
+Category: ${category}
+Base Item Type: ${baseItem}
+Item Name: ${nameMode === 'Enter Custom Name' && customName ? customName : 'Auto-generate an evocative name'}
+Rule System: ${ruleSet}
+Power Level: ${power}
+Rarity: ${rarity}
+Bonus Types: ${bonuses}
+Special Abilities: ${abilities}
+Materials: ${materials}
+Cultural Origin: ${culture}
+Condition or Age: ${condition9}
+Size or Form Factor: ${size}
+Visual Design Language: ${design}
+Distinctive Features: ${features}
+Lore Standing: ${lore}
+Special Condition: ${specialCond}
+User Requirement: ${requirements}
+Color Palette: ${palette}
+Presentation Context: ${presentation}
+Art Style: ${artStyle}
+Aspect Ratio: ${aspect}
+${clarifications ? `Clarifications and Overrides: ${clarifications}` : ''}
+
+Stay strictly within the ${ruleSet} rule system conventions. The item should be internally consistent and game-ready.`;
+
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Generating...';
+  hideErr();
+  ['out-stats','out-lore','out-visual'].forEach(id => document.getElementById(id).style.display = 'none');
+
+  try {
+    const resp = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
+      },
+      body: JSON.stringify({
+        model: 'grok-4.3',
+        max_tokens: 1200,
+        reasoning_effort: 'none',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user', content: userMsg }
+        ]
+      })
+    });
+
+    if (!resp.ok) {
+      const e = await resp.json().catch(() => ({}));
+      throw new Error(e.error?.message || `API error ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const raw = data.choices?.[0]?.message?.content || '';
+
+    // Parse JSON from response
+    let parsed;
+    try {
+      const cleaned = raw.replace(/```json|```/g, '').trim();
+      parsed = JSON.parse(cleaned);
+    } catch {
+      // Fallback: try to extract JSON block
+      const match = raw.match(/\{[\s\S]*\}/);
+      if (match) parsed = JSON.parse(match[0]);
+      else throw new Error('Could not parse response. Try again.');
+    }
+
+    document.getElementById('stats-body').textContent = parsed.stats || '';
+    document.getElementById('lore-body').textContent = parsed.lore || '';
+    document.getElementById('visual-body').textContent = parsed.visual_prompt || '';
+
+    ['out-stats','out-lore','out-visual'].forEach(id =>
+      document.getElementById(id).style.display = 'block');
+
+    // Update live preview with visual prompt
+    document.getElementById('live-preview').textContent = parsed.visual_prompt || raw;
+
+    const statusEl = document.getElementById('api-status');
+    statusEl.textContent = 'API OK';
+    statusEl.className = 'api-status ok';
+    statusEl.style.display = 'inline-block';
+
+  } catch(err) {
+    showErr(err.message);
+    const statusEl = document.getElementById('api-status');
+    statusEl.textContent = 'API Error';
+    statusEl.className = 'api-status bad';
+    statusEl.style.display = 'inline-block';
+  } finally {
+    btn.disabled = false;
+    btn.textContent = 'Generate Item';
+  }
+}
+
+function showErr(msg) {
+  const el = document.getElementById('err-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideErr() {
+  document.getElementById('err-msg').style.display = 'none';
+}
+
+function copySection(which) {
+  let text = '';
+  if (which === 'stats') text = document.getElementById('stats-body').textContent;
+  else if (which === 'lore') text = document.getElementById('lore-body').textContent;
+  else text = document.getElementById('visual-body').textContent ||
+               document.getElementById('live-preview').textContent;
+  if (!text || text === 'Fill in the form to see a live summary...') return;
+  navigator.clipboard.writeText(text).catch(() => {});
+}
+
+// ============================================================
+// SAVE / LOAD / RESET
+// ============================================================
+function saveCurrent() {
+  const snapshot = {
+    ans: state.ans,
+    custom: state.custom,
+    Q3: document.getElementById('Q3-input').value,
+    Q18i: document.getElementById('Q18-input')?.value || '',
+    Q22: document.getElementById('Q22-input').value
+  };
+  localStorage.setItem('cc_fantasy_items_v2', JSON.stringify(snapshot));
+  alert('Saved.');
+}
+
+function loadSaved() {
+  const raw = localStorage.getItem('cc_fantasy_items_v2');
+  if (!raw) { alert('No saved data.'); return; }
+  const d = JSON.parse(raw);
+  state.ans = d.ans || {};
+  state.custom = d.custom || {};
+  if (d.Q3) document.getElementById('Q3-input').value = d.Q3;
+  if (d.Q18i) document.getElementById('Q18-input').value = d.Q18i;
+  if (d.Q22) document.getElementById('Q22-input').value = d.Q22;
+  renderAll();
+  updatePreview();
+  alert('Loaded.');
+}
+
+function clearSaved() {
+  localStorage.removeItem('cc_fantasy_items_v2');
+  alert('Cleared.');
+}
+
+function resetApp() {
+  state = { ans:{}, custom:{} };
+  document.getElementById('Q3-input').value = '';
+  if (document.getElementById('Q18-input')) document.getElementById('Q18-input').value = '';
+  document.getElementById('Q22-input').value = '';
+  document.getElementById('live-preview').textContent = 'Fill in the form to see a live summary...';
+  ['out-stats','out-lore','out-visual'].forEach(id => document.getElementById(id).style.display = 'none');
+  hideErr();
+  renderAll();
+}
+
+// ============================================================
+// API KEY PERSISTENCE
+// ============================================================
+function confirmConnect() {
+  const key = document.getElementById('api-key').value.trim();
+  if (key) {
+    localStorage.setItem('xaiKey_fantasyItems', key);
+  }
+}
+
+function restoreApiKey() {
+  const saved = localStorage.getItem('xaiKey_fantasyItems');
+  if (saved) {
+    document.getElementById('api-key').value = saved;
+  }
+}
+
+// ============================================================
+// TEXT INPUT LISTENERS
+// ============================================================
+document.getElementById('Q3-input').addEventListener('input', updatePreview);
+document.getElementById('Q22-input').addEventListener('input', updatePreview);
+document.getElementById('api-key').addEventListener('change', confirmConnect);
+document.getElementById('api-key').addEventListener('blur', confirmConnect);
+
+// Q18 toggle
+document.addEventListener('DOMContentLoaded', () => {
+  // handled in renderField
+});
+
+// ============================================================
+// INIT
+// ============================================================
+restoreApiKey();
+renderAll();
+updatePreview();
+</script>
+</body>
+</html>

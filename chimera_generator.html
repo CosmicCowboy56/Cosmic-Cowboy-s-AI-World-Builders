@@ -1,0 +1,1365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- ============================================================
+     HEAD: Page metadata and Google Fonts import
+     ============================================================ -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Chimera Generator v2.0 - Cosmic Cowboy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* ============================================================
+   CSS: VARIABLES
+   ============================================================ */
+:root {
+  --dark-blue:   #023E8A;
+  --ocean-blue:  #0077B6;
+  --soft-cyan:   #90E0EF;
+  --pale-blue:   #CAF0F8;
+  --deepest:     #010E1F;
+  --surface:     rgba(0,119,182,0.09);
+  --surface2:    rgba(0,119,182,0.17);
+  --border:      rgba(144,224,239,0.22);
+  --border-hi:   rgba(144,224,239,0.50);
+  --dim:         rgba(202,240,248,0.45);
+  --green:       #4ade80;
+  --red:         #f87171;
+  --glow:        0 0 12px rgba(144,224,239,0.30);
+  --accent:      #FFD166;
+}
+
+/* ============================================================
+   CSS: RESET AND BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  background: var(--deepest);
+  color: var(--pale-blue);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
+/* ============================================================
+   CSS: SCROLLBARS
+   ============================================================ */
+::-webkit-scrollbar              { width: 8px; height: 8px; }
+::-webkit-scrollbar-track        { background: rgba(0,0,0,0.15); border-radius: 4px; }
+::-webkit-scrollbar-thumb        { background: rgba(144,224,239,0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(144,224,239,0.6); }
+
+/* ============================================================
+   CSS: HEADER
+   ============================================================ */
+.header {
+  flex-shrink: 0;
+  height: 52px;
+  background: rgba(0,0,0,0.40);
+  border-bottom: 1px solid var(--border-hi);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 10;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
+  opacity: 0.5;
+}
+
+.hdr-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.10rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--pale-blue);
+  text-shadow: 0 0 18px rgba(144,224,239,0.4);
+}
+
+.hdr-sub {
+  font-size: 0.60rem;
+  color: var(--soft-cyan);
+  letter-spacing: 0.2em;
+  margin-top: 2px;
+}
+
+/* ============================================================
+   CSS: API BAR
+   ============================================================ */
+.api-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  padding: 7px 20px;
+  background: rgba(0,0,0,0.25);
+  border-bottom: 1px solid var(--border);
+}
+
+.api-lbl {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--soft-cyan);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* ============================================================
+   CSS: SHARED INPUTS
+   ============================================================ */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.86rem;
+  font-weight: 300;
+  border-radius: 4px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--soft-cyan);
+  box-shadow: var(--glow);
+}
+
+input::placeholder, textarea::placeholder { color: var(--dim); }
+
+select option           { background: #011830; color: var(--pale-blue); }
+select[multiple]        { min-height: 160px; padding: 4px; }
+select[multiple] option { padding: 4px 8px; border-radius: 2px; }
+select[multiple] option:checked { background: rgba(144,224,239,0.2); color: var(--pale-blue); }
+
+/* ============================================================
+   CSS: SHARED BUTTONS
+   ============================================================ */
+.btn {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--soft-cyan);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.btn:hover:not(:disabled) { border-color: var(--soft-cyan); background: rgba(144,224,239,0.10); }
+.btn:disabled              { opacity: 0.30; cursor: not-allowed; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: 0 3px 14px rgba(0,119,182,0.40);
+}
+
+.btn-danger {
+  border-color: rgba(248,113,113,0.3);
+  color: rgba(248,113,113,0.7);
+}
+.btn-danger:hover:not(:disabled) {
+  background: rgba(248,113,113,0.10);
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.btn-rand {
+  width: 28px; height: 28px;
+  padding: 0; flex-shrink: 0;
+  font-size: 0.85rem;
+  align-self: flex-end; margin-bottom: 1px;
+  color: var(--dim);
+}
+.btn-rand:hover:not(:disabled) { color: var(--pale-blue); }
+
+.btn-sm { padding: 4px 10px; font-size: 0.66rem; }
+
+/* ============================================================
+   CSS: PAGE BODY AND LAYOUT
+   ============================================================ */
+.page-body {
+  flex: 1;
+  padding: 20px;
+  max-width: 1300px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.action-bar {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  padding: 0 0 14px 0;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 16px;
+}
+
+.main-cols {
+  display: grid;
+  grid-template-columns: 1fr 340px;
+  gap: 20px;
+  align-items: start;
+}
+
+.chat-col { position: sticky; top: 20px; }
+
+/* ============================================================
+   CSS: SECTION HEADINGS
+   ============================================================ */
+.sec-label {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  text-transform: uppercase;
+  padding: 8px 0 7px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 14px;
+  margin-top: 22px;
+}
+.sec-label:first-of-type { margin-top: 0; }
+
+/* ============================================================
+   CSS: FORM ROWS AND LABELS
+   ============================================================ */
+.form-row { margin-bottom: 14px; }
+.form-row:last-child { margin-bottom: 0; }
+
+.field-lbl {
+  display: block;
+  font-size: 0.66rem;
+  color: var(--soft-cyan);
+  letter-spacing: 0.10em;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+.field-hint {
+  font-size: 0.68rem;
+  color: var(--dim);
+  margin-top: 4px;
+  font-style: italic;
+  line-height: 1.45;
+}
+
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+
+.q-row { display: flex; gap: 6px; align-items: flex-end; }
+.q-row > :first-child { flex: 1; min-width: 0; }
+
+.custom-in { margin-top: 6px; }
+.custom-in input { font-size: 0.78rem; padding: 5px 8px; }
+
+.max-warn { font-size: 0.68rem; color: var(--red); margin-top: 3px; display: none; }
+.max-warn.show { display: block; }
+
+/* ============================================================
+   CSS: CONTRIBUTOR ROWS
+   ============================================================ */
+.contrib-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 8px; }
+
+.contrib-item {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  padding: 10px 12px;
+  position: relative;
+}
+
+.contrib-lbl {
+  font-size: 0.62rem;
+  color: var(--soft-cyan);
+  letter-spacing: 0.10em;
+  margin-bottom: 7px;
+}
+
+.type-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+
+.type-tab {
+  flex: 1; padding: 3px;
+  font-size: 0.62rem; letter-spacing: 0.07em;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--dim);
+  cursor: pointer; border-radius: 3px;
+  font-family: 'Exo 2', sans-serif;
+  transition: all 0.15s;
+}
+.type-tab.active { border-color: var(--soft-cyan); color: var(--pale-blue); background: rgba(144,224,239,0.10); }
+
+.contrib-row { display: grid; grid-template-columns: 1fr 64px; gap: 7px; align-items: start; }
+.pct-in      { text-align: center; }
+
+.img-drop {
+  background: rgba(0,0,0,0.20);
+  border: 1px dashed var(--border);
+  border-radius: 4px; padding: 8px;
+  text-align: center; cursor: pointer;
+  font-size: 0.66rem; color: var(--dim);
+  transition: all 0.2s;
+  min-height: 42px;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 3px;
+}
+.img-drop:hover  { border-color: var(--soft-cyan); color: var(--pale-blue); }
+.img-drop img    { max-height: 48px; max-width: 100%; border-radius: 3px; }
+
+.rm-btn {
+  position: absolute; top: 8px; right: 10px;
+  background: none; border: none;
+  color: rgba(248,113,113,0.45);
+  cursor: pointer; font-size: 0.9rem; line-height: 1;
+  transition: color 0.2s;
+}
+.rm-btn:hover { color: var(--red); }
+
+.pct-total      { font-size: 0.72rem; color: var(--dim); text-align: right; margin-top: 5px; }
+.pct-total.ok   { color: var(--green); }
+.pct-total.over { color: var(--red); }
+
+.add-contrib {
+  width: 100%; margin-top: 4px; padding: 7px;
+  border: 1px dashed var(--border);
+  background: transparent; color: var(--dim);
+  cursor: pointer; border-radius: 4px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.68rem; letter-spacing: 0.07em;
+  transition: all 0.2s;
+}
+.add-contrib:hover { border-color: var(--soft-cyan); color: var(--pale-blue); }
+
+.img-notice {
+  font-size: 0.66rem;
+  color: rgba(255,209,102,0.55);
+  font-style: italic;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+/* ============================================================
+   CSS: CHAT PANEL (sticky sidebar)
+   ============================================================ */
+.chat-panel {
+  display: flex;
+  flex-direction: column;
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.panel-head {
+  padding: 8px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.22);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-transform: uppercase;
+}
+
+.chat-msgs {
+  height: 440px;
+  overflow-y: auto;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+}
+
+.msg {
+  padding: 8px 12px;
+  border-radius: 5px;
+  font-size: 0.80rem;
+  line-height: 1.55;
+  word-break: break-word;
+}
+.msg.user      { background: rgba(0,0,0,0.25); border: 1px solid var(--border); align-self: flex-end; max-width: 90%; }
+.msg.assistant { background: rgba(0,119,182,0.12); border: 1px solid var(--border); align-self: flex-start; max-width: 95%; }
+.msg.system    { color: var(--dim); font-size: 0.74rem; text-align: center; font-style: italic; border: none; background: none; }
+
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+  padding: 8px 12px;
+  border-top: 1px solid var(--border);
+}
+.chat-input-row textarea { flex: 1; resize: none; height: 56px; font-size: 0.82rem; }
+
+/* ============================================================
+   CSS: OUTPUT PANEL (below both columns)
+   ============================================================ */
+.output-panel {
+  margin-top: 20px;
+  background: rgba(0,0,0,0.20);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.out-head {
+  padding: 7px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.22);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  text-transform: uppercase;
+}
+
+.out-body {
+  padding: 12px 16px;
+  font-size: 0.88rem;
+  line-height: 1.68;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 100px;
+  max-height: 320px;
+  overflow-y: auto;
+}
+.out-body.empty { color: var(--dim); font-style: italic; }
+
+/* ============================================================
+   CSS: SPINNER
+   ============================================================ */
+.spinner {
+  display: inline-block;
+  width: 11px; height: 11px;
+  border: 2px solid rgba(144,224,239,0.2);
+  border-top-color: var(--soft-cyan);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ============================================================
+   CSS: RESPONSIVE
+   ============================================================ */
+@media (max-width: 860px) {
+  .main-cols { grid-template-columns: 1fr; }
+  .chat-col  { position: static; }
+  .grid2     { grid-template-columns: 1fr; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HTML: HEADER
+     ============================================================ -->
+<header class="header">
+  <div>
+    <div class="hdr-title">&#129516; CLAUDE CHIMERA GENERATOR</div>
+    <div class="hdr-sub">v2.0 &mdash; COSMIC COWBOY'S AI WORLDBUILDERS</div>
+  </div>
+</header>
+
+<!-- ============================================================
+     HTML: API BAR
+     ============================================================ -->
+<div class="api-bar">
+  <span class="api-lbl">xAI API KEY</span>
+  <input type="password" id="apiKey" placeholder="your-xai-api-key"
+    style="flex:1;min-width:100px;" oninput="resetConnect()">
+  <span style="font-size:0.62rem;color:var(--dim);white-space:nowrap;">
+    Powered by xAI &mdash; grok-4.3
+  </span>
+  <button class="btn btn-connect" id="connectBtn" onclick="confirmConnect()" style="font-size:0.66rem;padding:6px 16px;">CONNECT</button>
+</div>
+
+<!-- ============================================================
+     HTML: PAGE BODY
+     ============================================================ -->
+<div class="page-body">
+
+  <!-- Action buttons -->
+  <div class="action-bar">
+    <button class="btn" style="color:var(--accent);border-color:rgba(255,209,102,0.3);" onclick="randomizeAll()">&#9861; RANDOMIZE ALL</button>
+    <button class="btn btn-danger" onclick="clearAll()">&#10005; CLEAR</button>
+  </div>
+
+  <!-- Two-column layout -->
+  <div class="main-cols">
+
+    <!-- ======================================================
+         LEFT: FORM
+         ====================================================== -->
+    <div>
+
+      <!-- CONTRIBUTORS -->
+      <div class="sec-label">&#11042; Contributors</div>
+
+      <div class="form-row">
+        <div class="contrib-list" id="contribList"></div>
+        <button class="add-contrib" id="addBtn" onclick="addContrib()">+ ADD CONTRIBUTOR (MAX 4)</button>
+        <div class="pct-total" id="pctTotal">Total: 0%</div>
+        <p class="field-hint">Percentages must total 100. All contributors are fully merged into one continuous organism - not layered or overlaid.</p>
+        <p class="img-notice">Uploaded images are sent to xAI's servers for processing. Do not upload images you do not have rights to share.</p>
+      </div>
+
+      <!-- CREATURE -->
+      <div class="sec-label">&#9675; Creature</div>
+
+      <div class="grid2">
+        <div class="form-row">
+          <label class="field-lbl">BASE MODE</label>
+          <div class="q-row">
+            <select id="baseMode">
+              <option value="">- Select -</option>
+              <option>Humanoid</option>
+              <option>Beast</option>
+              <option>Adaptive</option>
+            </select>
+            <button class="btn btn-rand" onclick="randSingle('baseMode',['Humanoid','Beast','Adaptive'])">&#9861;</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="field-lbl">GENDER</label>
+          <div class="q-row">
+            <select id="gender">
+              <option value="">- Select -</option>
+              <option>Male</option>
+              <option>Female</option>
+              <option>Neutral</option>
+            </select>
+            <button class="btn btn-rand" onclick="randSingle('gender',['Male','Female','Neutral'])">&#9861;</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="field-lbl">SCALE</label>
+          <div class="q-row">
+            <select id="scale">
+              <option value="">- Select -</option>
+              <option>Tiny</option>
+              <option>Small</option>
+              <option>Medium</option>
+              <option>Large</option>
+              <option>Huge</option>
+              <option>Giant</option>
+              <option>Low-rise</option>
+              <option>High-rise</option>
+              <option>Titanic</option>
+              <option>Cosmic</option>
+            </select>
+            <button class="btn btn-rand" onclick="randSingle('scale',['Tiny','Small','Medium','Large','Huge','Giant','Low-rise','High-rise','Titanic','Cosmic'])">&#9861;</button>
+          </div>
+        </div>
+        <div class="form-row">
+          <label class="field-lbl">IMAGE SIZE</label>
+          <div class="q-row">
+            <select id="imgSize">
+              <option value="">- Select -</option>
+              <option>Square (1:1)</option>
+              <option>Portrait (2:3)</option>
+              <option>Landscape (3:2)</option>
+            </select>
+            <button class="btn btn-rand" onclick="randSingle('imgSize',['Square (1:1)','Portrait (2:3)','Landscape (3:2)'])">&#9861;</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="form-row">
+        <label class="field-lbl">ART STYLE</label>
+        <div class="q-row">
+          <select id="artStyle">
+            <option value="">- Select -</option>
+            <option>Photorealism</option>
+            <option>Hyper realism</option>
+            <option>Cinematic realism</option>
+            <option>Surrealism</option>
+            <option>Fantasy realism</option>
+            <option>Digital painting / Concept art</option>
+            <option>Impressionistic realism</option>
+            <option>Classical oil painting</option>
+            <option>Anime</option>
+            <option>Low-poly stylized</option>
+            <option>Comic book / Graphic novel</option>
+            <option>Watercolor</option>
+            <option>Sketch / Line art</option>
+            <option>Dark fantasy / Gothic</option>
+            <option>Cel-shaded / Toon shader</option>
+            <option>Retro / Vintage poster art</option>
+          </select>
+          <button class="btn btn-rand" onclick="randSingle('artStyle',['Photorealism','Hyper realism','Cinematic realism','Fantasy realism','Digital painting / Concept art','Dark fantasy / Gothic','Classical oil painting','Watercolor','Anime'])">&#9861;</button>
+        </div>
+        <div class="custom-in"><input type="text" id="artStyleCustom" placeholder="Or type a custom art style..."></div>
+      </div>
+
+      <!-- APPEARANCE -->
+      <div class="sec-label">&#9673; Appearance</div>
+
+      <div class="form-row">
+        <label class="field-lbl">SKIN / BODY COVERING PALETTE</label>
+        <div class="q-row">
+          <select id="palette">
+            <option value="">- Select -</option>
+            <option>Natural</option>
+            <option>European</option>
+            <option>East Asian</option>
+            <option>African</option>
+            <option>Fantasy Arcane</option>
+            <option>Jewel</option>
+            <option>Fire</option>
+            <option>Chromatic Shift</option>
+            <option>Obsidian</option>
+            <option>Verdantflame</option>
+            <option>Crystalfire</option>
+            <option>Mirage</option>
+          </select>
+          <button class="btn btn-rand" onclick="randSingle('palette',['Natural','Fantasy Arcane','Jewel','Fire','Chromatic Shift','Obsidian','Verdantflame','Crystalfire','Mirage'])">&#9861;</button>
+        </div>
+        <div class="custom-in"><input type="text" id="paletteCustom" placeholder="Or type a custom palette..."></div>
+      </div>
+
+      <div class="form-row">
+        <label class="field-lbl">CLOTHING / ADORNMENT <span style="opacity:0.6;">(max 2)</span></label>
+        <div class="q-row">
+          <select id="clothing" multiple onchange="enforceMax(this,2,'clothingWarn')">
+            <option>Ceremonial</option>
+            <option>Modern western</option>
+            <option>Organic</option>
+            <option>Armor</option>
+            <option>Ornate</option>
+            <option>Magical</option>
+            <option>Cultural</option>
+            <option>Integrated</option>
+            <option>Minimal or auto-cover</option>
+            <option>Futuristic / Sci-fi</option>
+          </select>
+          <button class="btn btn-rand" onclick="randMulti('clothing',2)">&#9861;</button>
+        </div>
+        <div class="max-warn" id="clothingWarn">Maximum 2 selections.</div>
+        <div class="custom-in"><input type="text" id="clothingCustom" placeholder="Or type custom clothing / adornment..."></div>
+      </div>
+
+      <!-- ENVIRONMENT -->
+      <div class="sec-label">&#9711; Environment</div>
+
+      <div class="form-row">
+        <label class="field-lbl">BACKGROUND <span style="opacity:0.6;">(max 3)</span></label>
+        <div class="q-row">
+          <select id="background" multiple onchange="enforceMax(this,3,'bgWarn')">
+            <option>Forest or jungle</option>
+            <option>Underwater</option>
+            <option>Desert canyon</option>
+            <option>Sand dunes</option>
+            <option>Volcanic wasteland</option>
+            <option>Ocean surface</option>
+            <option>Mountain pass</option>
+            <option>Cliffside</option>
+            <option>Tundra</option>
+            <option>Swamp or marsh</option>
+            <option>Urban cityscape</option>
+            <option>Ancient ruins</option>
+            <option>Underground cave</option>
+            <option>Open sky or aerial</option>
+            <option>Cosmic void</option>
+            <option>Castle interior</option>
+            <option>Barren wasteland</option>
+            <option>Crystalline formation</option>
+            <option>Battlefield</option>
+            <option>Ethereal plane</option>
+          </select>
+          <button class="btn btn-rand" onclick="randMulti('background',3)">&#9861;</button>
+        </div>
+        <div class="max-warn" id="bgWarn">Maximum 3 selections.</div>
+        <div class="custom-in"><input type="text" id="backgroundCustom" placeholder="Or type a custom background..."></div>
+      </div>
+
+      <div class="form-row">
+        <label class="field-lbl">LIGHTING / ATMOSPHERE <span style="opacity:0.6;">(max 3)</span></label>
+        <div class="q-row">
+          <select id="lighting" multiple onchange="enforceMax(this,3,'lightWarn')">
+            <option>Bright daylight</option>
+            <option>Sunset glow</option>
+            <option>Moonlit night</option>
+            <option>Foggy twilight</option>
+            <option>Overcast morning</option>
+            <option>Stormy sky</option>
+            <option>Volcanic glow</option>
+            <option>Starlit void</option>
+            <option>Dawn mist</option>
+            <option>Cold blue dusk</option>
+            <option>Firelit darkness</option>
+            <option>Aurora glow</option>
+            <option>Deep shadow interior</option>
+            <option>Radiant energy field</option>
+            <option>Candlelit chamber</option>
+            <option>Magical haze</option>
+            <option>Underwater light</option>
+            <option>Bioluminescent night</option>
+            <option>Eclipse light</option>
+          </select>
+          <button class="btn btn-rand" onclick="randMulti('lighting',3)">&#9861;</button>
+        </div>
+        <div class="max-warn" id="lightWarn">Maximum 3 selections.</div>
+        <div class="custom-in"><input type="text" id="lightingCustom" placeholder="Or type custom lighting..."></div>
+      </div>
+
+      <div class="form-row">
+        <label class="field-lbl">ENVIRONMENTAL DETAIL <span style="opacity:0.6;">(max 3)</span></label>
+        <div class="q-row">
+          <select id="envDetail" multiple onchange="enforceMax(this,3,'envWarn')">
+            <option>Crumbling architecture</option>
+            <option>Broken statues</option>
+            <option>Ancient carvings</option>
+            <option>Ruined banners</option>
+            <option>Overgrown vines</option>
+            <option>Scattered bones</option>
+            <option>Glowing mushrooms</option>
+            <option>Swarming insects</option>
+            <option>Crystal formations</option>
+            <option>Arcane sigils</option>
+            <option>Falling snow</option>
+            <option>Falling ash</option>
+            <option>Mist or dust clouds</option>
+            <option>Floating embers</option>
+            <option>Floating stones</option>
+            <option>Flowing water</option>
+            <option>Flowing lava</option>
+            <option>Lightning in the distance</option>
+            <option>Energy currents</option>
+          </select>
+          <button class="btn btn-rand" onclick="randMulti('envDetail',3)">&#9861;</button>
+        </div>
+        <div class="max-warn" id="envWarn">Maximum 3 selections.</div>
+        <div class="custom-in"><input type="text" id="envDetailCustom" placeholder="Or type custom environmental detail..."></div>
+      </div>
+
+      <!-- POSE & EXPRESSION -->
+      <div class="sec-label">&#9682; Pose and Expression</div>
+
+      <div class="form-row">
+        <label class="field-lbl">POSE <span style="opacity:0.6;">(max 3)</span></label>
+        <div class="q-row">
+          <select id="pose" multiple onchange="enforceMax(this,3,'poseWarn')">
+            <option>Neutral standing</option>
+            <option>Relaxed</option>
+            <option>Resting</option>
+            <option>Crouching</option>
+            <option>Kneeling</option>
+            <option>Sitting</option>
+            <option>Walking</option>
+            <option>Running</option>
+            <option>Flying</option>
+            <option>Swimming</option>
+            <option>Jumping</option>
+            <option>Charging</option>
+            <option>Towering</option>
+            <option>Reaching</option>
+            <option>Grasping</option>
+            <option>Striking</option>
+            <option>Casting</option>
+            <option>Summoning</option>
+            <option>Roaring</option>
+            <option>Shouting</option>
+            <option>Floating</option>
+            <option>Turning</option>
+            <option>Looking back</option>
+            <option>Reclining</option>
+            <option>Fallen</option>
+            <option>Looming</option>
+            <option>Defensive</option>
+            <option>Cowering</option>
+            <option>Strutting</option>
+          </select>
+          <button class="btn btn-rand" onclick="randMulti('pose',3)">&#9861;</button>
+        </div>
+        <div class="max-warn" id="poseWarn">Maximum 3 selections.</div>
+        <div class="custom-in"><input type="text" id="poseCustom" placeholder="Or type a custom pose..."></div>
+      </div>
+
+      <div class="form-row">
+        <label class="field-lbl">EXPRESSION / EMOTION <span style="opacity:0.6;">(max 2)</span></label>
+        <div class="q-row">
+          <select id="expression" multiple onchange="enforceMax(this,2,'exprWarn')">
+            <option>Neutral</option>
+            <option>Blank</option>
+            <option>Serene</option>
+            <option>Calm</option>
+            <option>Focused</option>
+            <option>Curious</option>
+            <option>Determined</option>
+            <option>Angry</option>
+            <option>Furious</option>
+            <option>Terrifying</option>
+            <option>Sorrowful</option>
+            <option>Grieving</option>
+            <option>Joyful</option>
+            <option>Triumphant</option>
+            <option>Awe-struck</option>
+            <option>Enraged</option>
+            <option>Contemplative</option>
+            <option>Defiant</option>
+            <option>Transcendent</option>
+          </select>
+          <button class="btn btn-rand" onclick="randMulti('expression',2)">&#9861;</button>
+        </div>
+        <div class="max-warn" id="exprWarn">Maximum 2 selections.</div>
+        <div class="custom-in"><input type="text" id="expressionCustom" placeholder="Or type a custom expression..."></div>
+      </div>
+
+      <!-- REVISIONS -->
+      <div class="sec-label">&#9998; Revisions and Overrides</div>
+
+      <div class="form-row">
+        <textarea id="revisions" style="height:90px;resize:vertical;"
+          placeholder="Authoritative overrides - supersede all earlier selections.&#10;&#10;Examples:&#10;creature has six limbs arranged radially&#10;horns are forward-curving, 3 foot span&#10;add bioluminescent stripe pattern along spine"></textarea>
+      </div>
+
+      <!-- Bottom assemble button -->
+      <div style="margin-top:20px;padding-top:14px;border-top:1px solid var(--border);display:flex;gap:10px;">
+        <button class="btn btn-primary" style="flex:1;font-size:0.80rem;padding:10px;" onclick="assemblePrompt()">&#9679; ASSEMBLE CHIMERA</button>
+      </div>
+
+    </div><!-- end left col -->
+
+    <!-- ======================================================
+         RIGHT: LIVE ADVISOR CHAT (sticky)
+         ====================================================== -->
+    <div class="chat-col">
+      <div class="chat-panel">
+        <div class="panel-head">
+          Live Advisor
+          <span style="font-size:0.60rem;color:var(--dim);font-family:'Exo 2',sans-serif;font-weight:300;text-transform:none;letter-spacing:0.04em;">
+            Full form awareness
+          </span>
+        </div>
+        <div class="chat-msgs" id="chatMsgs">
+          <div class="msg system">
+            Connect your API key, then ask for contributor ideas, style suggestions, or describe what you want to create. The advisor sees your current selections in real time.
+          </div>
+        </div>
+        <div class="chat-input-row">
+          <textarea id="chatInput"
+            placeholder="Ask for ideas, describe your concept, request suggestions..."
+            onkeydown="chatKey(event)"></textarea>
+          <button class="btn btn-primary btn-sm" id="sendBtn" onclick="sendChat()">SEND</button>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end main-cols -->
+
+  <!-- OUTPUT PANEL -->
+  <div class="output-panel">
+    <div class="out-head">
+      Chimera - Final Prompt
+      <button class="btn btn-sm" onclick="copyPrompt(this)">COPY</button>
+    </div>
+    <div class="out-body empty" id="outPrompt">
+      Fill in the form and click ASSEMBLE to generate your chimera prompt.
+    </div>
+  </div>
+
+</div><!-- end page-body -->
+
+
+<script>
+
+/* ============================================================
+   JS: xAI CONFIGURATION
+   ============================================================ */
+const XAI_ENDPOINT = 'https://api.x.ai/v1/chat/completions';
+const XAI_MODEL    = 'grok-4.3';
+
+
+/* ============================================================
+   JS: STATE
+   ============================================================ */
+let contribs    = [];
+let chatHistory = [];
+let lastPrompt  = '';
+let cid         = 0;
+
+
+/* ============================================================
+   JS: API CONNECTION
+   ============================================================ */
+function resetConnect() {
+  const btn = document.getElementById('connectBtn');
+  btn.textContent = 'CONNECT';
+  btn.className   = 'btn';
+  btn.style.cssText = 'font-size:0.66rem;padding:6px 16px;';
+}
+
+function confirmConnect() {
+  const key = document.getElementById('apiKey').value.trim();
+  const btn = document.getElementById('connectBtn');
+  if (!key || key.length < 6) {
+    btn.textContent = 'NEED API KEY';
+    btn.style.cssText = 'font-size:0.66rem;padding:6px 16px;background:rgba(200,30,30,0.12);color:var(--red);border-color:rgba(200,30,30,0.35);';
+    return;
+  }
+  localStorage.setItem('xaiKey_chimera', key);
+  btn.textContent = 'CONNECTED';
+  btn.style.cssText = 'font-size:0.66rem;padding:6px 16px;background:rgba(0,160,90,0.15);color:var(--green);border-color:rgba(0,160,90,0.35);';
+}
+
+function apiKey()   { return document.getElementById('apiKey').value.trim(); }
+function apiReady() { return document.getElementById('connectBtn').textContent === 'CONNECTED'; }
+
+
+/* ============================================================
+   JS: CONTRIBUTOR MANAGEMENT
+   ============================================================ */
+function addContrib() {
+  if (contribs.length >= 4) return;
+  contribs.push({ id: ++cid, type: 'text', text: '', pct: '', b64: null, mime: null, fname: null, preview: null });
+  renderContribs();
+}
+
+function removeContrib(id) {
+  contribs = contribs.filter(c => c.id !== id);
+  renderContribs(); calcPct();
+}
+
+function setType(id, type) {
+  const c = contribs.find(c => c.id === id);
+  if (c) { c.type = type; renderContribs(); }
+}
+
+function upText(id, val) { const c = contribs.find(c => c.id === id); if (c) { c.text = val; calcPct(); } }
+function upPct(id, val)  { const c = contribs.find(c => c.id === id); if (c) { c.pct  = val; calcPct(); } }
+
+function renderContribs() {
+  const list = document.getElementById('contribList');
+  list.innerHTML = '';
+
+  contribs.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'contrib-item';
+
+    const body = c.type === 'text'
+      ? `<div class="contrib-row">
+           <input type="text" placeholder="wolf, thunderstorm, obsidian, black hole..." value="${esc(c.text)}" oninput="upText(${c.id},this.value)">
+           <input type="number" class="pct-in" min="1" max="100" placeholder="%" value="${esc(c.pct)}" oninput="upPct(${c.id},this.value)">
+         </div>`
+      : `<div class="contrib-row">
+           <div class="img-drop" onclick="pickFile(${c.id})" id="drop-${c.id}">
+             ${c.preview
+               ? `<img src="${c.preview}"><span style="font-size:0.62rem;color:var(--soft-cyan)">${c.fname}</span>`
+               : '&#128206; Click to upload image'}
+           </div>
+           <input type="number" class="pct-in" min="1" max="100" placeholder="%" value="${esc(c.pct)}" oninput="upPct(${c.id},this.value)">
+         </div>
+         <input type="file" id="file-${c.id}" accept="image/*" style="display:none" onchange="loadImg(${c.id},event)">`;
+
+    div.innerHTML = `
+      <button class="rm-btn" onclick="removeContrib(${c.id})">&#10005;</button>
+      <div class="contrib-lbl">CONTRIBUTOR ${i + 1}</div>
+      <div class="type-tabs">
+        <button class="type-tab ${c.type === 'text'  ? 'active' : ''}" onclick="setType(${c.id},'text')">TEXT</button>
+        <button class="type-tab ${c.type === 'image' ? 'active' : ''}" onclick="setType(${c.id},'image')">IMAGE</button>
+      </div>
+      ${body}`;
+
+    list.appendChild(div);
+  });
+
+  document.getElementById('addBtn').style.display = contribs.length >= 4 ? 'none' : 'block';
+  calcPct();
+}
+
+function calcPct() {
+  const total = contribs.reduce((s, c) => s + (parseFloat(c.pct) || 0), 0);
+  const el = document.getElementById('pctTotal');
+  el.textContent = `Total: ${total}%`;
+  el.className = 'pct-total' + (total === 100 ? ' ok' : total > 100 ? ' over' : '');
+}
+
+function pickFile(id) { document.getElementById(`file-${id}`)?.click(); }
+
+function loadImg(id, e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const c = contribs.find(c => c.id === id); if (!c) return;
+    const data = ev.target.result;
+    c.b64 = data.split(',')[1]; c.mime = file.type || 'image/jpeg';
+    c.fname = file.name; c.preview = data;
+    renderContribs();
+  };
+  reader.readAsDataURL(file);
+}
+
+function enforceMax(sel, max, warnId) {
+  const warn = document.getElementById(warnId);
+  const opts = Array.from(sel.selectedOptions);
+  if (opts.length > max) {
+    opts.slice(max).forEach(o => o.selected = false);
+    warn.classList.add('show');
+    setTimeout(() => warn.classList.remove('show'), 2500);
+  }
+}
+
+
+/* ============================================================
+   JS: FORM STATE HELPERS
+   ============================================================ */
+function v(id)        { return (document.getElementById(id)?.value || '').trim(); }
+function getMulti(id) { return Array.from(document.getElementById(id)?.selectedOptions || []).map(o => o.value); }
+function getField(id, customId) { const c = v(customId); return c ? [c] : getMulti(id); }
+
+function getState() {
+  return {
+    contributors: contribs.map(c => ({
+      type: c.type, label: c.type === 'text' ? c.text : `[Image: ${c.fname || 'uploaded'}]`,
+      pct: c.pct, hasImage: c.type === 'image' && !!c.b64,
+    })),
+    baseMode:   v('baseMode'),
+    gender:     v('gender'),
+    palette:    v('paletteCustom') || v('palette'),
+    clothing:   getField('clothing', 'clothingCustom'),
+    background: getField('background', 'backgroundCustom'),
+    lighting:   getField('lighting', 'lightingCustom'),
+    envDetail:  getField('envDetail', 'envDetailCustom'),
+    pose:       getField('pose', 'poseCustom'),
+    expression: getField('expression', 'expressionCustom'),
+    scale:      v('scale'),
+    artStyle:   v('artStyleCustom') || v('artStyle'),
+    imgSize:    v('imgSize'),
+    revisions:  v('revisions'),
+  };
+}
+
+function stateToText(s) {
+  const cs = s.contributors.filter(c => c.label || c.hasImage)
+    .map(c => `  - ${c.label} - ${c.pct}%`).join('\n') || '  (none)';
+  const f = a => Array.isArray(a) && a.length ? a.join(', ') : '(not set)';
+  return `=== CURRENT FORM STATE ===
+Contributors:
+${cs}
+Base Mode: ${s.baseMode || '(not set)'}
+Gender: ${s.gender || '(not set)'}
+Palette: ${s.palette || '(not set)'}
+Clothing: ${f(s.clothing)}
+Background: ${f(s.background)}
+Lighting: ${f(s.lighting)}
+Env Detail: ${f(s.envDetail)}
+Pose: ${f(s.pose)}
+Expression: ${f(s.expression)}
+Scale: ${s.scale || '(not set)'}
+Art Style: ${s.artStyle || '(not set)'}
+Image Size: ${s.imgSize || '(not set)'}
+Revisions: ${s.revisions || '(none)'}`;
+}
+
+
+/* ============================================================
+   JS: ASSEMBLE PROMPT
+   ============================================================ */
+async function assemblePrompt() {
+  if (!apiReady()) { addMsg('system', 'Connect your API key first.'); return; }
+
+  const total = contribs.reduce((s, c) => s + (parseFloat(c.pct) || 0), 0);
+  if (Math.abs(total - 100) > 0.001) {
+    addMsg('system', `Contributor percentages must total 100. Current: ${total}%`); return;
+  }
+  if (!contribs.some(c => c.text.trim() || c.b64)) {
+    addMsg('system', 'Add at least one contributor before assembling.'); return;
+  }
+
+  const out = document.getElementById('outPrompt');
+  out.innerHTML = '<div style="display:flex;align-items:center;gap:12px;padding:10px 0;font-size:0.90rem;color:var(--soft-cyan);"><span class="spinner" style="width:18px;height:18px;border-width:3px;"></span><strong>Generating chimera - please wait...</strong></div>';
+  out.className = 'out-body';
+  out.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+  const state = getState();
+  const userBlocks = [];
+
+  contribs.filter(c => c.type === 'image' && c.b64).forEach(c => {
+    userBlocks.push({ type: 'text', text: `Contributor ${contribs.indexOf(c) + 1} (${c.pct}%) - uploaded image:` });
+    userBlocks.push({ type: 'image_url', image_url: { url: `data:${c.mime};base64,${c.b64}`, detail: 'high' } });
+  });
+  userBlocks.push({ type: 'text', text: `Assemble the final chimera:\n\n${stateToText(state)}` });
+
+  const sys = `You are the prompt engine for Cosmic Cowboy's CHIMERA GENERATOR. Output ONLY a dense, comma-separated image generation prompt. No labels, no preamble, no explanation — start immediately with descriptive terms.
+
+━━━ THE INTEGRATION RULE — applies EXCLUSIVELY to the Contributors list ━━━
+Contributors define the creature's physical body. Each contributor — regardless of what it is — is fully dissolved and biologically integrated into ONE continuous organism. The creature has one body, one skin, one unbroken form. Nothing is layered, overlaid, or kept as a separate element.
+
+Contributor percentage controls visual dominance: a 60% contributor drives the creature's primary anatomy, proportions, silhouette, and dominant texture; a 20% contributor is a present but secondary biological influence that shapes secondary features, surface detail, or structural undertones. All percentages must be honored proportionally.
+
+ANY contributor is valid — animals, objects, weather phenomena, materials, concepts, celestial bodies, emotions, abstract forces. Abstract contributors (thunderstorm, obsidian, void, gravity, fire) do not appear literally — they manifest as anatomy, surface quality, structural logic, texture, or behavioral energy woven into the creature's biology. The integration rule applies equally to all of them.
+
+FORBIDDEN during integration: contributor names, percentages, "blend of", "combination of", "part X", "X%", any literal reference to source materials by name.
+
+━━━ ALL OTHER FIELDS — scene descriptors, not subject to the integration rule ━━━
+Everything outside the Contributors list describes the scene, presentation, and rendering of the creature. These fields are passed through faithfully and directly — they are NOT dissolved, NOT integrated, NOT reinterpreted:
+- Base Mode, Gender, Scale → describe the creature's physical category and size
+- Palette → the creature's skin and body covering color language
+- Clothing / Adornment → worn or attached items, described as-is
+- Pose, Expression → the creature's body position and emotional state, described directly
+- Background, Lighting, Environmental Detail → the surrounding scene, atmosphere, and world around the creature
+- Art Style, Image Size → rendering treatment and framing
+
+Build the output in this order: [creature body built from integrated contributors] [clothing/adornment if set] [pose and expression] [scale context] [background and environment] [lighting and atmosphere] [environmental details] [art style] [image size if specified].
+
+QUALITY CLOSE: end every prompt with — ultra-fine surface detail, sharp focus, cinematic physically plausible lighting, dense creature anatomy, production-grade rendering.`;
+
+  try {
+    const res = await fetch(XAI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey() },
+      body: JSON.stringify({
+        model: XAI_MODEL,
+        max_tokens: 1600,
+        reasoning_effort: 'none',
+        messages: [{ role: 'system', content: sys }, { role: 'user', content: userBlocks }]
+      }),
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `API error ${res.status}`);
+    const reply = data.choices?.[0]?.message?.content || '';
+    if (!reply) throw new Error('Empty response.');
+
+    const prompt = reply.trim();
+    lastPrompt = prompt;
+    out.textContent = prompt;
+    out.className   = 'out-body';
+
+  } catch (e) {
+    addErrMsg(e.message);
+    out.textContent = '';
+    out.className   = 'out-body empty';
+  }
+}
+
+
+/* ============================================================
+   JS: LIVE ADVISOR CHAT
+   ============================================================ */
+async function sendChat() {
+  const msg = (document.getElementById('chatInput').value || '').trim();
+  if (!msg) return;
+  if (!apiReady()) { addMsg('system', 'Connect your API key first.'); return; }
+
+  addMsg('user', msg);
+  document.getElementById('chatInput').value = '';
+  const btn = document.getElementById('sendBtn');
+  btn.innerHTML = '<span class="spinner"></span>';
+  btn.disabled  = true;
+
+  const sys = `You are a live creative advisor for Cosmic Cowboy's CHIMERA GENERATOR.
+You have full real-time awareness of the user's current form selections (provided with each message).
+
+INTEGRATION RULE (for contributor advice only): All contributors must be fully dissolved and biologically integrated into ONE continuous organism — never overlays, never independent elements. Any contributor is valid: animals, objects, weather, materials, abstract concepts, celestial bodies. Abstract contributors manifest as anatomy, texture, or structural logic. Percentages must total 100 and control visual dominance.
+
+All other fields (background, lighting, pose, clothing, etc.) are scene descriptors — advise on them directly, not through the integration lens.
+
+Be specific and imaginative. Keep responses concise.`;
+
+  chatHistory.push({ role: 'user', content: msg });
+  const stateCtx = stateToText(getState());
+  const messages = chatHistory.length === 1
+    ? [{ role: 'user', content: `${stateCtx}\n\n---\n${msg}` }]
+    : [{ role: 'user', content: `${stateCtx}\n\n---\n${chatHistory[0].content}` }, ...chatHistory.slice(1)];
+
+  try {
+    const res = await fetch(XAI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey() },
+      body: JSON.stringify({
+        model: XAI_MODEL,
+        max_tokens: 700,
+        reasoning_effort: 'none',
+        messages: [{ role: 'system', content: sys }, ...messages]
+      }),
+    });
+    const data  = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `API error ${res.status}`);
+    const reply = data.choices?.[0]?.message?.content || '';
+    if (!reply) throw new Error('No response.');
+    chatHistory.push({ role: 'assistant', content: reply });
+    addMsg('assistant', reply);
+  } catch (e) {
+    addErrMsg(e.message); chatHistory.pop();
+  } finally {
+    btn.innerHTML = 'SEND'; btn.disabled = false;
+  }
+}
+
+function chatKey(e) { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendChat(); } }
+
+
+/* ============================================================
+   JS: CHAT MESSAGE HELPERS
+   ============================================================ */
+function addMsg(role, text) {
+  const c = document.getElementById('chatMsgs');
+  const d = document.createElement('div');
+  d.className = `msg ${role}`; d.textContent = text;
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+
+function addErrMsg(text) {
+  const c = document.getElementById('chatMsgs');
+  const d = document.createElement('div');
+  d.className = 'msg';
+  d.style.cssText = 'background:rgba(248,113,113,0.12);border:1px solid rgba(248,113,113,0.5);color:#fca5a5;font-size:0.80rem;';
+  d.textContent = 'ERROR: ' + text;
+  c.appendChild(d); c.scrollTop = c.scrollHeight;
+}
+
+
+/* ============================================================
+   JS: COPY
+   ============================================================ */
+function copyPrompt(btn) {
+  if (!lastPrompt) return;
+  navigator.clipboard.writeText(lastPrompt).then(() => {
+    const orig = btn.textContent; btn.textContent = 'COPIED';
+    setTimeout(() => btn.textContent = orig, 1500);
+  });
+}
+
+
+/* ============================================================
+   JS: RANDOMIZE
+   ============================================================ */
+function randSingle(id, arr) {
+  const el = document.getElementById(id); if (!el) return;
+  el.value = arr[Math.floor(Math.random() * arr.length)];
+}
+
+function randMulti(id, max) {
+  const el = document.getElementById(id); if (!el) return;
+  Array.from(el.options).forEach(o => o.selected = false);
+  const n = Math.floor(Math.random() * max) + 1;
+  [...el.options].sort(() => Math.random() - 0.5).slice(0, n).forEach(o => o.selected = true);
+}
+
+function randomizeAll() {
+  randSingle('baseMode',   ['Humanoid','Beast','Adaptive']);
+  randSingle('gender',     ['Male','Female','Neutral']);
+  randSingle('palette',    ['Natural','Fantasy Arcane','Jewel','Fire','Chromatic Shift','Obsidian','Verdantflame','Crystalfire','Mirage']);
+  randSingle('scale',      ['Medium','Large','Huge','Giant','Titanic']);
+  randSingle('artStyle',   ['Photorealism','Hyper realism','Cinematic realism','Fantasy realism','Digital painting / Concept art','Dark fantasy / Gothic','Classical oil painting','Watercolor','Anime']);
+  randSingle('imgSize',    ['Square (1:1)','Portrait (2:3)','Landscape (3:2)']);
+  randMulti('clothing',    2);
+  randMulti('background',  3);
+  randMulti('lighting',    3);
+  randMulti('envDetail',   2);
+  randMulti('pose',        2);
+  randMulti('expression',  1);
+
+  const pool = ['wolf','dragon','eagle','shark','obsidian','octopus','panther','serpent','phoenix','kraken','bear','mantis','raven','lion','orca','spider','ancient tree','volcanic rock','storm cloud','shadow','bioluminescent jellyfish','iron automaton','fungal network','crystal golem','void entity','fire elemental','ice elemental','coral reef','human','feline','canine','insectoid','deep sea creature'];
+  const shuffled = [...pool].sort(() => Math.random() - 0.5);
+  contribs = []; cid = 0;
+  const n = Math.random() < 0.4 ? 2 : Math.random() < 0.75 ? 3 : 4;
+  for (let i = 0; i < n; i++) {
+    contribs.push({ id: ++cid, type: 'text', text: shuffled[i], pct: '', b64: null, mime: null, fname: null, preview: null });
+  }
+  let rem = 100;
+  contribs.forEach((c, i) => {
+    if (i === contribs.length - 1) { c.pct = String(rem); return; }
+    const p = Math.max(10, Math.min(rem - (contribs.length - i - 1) * 10, Math.round(Math.random() * 40 + 20)));
+    c.pct = String(p); rem -= p;
+  });
+  renderContribs();
+
+  ['artStyleCustom','paletteCustom','clothingCustom','backgroundCustom',
+   'lightingCustom','envDetailCustom','poseCustom','expressionCustom','revisions']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+}
+
+
+/* ============================================================
+   JS: CLEAR ALL
+   ============================================================ */
+function clearAll() {
+  if (!confirm('Clear all selections?')) return;
+  ['baseMode','gender','palette','artStyle','imgSize','scale'].forEach(id => {
+    const el = document.getElementById(id); if (el) el.value = '';
+  });
+  ['clothing','background','lighting','envDetail','pose','expression'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) Array.from(el.options).forEach(o => o.selected = false);
+  });
+  ['artStyleCustom','paletteCustom','clothingCustom','backgroundCustom',
+   'lightingCustom','envDetailCustom','poseCustom','expressionCustom','revisions']
+    .forEach(id => { const el = document.getElementById(id); if (el) el.value = ''; });
+  contribs = []; cid = 0; addContrib(); addContrib();
+  lastPrompt = '';
+  const out = document.getElementById('outPrompt');
+  out.textContent = 'Fill in the form and click ASSEMBLE to generate your chimera prompt.';
+  out.className   = 'out-body empty';
+}
+
+
+/* ============================================================
+   JS: UTILITY
+   ============================================================ */
+function esc(s) {
+  return (s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+
+/* ============================================================
+   JS: INIT
+   ============================================================ */
+window.addEventListener('DOMContentLoaded', () => {
+  const savedKey = localStorage.getItem('xaiKey_chimera');
+  if (savedKey) {
+    document.getElementById('apiKey').value = savedKey;
+    confirmConnect();
+  }
+  addContrib(); addContrib();
+});
+
+</script>
+</body>
+</html>
