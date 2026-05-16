@@ -2248,6 +2248,7 @@ async function generateNarrativePrompt() {
       body: JSON.stringify({
         model: 'grok-4.3',
         max_completion_tokens: 600,
+        reasoning_effort: 'none',
         messages: [
           {
             role: 'system',
