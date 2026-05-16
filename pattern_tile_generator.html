@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<!-- ============================================================
+     HEAD: Page metadata and Google Fonts import
+     ============================================================ -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Claude Pattern Generator v2.0 — Cosmic Cowboy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+/* ============================================================
+   CSS: VARIABLES
+   ============================================================ */
+:root {
+  --dark-blue:   #023E8A;
+  --ocean-blue:  #0077B6;
+  --soft-cyan:   #90E0EF;
+  --pale-blue:   #CAF0F8;
+  --deepest:     #010E1F;
+  --surface:     rgba(0,119,182,0.09);
+  --surface2:    rgba(0,119,182,0.17);
+  --border:      rgba(144,224,239,0.22);
+  --border-hi:   rgba(144,224,239,0.50);
+  --dim:         rgba(202,240,248,0.45);
+  --green:       #4ade80;
+  --red:         #f87171;
+  --glow:        0 0 12px rgba(144,224,239,0.30);
+  --accent:      #FFD166;
+}
+
+/* ============================================================
+   CSS: RESET AND BASE
+   ============================================================ */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  min-height: 100%;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  background: var(--deepest);
+  color: var(--pale-blue);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
+/* ============================================================
+   CSS: SCROLLBARS
+   ============================================================ */
+::-webkit-scrollbar              { width: 8px; height: 8px; }
+::-webkit-scrollbar-track        { background: rgba(0,0,0,0.15); border-radius: 4px; }
+::-webkit-scrollbar-thumb        { background: rgba(144,224,239,0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(144,224,239,0.6); }
+
+/* ============================================================
+   CSS: HEADER
+   ============================================================ */
+.header {
+  flex-shrink: 0;
+  height: 52px;
+  background: rgba(0,0,0,0.40);
+  border-bottom: 1px solid var(--border-hi);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 10;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
+  opacity: 0.5;
+}
+
+.hdr-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.10rem;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  color: var(--pale-blue);
+  text-shadow: 0 0 18px rgba(144,224,239,0.4);
+}
+
+.hdr-sub {
+  font-size: 0.60rem;
+  color: var(--soft-cyan);
+  letter-spacing: 0.2em;
+  margin-top: 2px;
+}
+
+
+
+/* ============================================================
+   CSS: SHARED BUTTONS
+   ============================================================ */
+.btn {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  padding: 6px 15px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--soft-cyan);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.btn:hover:not(:disabled) { border-color: var(--soft-cyan); background: rgba(144,224,239,0.10); }
+.btn:disabled              { opacity: 0.30; cursor: not-allowed; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: 0 3px 14px rgba(0,119,182,0.40);
+}
+
+
+.btn-rand {
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  color: var(--accent);
+  border-color: rgba(255,209,102,0.3);
+}
+.btn-rand:hover:not(:disabled) {
+  background: rgba(255,209,102,0.08);
+  border-color: var(--accent);
+}
+
+.btn-small { font-size: 0.66rem; padding: 5px 12px; }
+
+/* ============================================================
+   CSS: MAIN CONTENT AREA
+   Scrollable page content below the header.
+   ============================================================ */
+.page-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+/* ============================================================
+   CSS: PATTERN TYPE SELECTOR
+   ============================================================ */
+.section-head {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--border);
+}
+
+.pattern-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.pattern-btn {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  padding: 12px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 400;
+  transition: all 0.15s;
+  position: relative;
+}
+.pattern-btn:hover { border-color: var(--soft-cyan); background: var(--surface2); }
+.pattern-btn.selected {
+  background: rgba(0,119,182,0.25);
+  border-color: var(--soft-cyan);
+  color: var(--pale-blue);
+}
+.pattern-btn.selected::after {
+  content: '✓';
+  position: absolute; right: 10px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--soft-cyan); font-weight: bold;
+}
+
+/* ============================================================
+   CSS: MAIN TWO-COLUMN LAYOUT
+   Left = question accordions, Right = live preview.
+   ============================================================ */
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+.preview-col { position: sticky; top: 20px; }
+
+/* ============================================================
+   CSS: ACCORDION SECTIONS
+   Each question is a collapsible accordion panel.
+   ============================================================ */
+.accordion {
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.accordion-header {
+  background: rgba(0,0,0,0.20);
+  padding: 11px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.84rem;
+  user-select: none;
+  gap: 10px;
+}
+.accordion-header:hover { background: rgba(0,0,0,0.30); }
+
+.accordion-chevron {
+  font-size: 0.70rem;
+  color: var(--dim);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.accordion-header.open .accordion-chevron { transform: rotate(180deg); }
+
+.accordion-body {
+  padding: 12px 14px;
+  background: var(--surface);
+  display: none;
+}
+.accordion-body.open { display: block; }
+
+/* Q number badge */
+.q-num {
+  background: var(--ocean-blue);
+  color: #fff;
+  width: 22px; height: 22px;
+  border-radius: 50%;
+  display: inline-flex; align-items: center; justify-content: center;
+  font-size: 0.72rem; font-weight: 700;
+  flex-shrink: 0;
+}
+
+.q-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* ============================================================
+   CSS: OPTION BUTTONS (inside accordions)
+   ============================================================ */
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: 7px;
+  margin-top: 8px;
+}
+
+.option-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  padding: 8px 11px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.80rem;
+  font-weight: 300;
+  transition: all 0.15s;
+  position: relative;
+  line-height: 1.35;
+}
+.option-btn:hover { border-color: var(--soft-cyan); background: rgba(0,119,182,0.18); }
+.option-btn.selected {
+  background: rgba(0,119,182,0.28);
+  border-color: var(--soft-cyan);
+}
+.option-btn.selected::after {
+  content: '✓';
+  position: absolute; right: 7px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--soft-cyan); font-weight: bold; font-size: 0.75rem;
+}
+
+.multi-note {
+  font-size: 0.72rem;
+  color: var(--dim);
+  font-style: italic;
+  margin-top: 6px;
+}
+
+/* ============================================================
+   CSS: PREVIEW PANEL (right column)
+   ============================================================ */
+.preview-panel {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.preview-head {
+  padding: 8px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.20);
+}
+
+.prompt-display {
+  padding: 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 300;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 180px;
+  max-height: 420px;
+  overflow-y: auto;
+  color: var(--pale-blue);
+}
+
+.prompt-display.empty { color: var(--dim); font-style: italic; }
+
+.preview-actions {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+.preview-actions .btn { flex: 1; }
+
+/* ============================================================
+   CSS: ACTION BAR (below accordions)
+   ============================================================ */
+.action-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+/* ============================================================
+   CSS: ERROR / NOTICE MESSAGES
+   ============================================================ */
+.notice {
+  font-size: 0.78rem;
+  padding: 7px 11px;
+  border-radius: 4px;
+  margin-top: 8px;
+  display: none;
+}
+.notice.err { display: block; background: rgba(200,30,30,0.15); border: 1px solid rgba(200,30,30,0.4); color: var(--red); }
+.notice.ok  { display: block; background: rgba(0,160,90,0.12);  border: 1px solid rgba(0,160,90,0.35);  color: var(--green); }
+
+/* ============================================================
+   CSS: RESPONSIVE
+   ============================================================ */
+@media (max-width: 860px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .preview-col  { position: static; }
+  .options-grid { grid-template-columns: 1fr; }
+  .pattern-grid { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+}
+
+</style>
+</head>
+<body>
+
+<!-- ============================================================
+     HTML: HEADER
+     ============================================================ -->
+<header class="header">
+  <div>
+    <div class="hdr-title">◈ CLAUDE PATTERN GENERATOR</div>
+    <div class="hdr-sub">v2.0 &mdash; COSMIC COWBOY'S AI WORLDBUILDERS</div>
+  </div>
+  <button class="btn" onclick="resetApp()">✦ RESET</button>
+</header>
+
+<!-- ============================================================
+     HTML: SCROLLABLE PAGE BODY
+     ============================================================ -->
+<div class="page-body">
+
+  <!-- Pattern type selector -->
+  <div class="section-head">Select Pattern Type</div>
+  <div class="pattern-grid" id="patternGrid"></div>
+
+  <!-- Two-column layout: questions + preview -->
+  <div class="main-layout">
+
+    <!-- LEFT: Question accordions -->
+    <div>
+      <div id="questionsContainer">
+        <div style="color:var(--dim);font-style:italic;padding:20px 0;font-size:0.88rem;">
+          Select a pattern type above to begin.
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-small" onclick="randomizeAll()">&#9861; Randomize All</button>
+        <button class="btn btn-small" onclick="saveCurrent()">&#128190; Save</button>
+        <button class="btn btn-small" onclick="loadSaved()">&#128194; Load</button>
+        <button class="btn btn-small" onclick="clearSaved()">&#128465; Clear Saved</button>
+      </div>
+
+      <div class="notice" id="actionNotice"></div>
+    </div>
+
+    <!-- RIGHT: Live preview -->
+    <div class="preview-col">
+      <div class="preview-panel">
+        <div class="preview-head">Live Prompt Preview</div>
+        <div class="prompt-display empty" id="livePreview">
+          Select a pattern type and answer the questions to build your prompt.
+        </div>
+        <div class="preview-actions">
+          <button class="btn btn-small" onclick="copyPrompt()">&#128203; Copy Prompt</button>
+
+        </div>
+        <div class="notice" id="copyNotice" style="margin:0 14px 10px;"></div>
+      </div>
+    </div>
+
+  </div>
+
+</div><!-- end page-body -->
+
+
+<script>
+
+
+
+
+/* ============================================================
+   JS: PATTERN DATA
+   Each pattern type has a name, a list of questions,
+   and an assemblePrompt function that builds the final string.
+   ============================================================ */
+const PATTERNS = {
+
+  geometric: {
+    name: 'Geometric Pattern',
+    questions: [
+      { id: 'Q1', title: 'Pattern Cell Shape', type: 'single', options: [
+        { id: '1', text: 'Square grid' },
+        { id: '2', text: 'Hexagonal grid' },
+        { id: '3', text: 'Triangular grid' },
+        { id: '4', text: 'Radial or circular tiling' },
+      ]},
+      { id: 'Q2', title: 'Pattern Focus', type: 'multi', max: 2, options: [
+        { id: '1', text: 'Abstract non-representational pattern' },
+        { id: '2', text: 'Tessellated triangles' },
+        { id: '3', text: 'Interlocking circles' },
+        { id: '4', text: 'Hexagonal grids' },
+        { id: '5', text: 'Recursive spirals' },
+        { id: '6', text: 'Sacred geometry' },
+        { id: '7', text: 'Op-art waveforms' },
+        { id: '8', text: 'Fractal tiling' },
+      ]},
+      { id: 'Q3', title: 'Geometric Complexity', type: 'single', options: [
+        { id: '1', text: 'Simple repeating geometry' },
+        { id: '2', text: 'Moderate complexity with secondary shapes' },
+        { id: '3', text: 'High complexity, dense interlocking forms' },
+      ]},
+      { id: 'Q4', title: 'Symmetry Type', type: 'multi', max: 2, options: [
+        { id: '1', text: 'Strict symmetrical' },
+        { id: '2', text: 'Radial symmetry' },
+        { id: '3', text: 'Offset or staggered symmetry' },
+        { id: '4', text: 'Asymmetrical but tileable' },
+      ]},
+      { id: 'Q5', title: 'Color Palette', type: 'single', options: [
+        { id: '1', text: 'Monochrome black and white' },
+        { id: '2', text: 'Pastel pinks and cyans' },
+        { id: '3', text: '1970s earth tones' },
+        { id: '4', text: 'High-contrast neon' },
+        { id: '5', text: 'Muted grayscale' },
+        { id: '6', text: 'Limited two-color palette' },
+      ]},
+      { id: 'Q6', title: 'Texture or Surface Feel', type: 'single', options: [
+        { id: '1', text: 'Flat graphic' },
+        { id: '2', text: 'Woven textile' },
+        { id: '3', text: 'Polished marble mosaic' },
+        { id: '4', text: 'Paper cutout' },
+        { id: '5', text: 'Digital glitch texture' },
+        { id: '6', text: 'Ink on parchment' },
+      ]},
+      { id: 'Q7', title: 'Line and Shape Style', type: 'single', options: [
+        { id: '1', text: 'Clean, sharp vector lines' },
+        { id: '2', text: 'Soft rounded geometry' },
+        { id: '3', text: 'Hand-drawn irregular lines' },
+        { id: '4', text: 'Mixed precision and organic' },
+      ]},
+      { id: 'Q8', title: 'Visual Density', type: 'single', options: [
+        { id: '1', text: 'Open, breathable pattern' },
+        { id: '2', text: 'Balanced spacing' },
+        { id: '3', text: 'Dense, hypnotic repetition' },
+      ]},
+      { id: 'Q9', title: 'Style Reference', type: 'single', options: [
+        { id: '1', text: 'Inspired by Escher' },
+        { id: '2', text: 'Inspired by Islamic geometry' },
+        { id: '3', text: 'Bauhaus abstraction' },
+        { id: '4', text: 'Memphis design' },
+        { id: '5', text: 'Op art' },
+        { id: '6', text: 'None' },
+      ]},
+    ],
+    assemblePrompt: (a) => {
+      const q2 = multiVal('geometric','Q2',a);
+      const q4 = multiVal('geometric','Q4',a);
+      return `Seamless, tileable abstract geometric pattern using ${opt('geometric','Q1',a.Q1)}, featuring ${q2} with ${q4}. ${opt('geometric','Q3',a.Q3)} geometry and ${opt('geometric','Q8',a.Q8)}. Color palette: ${opt('geometric','Q5',a.Q5)}. Surface texture: ${opt('geometric','Q6',a.Q6)}. Line style: ${opt('geometric','Q7',a.Q7)}. Style reference: ${opt('geometric','Q9',a.Q9)}. Flat graphic, generative design, hypnotic repetition, infinite zoom, high-resolution vector quality, seamless repeating pattern.`;
+    },
+  },
+
+  fractal: {
+    name: 'Fractal Pattern',
+    questions: [
+      { id: 'Q1', title: 'Fractal Type', type: 'single', options: [
+        { id: '1', text: 'Mandelbrot set variation' },
+        { id: '2', text: 'Julia set variation' },
+        { id: '3', text: 'Sierpinski triangle or gasket' },
+        { id: '4', text: 'Koch curve or snowflake' },
+        { id: '5', text: 'Dragon curve' },
+        { id: '6', text: 'Hilbert curve' },
+        { id: '7', text: 'Apollonian gasket' },
+        { id: '8', text: 'Burning ship fractal' },
+        { id: '9', text: 'Organic branching fractals' },
+        { id: '10', text: 'Custom mathematical iteration' },
+      ]},
+      { id: 'Q2', title: 'Recursion Depth', type: 'single', options: [
+        { id: '1', text: 'Shallow (3–5 iterations)' },
+        { id: '2', text: 'Moderate (6–8 iterations)' },
+        { id: '3', text: 'Deep (9–12 iterations)' },
+        { id: '4', text: 'Extreme (13+ iterations)' },
+      ]},
+      { id: 'Q3', title: 'Branching Behavior', type: 'multi', max: 2, options: [
+        { id: '1', text: 'Symmetric bifurcation' },
+        { id: '2', text: 'Asymmetric branching' },
+        { id: '3', text: 'Spiral recursion' },
+        { id: '4', text: 'Grid-based subdivision' },
+        { id: '5', text: 'Organic growth pattern' },
+        { id: '6', text: 'Geometric tiling recursion' },
+      ]},
+      { id: 'Q4', title: 'Scale Relationship', type: 'single', options: [
+        { id: '1', text: 'Uniform scale reduction' },
+        { id: '2', text: 'Varied scale steps' },
+        { id: '3', text: 'Golden ratio scaling' },
+        { id: '4', text: 'Exponential reduction' },
+        { id: '5', text: 'Chaotic scale variation' },
+      ]},
+      { id: 'Q5', title: 'Complexity Distribution', type: 'single', options: [
+        { id: '1', text: 'Even complexity throughout' },
+        { id: '2', text: 'Dense center, sparse edges' },
+        { id: '3', text: 'Sparse center, dense edges' },
+        { id: '4', text: 'Clustered complexity zones' },
+        { id: '5', text: 'Gradient complexity transition' },
+      ]},
+      { id: 'Q6', title: 'Color Mapping Method', type: 'single', options: [
+        { id: '1', text: 'Iteration count gradient' },
+        { id: '2', text: 'Distance estimation coloring' },
+        { id: '3', text: 'Orbit trap coloring' },
+        { id: '4', text: 'Layered depth mapping' },
+        { id: '5', text: 'Single solid color' },
+        { id: '6', text: 'Monochrome with highlights' },
+      ]},
+      { id: 'Q7', title: 'Color Palette', type: 'single', options: [
+        { id: '1', text: 'Electric blues and purples' },
+        { id: '2', text: 'Fire spectrum (red to yellow)' },
+        { id: '3', text: 'Ocean depths (cyan to deep blue)' },
+        { id: '4', text: 'Earth tones (browns and greens)' },
+        { id: '5', text: 'Psychedelic rainbow' },
+        { id: '6', text: 'Monochrome grayscale' },
+        { id: '7', text: 'High-contrast black and white' },
+        { id: '8', text: 'Pastel gradient' },
+      ]},
+      { id: 'Q8', title: 'Edge Definition', type: 'single', options: [
+        { id: '1', text: 'Sharp crisp boundaries' },
+        { id: '2', text: 'Soft gradient transitions' },
+        { id: '3', text: 'Glowing anti-aliased edges' },
+        { id: '4', text: 'Rough pixelated edges' },
+        { id: '5', text: 'Mixed sharp and soft' },
+      ]},
+      { id: 'Q9', title: 'Visual Density', type: 'single', options: [
+        { id: '1', text: 'Sparse and open' },
+        { id: '2', text: 'Balanced spacing' },
+        { id: '3', text: 'Dense and intricate' },
+        { id: '4', text: 'Overwhelmingly detailed' },
+      ]},
+      { id: 'Q10', title: 'Aspect Ratio', type: 'single', options: [
+        { id: '1', text: 'Square (1:1)' },
+        { id: '2', text: 'Wide (16:9)' },
+        { id: '3', text: 'Portrait (9:16)' },
+      ]},
+    ],
+    assemblePrompt: (a) => {
+      const q3 = multiVal('fractal','Q3',a);
+      return `Seamless, tileable fractal pattern based on ${opt('fractal','Q1',a.Q1)} with ${opt('fractal','Q2',a.Q2)} recursion depth. ${q3} branching with ${opt('fractal','Q4',a.Q4)} scale relationship. Complexity distribution: ${opt('fractal','Q5',a.Q5)}. Color mapping uses ${opt('fractal','Q6',a.Q6)} with ${opt('fractal','Q7',a.Q7)} palette. Edge definition: ${opt('fractal','Q8',a.Q8)}. Visual density: ${opt('fractal','Q9',a.Q9)}. Mathematical precision, infinite zoom capability, self-similar structures, high-resolution fractal detail, seamless repeating pattern.`;
+    },
+  },
+
+  abstract: {
+    name: 'Abstract Pattern',
+    questions: [
+      { id: 'Q1', title: 'Pattern Cell Shape', type: 'single', options: [
+        { id: '1', text: 'Square grid' },
+        { id: '2', text: 'Hexagonal grid' },
+        { id: '3', text: 'Triangular grid' },
+        { id: '4', text: 'Radial or circular tiling' },
+      ]},
+      { id: 'Q2', title: 'Abstract Pattern Type', type: 'multi', max: 2, options: [
+        { id: '1', text: 'Fluid flow fields' },
+        { id: '2', text: 'Organic noise textures' },
+        { id: '3', text: 'Ink wash abstraction' },
+        { id: '4', text: 'Marbled liquid patterns' },
+        { id: '5', text: 'Smoke or vapor forms' },
+        { id: '6', text: 'Grain and film noise' },
+        { id: '7', text: 'Interference or moiré effects' },
+        { id: '8', text: 'Painterly non-representational strokes' },
+      ]},
+      { id: 'Q3', title: 'Motion or Flow Character', type: 'single', options: [
+        { id: '1', text: 'Calm and slow-moving' },
+        { id: '2', text: 'Directional flow' },
+        { id: '3', text: 'Swirling or vortex motion' },
+        { id: '4', text: 'Chaotic turbulence' },
+        { id: '5', text: 'Static but visually active' },
+      ]},
+      { id: 'Q4', title: 'Scale Variation', type: 'single', options: [
+        { id: '1', text: 'Uniform scale' },
+        { id: '2', text: 'Subtle scale variation' },
+        { id: '3', text: 'Strong multi-scale variation' },
+      ]},
+      { id: 'Q5', title: 'Transition Quality', type: 'single', options: [
+        { id: '1', text: 'Soft blended transitions' },
+        { id: '2', text: 'Mixed soft and hard edges' },
+        { id: '3', text: 'Sharp high-contrast boundaries' },
+      ]},
+      { id: 'Q6', title: 'Color Behavior', type: 'single', options: [
+        { id: '1', text: 'Monochrome tones' },
+        { id: '2', text: 'Limited muted palette' },
+        { id: '3', text: 'High-contrast color fields' },
+        { id: '4', text: 'Subtle gradient shifts' },
+        { id: '5', text: 'Chaotic color dispersion' },
+      ]},
+      { id: 'Q7', title: 'Surface Impression', type: 'single', options: [
+        { id: '1', text: 'Liquid or fluid surface' },
+        { id: '2', text: 'Smoke, fog, or vapor' },
+        { id: '3', text: 'Organic biological texture' },
+        { id: '4', text: 'Painted or brushed surface' },
+        { id: '5', text: 'Digital noise or signal artifact' },
+      ]},
+      { id: 'Q8', title: 'Visual Density', type: 'single', options: [
+        { id: '1', text: 'Sparse and open' },
+        { id: '2', text: 'Balanced distribution' },
+        { id: '3', text: 'Dense and immersive' },
+      ]},
+      { id: 'Q9', title: 'Looping Behavior', type: 'single', options: [
+        { id: '1', text: 'Seamless soft repetition' },
+        { id: '2', text: 'Hidden tile seams' },
+        { id: '3', text: 'Strong repeating rhythm' },
+      ]},
+    ],
+    assemblePrompt: (a) => {
+      const q2 = multiVal('abstract','Q2',a);
+      return `Seamless, tileable abstract pattern using ${opt('abstract','Q1',a.Q1)}, composed of ${q2} with ${opt('abstract','Q3',a.Q3)}. ${opt('abstract','Q4',a.Q4)} and ${opt('abstract','Q8',a.Q8)}. ${opt('abstract','Q5',a.Q5)} transitions with ${opt('abstract','Q6',a.Q6)}. Surface impression suggests ${opt('abstract','Q7',a.Q7)}. Looping behavior: ${opt('abstract','Q9',a.Q9)}. Non-representational, generative abstraction, motion illusion, high-resolution, seamless repeating pattern.`;
+    },
+  },
+
+  topographic: {
+    name: 'Topographic / Field Map',
+    questions: [
+      { id: 'Q1', title: 'Field Type', type: 'single', options: [
+        { id: '1', text: 'Topographic elevation' },
+        { id: '2', text: 'Flow or current field' },
+        { id: '3', text: 'Magnetic or gravitational field' },
+        { id: '4', text: 'Energy or mana field' },
+        { id: '5', text: 'Abstract spatial distortion' },
+      ]},
+      { id: 'Q2', title: 'Representation Method', type: 'single', options: [
+        { id: '1', text: 'Contour lines' },
+        { id: '2', text: 'Gradient fields' },
+        { id: '3', text: 'Vector arrows or streamlines' },
+        { id: '4', text: 'Layered bands or zones' },
+        { id: '5', text: 'Hybrid representation' },
+      ]},
+      { id: 'Q3', title: 'Field Complexity', type: 'single', options: [
+        { id: '1', text: 'Simple and readable' },
+        { id: '2', text: 'Moderate variation' },
+        { id: '3', text: 'Dense and complex' },
+      ]},
+      { id: 'Q4', title: 'Directionality', type: 'single', options: [
+        { id: '1', text: 'Non-directional' },
+        { id: '2', text: 'Single dominant flow' },
+        { id: '3', text: 'Multi-directional interactions' },
+      ]},
+      { id: 'Q5', title: 'Scale Interpretation', type: 'single', options: [
+        { id: '1', text: 'Localized field' },
+        { id: '2', text: 'Regional field' },
+        { id: '3', text: 'Vast environmental system' },
+      ]},
+      { id: 'Q6', title: 'Distortion or Noise', type: 'single', options: [
+        { id: '1', text: 'Clean and idealized' },
+        { id: '2', text: 'Subtle irregularities' },
+        { id: '3', text: 'Heavy distortion or turbulence' },
+      ]},
+      { id: 'Q7', title: 'Color Encoding', type: 'single', options: [
+        { id: '1', text: 'Monochrome' },
+        { id: '2', text: 'Limited coded palette' },
+        { id: '3', text: 'High-contrast data colors' },
+        { id: '4', text: 'Gradient-based encoding' },
+      ]},
+      { id: 'Q8', title: 'Visual Density', type: 'single', options: [
+        { id: '1', text: 'Sparse and open' },
+        { id: '2', text: 'Balanced informational density' },
+        { id: '3', text: 'Dense and data-heavy' },
+      ]},
+      { id: 'Q9', title: 'Looping Behavior', type: 'single', options: [
+        { id: '1', text: 'Seamless soft repetition' },
+        { id: '2', text: 'Hidden tile seams' },
+        { id: '3', text: 'Strong repeating field rhythm' },
+      ]},
+      { id: 'Q10', title: 'Aspect Ratio', type: 'single', options: [
+        { id: '1', text: 'Square (1:1)' },
+        { id: '2', text: 'Wide (16:9)' },
+        { id: '3', text: 'Portrait (9:16)' },
+      ]},
+    ],
+    assemblePrompt: (a) =>
+      `Seamless, tileable field map depicting ${opt('topographic','Q1',a.Q1)} using ${opt('topographic','Q2',a.Q2)}. Field complexity is ${opt('topographic','Q3',a.Q3)} with ${opt('topographic','Q4',a.Q4)} at a ${opt('topographic','Q5',a.Q5)}. Distortion level: ${opt('topographic','Q6',a.Q6)}. Color encoding uses ${opt('topographic','Q7',a.Q7)}. Visual density is ${opt('topographic','Q8',a.Q8)}. Looping: ${opt('topographic','Q9',a.Q9)}. Diagrammatic, non-representational spatial field designed for maps, overlays, and infinite tiling continuity.`,
+  },
+
+  lightshadow: {
+    name: 'Light and Shadow',
+    questions: [
+      { id: 'Q1', title: 'Light Source Type', type: 'single', options: [
+        { id: '1', text: 'Natural sunlight' },
+        { id: '2', text: 'Artificial directional light' },
+        { id: '3', text: 'Fire or flame light' },
+        { id: '4', text: 'Bioluminescent or magical' },
+        { id: '5', text: 'Abstract energy light' },
+      ]},
+      { id: 'Q2', title: 'Shadow Pattern Type', type: 'single', options: [
+        { id: '1', text: 'Soft diffuse shadows' },
+        { id: '2', text: 'Hard-edged cast shadows' },
+        { id: '3', text: 'Broken or dappled light' },
+        { id: '4', text: 'Volumetric shafts' },
+        { id: '5', text: 'Caustic light patterns' },
+        { id: '6', text: 'Lattice or window-projection shadows' },
+      ]},
+      { id: 'Q3', title: 'Contrast Level', type: 'single', options: [
+        { id: '1', text: 'Low contrast' },
+        { id: '2', text: 'Balanced contrast' },
+        { id: '3', text: 'High dramatic contrast' },
+      ]},
+      { id: 'Q4', title: 'Color Temperature', type: 'single', options: [
+        { id: '1', text: 'Warm light' },
+        { id: '2', text: 'Cool light' },
+        { id: '3', text: 'Mixed temperature' },
+        { id: '4', text: 'Neutral white' },
+      ]},
+      { id: 'Q5', title: 'Occlusion Behavior', type: 'single', options: [
+        { id: '1', text: 'Minimal occlusion, broad even coverage' },
+        { id: '2', text: 'Moderate occlusion, clear falloff zones' },
+        { id: '3', text: 'Heavy occlusion, deep shadow dominance' },
+        { id: '4', text: 'Layered occlusion, multiple depth planes' },
+        { id: '5', text: 'Uneven occlusion, patchy blocking' },
+      ]},
+      { id: 'Q6', title: 'Atmospheric Influence', type: 'single', options: [
+        { id: '1', text: 'Clear air' },
+        { id: '2', text: 'Dust or smoke' },
+        { id: '3', text: 'Fog or mist' },
+        { id: '4', text: 'Steam or haze' },
+        { id: '5', text: 'Particulate sparkle or drifting motes' },
+      ]},
+      { id: 'Q7', title: 'Visual Density', type: 'single', options: [
+        { id: '1', text: 'Sparse and open illumination' },
+        { id: '2', text: 'Balanced distribution' },
+        { id: '3', text: 'Dense and immersive shadowing' },
+      ]},
+      { id: 'Q8', title: 'Looping Behavior', type: 'single', options: [
+        { id: '1', text: 'Seamless soft repetition' },
+        { id: '2', text: 'Hidden tile seams' },
+        { id: '3', text: 'Strong repeating rhythm' },
+      ]},
+      { id: 'Q9', title: 'Aspect Ratio', type: 'single', options: [
+        { id: '1', text: 'Square (1:1)' },
+        { id: '2', text: 'Wide (16:9)' },
+        { id: '3', text: 'Portrait (9:16)' },
+      ]},
+    ],
+    assemblePrompt: (a) =>
+      `Seamless, tileable light and shadow pattern generated by ${opt('lightshadow','Q1',a.Q1)}, producing ${opt('lightshadow','Q2',a.Q2)}. Contrast level: ${opt('lightshadow','Q3',a.Q3)}. Color temperature: ${opt('lightshadow','Q4',a.Q4)}. Occlusion and falloff: ${opt('lightshadow','Q5',a.Q5)}. Atmospheric influence: ${opt('lightshadow','Q6',a.Q6)}. Visual density: ${opt('lightshadow','Q7',a.Q7)}. Looping behavior: ${opt('lightshadow','Q8',a.Q8)}. Non-representational lighting field intended as an overlay, naturalistic illumination logic, high-resolution, seamless repeating pattern.`,
+  },
+
+  weathering: {
+    name: 'Weathering and Decay',
+    questions: [
+      { id: 'Q1', title: 'Decay Process Type', type: 'single', options: [
+        { id: '1', text: 'Erosion and abrasion' },
+        { id: '2', text: 'Corrosion and oxidation' },
+        { id: '3', text: 'Rot and organic decay' },
+        { id: '4', text: 'Cracking and fracture' },
+        { id: '5', text: 'Scorching and burn damage' },
+        { id: '6', text: 'Grime, soot, and buildup' },
+        { id: '7', text: 'Mixed degradation processes' },
+      ]},
+      { id: 'Q2', title: 'Affected Material', type: 'single', options: [
+        { id: '1', text: 'Stone or masonry' },
+        { id: '2', text: 'Metal or alloy' },
+        { id: '3', text: 'Wood or plant matter' },
+        { id: '4', text: 'Fabric, leather, or hide' },
+        { id: '5', text: 'Bone or organic matter' },
+        { id: '6', text: 'Mixed materials' },
+      ]},
+      { id: 'Q3', title: 'Damage Distribution', type: 'single', options: [
+        { id: '1', text: 'Evenly distributed wear' },
+        { id: '2', text: 'Edge-focused degradation' },
+        { id: '3', text: 'Patchy and irregular damage' },
+        { id: '4', text: 'Directional exposure patterns' },
+        { id: '5', text: 'Stress-point concentrated damage' },
+      ]},
+      { id: 'Q4', title: 'Damage Intensity', type: 'single', options: [
+        { id: '1', text: 'Subtle surface wear' },
+        { id: '2', text: 'Moderate visible damage' },
+        { id: '3', text: 'Heavy structural damage' },
+        { id: '4', text: 'Near-total material failure' },
+      ]},
+      { id: 'Q5', title: 'Time Scale of Decay', type: 'single', options: [
+        { id: '1', text: 'Recent or fresh damage' },
+        { id: '2', text: 'Long-term weathering' },
+        { id: '3', text: 'Ancient or extreme age' },
+      ]},
+      { id: 'Q6', title: 'Environmental Cause', type: 'multi', max: 2, options: [
+        { id: '1', text: 'Wind and particulate abrasion' },
+        { id: '2', text: 'Water and moisture exposure' },
+        { id: '3', text: 'Heat or fire' },
+        { id: '4', text: 'Cold, ice, or freeze damage' },
+        { id: '5', text: 'Chemical or toxic exposure' },
+        { id: '6', text: 'Biological activity' },
+      ]},
+      { id: 'Q7', title: 'Edge Quality', type: 'single', options: [
+        { id: '1', text: 'Soft erosion and blending' },
+        { id: '2', text: 'Mixed soft and sharp transitions' },
+        { id: '3', text: 'Jagged, aggressive breakage' },
+        { id: '4', text: 'Layered peeling or flaking' },
+      ]},
+      { id: 'Q8', title: 'Visual Density', type: 'single', options: [
+        { id: '1', text: 'Sparse degradation' },
+        { id: '2', text: 'Balanced wear coverage' },
+        { id: '3', text: 'Dense, immersive decay' },
+      ]},
+      { id: 'Q9', title: 'Looping Behavior', type: 'single', options: [
+        { id: '1', text: 'Seamless soft repetition' },
+        { id: '2', text: 'Hidden tile seams' },
+        { id: '3', text: 'Strong repeating degradation rhythm' },
+      ]},
+    ],
+    assemblePrompt: (a) => {
+      const q6 = multiVal('weathering','Q6',a);
+      return `Seamless, tileable weathering and decay pattern depicting ${opt('weathering','Q1',a.Q1)} affecting ${opt('weathering','Q2',a.Q2)}. Damage distribution is ${opt('weathering','Q3',a.Q3)} with ${opt('weathering','Q4',a.Q4)}, shaped by ${q6} over a ${opt('weathering','Q5',a.Q5)}. Transitions are ${opt('weathering','Q7',a.Q7)} with ${opt('weathering','Q8',a.Q8)}. Looping: ${opt('weathering','Q9',a.Q9)}. Non-representational degradation layer designed for realism, surface aging, and infinite tiling continuity.`;
+    },
+  },
+
+  biological: {
+    name: 'Biological Micro Pattern',
+    questions: [
+      { id: 'Q1', title: 'Biological Basis', type: 'single', options: [
+        { id: '1', text: 'Cellular membranes or organelles' },
+        { id: '2', text: 'Fungal or spore networks' },
+        { id: '3', text: 'Vascular or circulatory systems' },
+        { id: '4', text: 'Chitinous or insectile surfaces' },
+        { id: '5', text: 'Muscular or fibrous tissue' },
+        { id: '6', text: 'Hybrid or unknown biology' },
+      ]},
+      { id: 'Q2', title: 'Structural Organization', type: 'single', options: [
+        { id: '1', text: 'Repeating uniform units' },
+        { id: '2', text: 'Clustered organic growth' },
+        { id: '3', text: 'Branching network structures' },
+        { id: '4', text: 'Layered tissue strata' },
+        { id: '5', text: 'Chaotic biological mass' },
+      ]},
+      { id: 'Q3', title: 'Scale Behavior', type: 'single', options: [
+        { id: '1', text: 'Micro-scale only' },
+        { id: '2', text: 'Micro with meso variation' },
+        { id: '3', text: 'Multi-scale biological complexity' },
+      ]},
+      { id: 'Q4', title: 'Surface Texture', type: 'multi', max: 2, options: [
+        { id: '1', text: 'Smooth and membranous' },
+        { id: '2', text: 'Fibrous or sinewy' },
+        { id: '3', text: 'Nodular or pustular' },
+        { id: '4', text: 'Ridged or plated' },
+        { id: '5', text: 'Soft deformable tissue' },
+      ]},
+      { id: 'Q5', title: 'Biological State', type: 'single', options: [
+        { id: '1', text: 'Healthy and stable' },
+        { id: '2', text: 'Mutated or irregular' },
+        { id: '3', text: 'Diseased or necrotic' },
+        { id: '4', text: 'Actively growing or invasive' },
+      ]},
+      { id: 'Q6', title: 'Moisture and Viscosity', type: 'single', options: [
+        { id: '1', text: 'Dry organic' },
+        { id: '2', text: 'Damp or humid' },
+        { id: '3', text: 'Wet or slick' },
+        { id: '4', text: 'Viscous or mucous-like' },
+      ]},
+      { id: 'Q7', title: 'Color Behavior', type: 'single', options: [
+        { id: '1', text: 'Natural biological tones' },
+        { id: '2', text: 'Muted organic palette' },
+        { id: '3', text: 'High-contrast alien coloration' },
+        { id: '4', text: 'Subtle internal bioluminescence' },
+        { id: '5', text: 'Sickly or corrupted hues' },
+      ]},
+      { id: 'Q8', title: 'Visual Density', type: 'single', options: [
+        { id: '1', text: 'Sparse microstructure' },
+        { id: '2', text: 'Balanced biological coverage' },
+        { id: '3', text: 'Dense and overwhelming' },
+      ]},
+      { id: 'Q9', title: 'Looping Behavior', type: 'single', options: [
+        { id: '1', text: 'Seamless soft repetition' },
+        { id: '2', text: 'Hidden tile seams' },
+        { id: '3', text: 'Strong repeating biological rhythm' },
+      ]},
+      { id: 'Q10', title: 'Aspect Ratio', type: 'single', options: [
+        { id: '1', text: 'Square (1:1)' },
+        { id: '2', text: 'Wide (16:9)' },
+        { id: '3', text: 'Portrait (9:16)' },
+      ]},
+    ],
+    assemblePrompt: (a) => {
+      const q4 = multiVal('biological','Q4',a);
+      return `Seamless, tileable biological micro pattern based on ${opt('biological','Q1',a.Q1)} with ${opt('biological','Q2',a.Q2)}. Surface texture is ${q4} at ${opt('biological','Q3',a.Q3)}. The biological state appears ${opt('biological','Q5',a.Q5)} with ${opt('biological','Q6',a.Q6)}. Color behavior is ${opt('biological','Q7',a.Q7)}. Non-representational organic microstructure designed for alien realism, surface logic, and infinite tiling continuity.`;
+    },
+  },
+
+  material: {
+    name: 'Material Surface',
+    questions: [
+      { id: 'Q1', title: 'Base Material', type: 'single', options: [
+        { id: '1', text: 'Stone or mineral' },
+        { id: '2', text: 'Metal or alloy' },
+        { id: '3', text: 'Wood or plant-based' },
+        { id: '4', text: 'Fabric or textile' },
+        { id: '5', text: 'Leather or hide' },
+        { id: '6', text: 'Bone, shell, or chitin' },
+        { id: '7', text: 'Clay, ceramic, or plaster' },
+        { id: '8', text: 'Synthetic or composite' },
+      ]},
+      { id: 'Q2', title: 'Material Specificity', type: 'single', options: [
+        { id: '1', text: 'Generic material type' },
+        { id: '2', text: 'Refined or processed material' },
+        { id: '3', text: 'Raw or natural material' },
+        { id: '4', text: 'Aged or historical material' },
+      ]},
+      { id: 'Q3', title: 'Surface Structure', type: 'multi', max: 2, options: [
+        { id: '1', text: 'Smooth and uniform' },
+        { id: '2', text: 'Rough and irregular' },
+        { id: '3', text: 'Layered or stratified' },
+        { id: '4', text: 'Fibrous or woven' },
+        { id: '5', text: 'Cracked or fractured' },
+        { id: '6', text: 'Pitted or porous' },
+      ]},
+      { id: 'Q4', title: 'Detail Scale', type: 'single', options: [
+        { id: '1', text: 'Fine micro-detail only' },
+        { id: '2', text: 'Mixed micro and macro detail' },
+        { id: '3', text: 'Large dominant surface features' },
+      ]},
+      { id: 'Q5', title: 'Wear and Condition', type: 'single', options: [
+        { id: '1', text: 'Pristine and untouched' },
+        { id: '2', text: 'Lightly worn' },
+        { id: '3', text: 'Heavily worn or damaged' },
+        { id: '4', text: 'Degraded or partially decayed' },
+      ]},
+      { id: 'Q6', title: 'Environmental Exposure', type: 'multi', max: 2, options: [
+        { id: '1', text: 'Dry and stable' },
+        { id: '2', text: 'Wet or damp' },
+        { id: '3', text: 'Heat or scorch exposure' },
+        { id: '4', text: 'Cold or frost exposure' },
+        { id: '5', text: 'Chemical or corrosive exposure' },
+      ]},
+      { id: 'Q7', title: 'Color Behavior', type: 'single', options: [
+        { id: '1', text: 'Natural material coloration' },
+        { id: '2', text: 'Muted desaturated tones' },
+        { id: '3', text: 'High contrast tonal variation' },
+        { id: '4', text: 'Subtle color shifts and staining' },
+        { id: '5', text: 'Artificially treated or dyed' },
+      ]},
+      { id: 'Q8', title: 'Reflectivity', type: 'single', options: [
+        { id: '1', text: 'Matte or diffuse' },
+        { id: '2', text: 'Satin or semi-gloss' },
+        { id: '3', text: 'Polished or reflective' },
+        { id: '4', text: 'Uneven or patchy reflectivity' },
+      ]},
+      { id: 'Q9', title: 'Tiling Continuity', type: 'single', options: [
+        { id: '1', text: 'Perfectly seamless tiling' },
+        { id: '2', text: 'Seamless with subtle variation' },
+        { id: '3', text: 'Structured repetition visible at scale' },
+      ]},
+      { id: 'Q10', title: 'Aspect Ratio', type: 'single', options: [
+        { id: '1', text: 'Square (1:1)' },
+        { id: '2', text: 'Wide (16:9)' },
+        { id: '3', text: 'Portrait (9:16)' },
+      ]},
+    ],
+    assemblePrompt: (a) => {
+      const q3 = multiVal('material','Q3',a);
+      const q6 = multiVal('material','Q6',a);
+      return `Seamless, tileable material surface depicting ${opt('material','Q1',a.Q1)} with ${opt('material','Q2',a.Q2)}. Surface structure is ${q3} with ${opt('material','Q4',a.Q4)}. Condition shows ${opt('material','Q5',a.Q5)} influenced by ${q6}. Color behavior is ${opt('material','Q7',a.Q7)}. Finish is ${opt('material','Q8',a.Q8)}. Tiling: ${opt('material','Q9',a.Q9)}. Designed as a non-representational material texture with realistic surface depth, physical plausibility, and infinite tiling continuity.`;
+    },
+  },
+
+};
+
+
+/* ============================================================
+   JS: APP STATE
+   ============================================================ */
+let appState = {
+  currentPattern: null,
+  answers: {},
+};
+
+
+/* ============================================================
+   JS: OPTION LOOKUP HELPERS
+   ============================================================ */
+function opt(patternId, qId, optId) {
+  if (!optId) return '[not selected]';
+  const q = PATTERNS[patternId].questions.find(q => q.id === qId);
+  if (!q) return optId;
+  const o = q.options.find(o => o.id === optId);
+  return o ? o.text : optId;
+}
+
+function multiVal(patternId, qId, answers) {
+  const val = answers[qId];
+  if (!val) return '[not selected]';
+  if (Array.isArray(val)) return val.map(id => opt(patternId, qId, id)).join(', ');
+  return opt(patternId, qId, val);
+}
+
+
+
+
+
+
+/* ============================================================
+   JS: PATTERN SELECTION
+   ============================================================ */
+function renderPatternGrid() {
+  const grid = document.getElementById('patternGrid');
+  grid.innerHTML = '';
+  Object.keys(PATTERNS).forEach((key, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'pattern-btn' + (appState.currentPattern === key ? ' selected' : '');
+    btn.textContent = PATTERNS[key].name;
+    btn.onclick = () => selectPattern(key);
+    grid.appendChild(btn);
+  });
+}
+
+function selectPattern(key) {
+  appState.currentPattern = key;
+  appState.answers = {};
+  renderPatternGrid();
+  renderQuestions();
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: QUESTION ACCORDIONS
+   Renders all questions for the selected pattern as collapsible panels.
+   First panel opens by default.
+   ============================================================ */
+function renderQuestions() {
+  const container = document.getElementById('questionsContainer');
+
+  if (!appState.currentPattern) {
+    container.innerHTML = '<div style="color:var(--dim);font-style:italic;padding:20px 0;font-size:0.88rem;">Select a pattern type above to begin.</div>';
+    return;
+  }
+
+  container.innerHTML = '';
+  const qs = PATTERNS[appState.currentPattern].questions;
+
+  qs.forEach((q, idx) => {
+    const acc = document.createElement('div');
+    acc.className = 'accordion';
+
+    const header = document.createElement('div');
+    header.className = 'accordion-header' + (idx === 0 ? ' open' : '');
+    header.innerHTML = `
+      <div class="q-title-row">
+        <span class="q-num">${idx + 1}</span>
+        <span>${q.title}</span>
+      </div>
+      <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;">
+        <button class="btn btn-rand btn-small" onclick="event.stopPropagation();randomizeField('${q.id}')">&#9861;</button>
+        <span class="accordion-chevron">&#9660;</span>
+      </div>`;
+    header.onclick = () => toggleAccordion(header, body);
+
+    const body = document.createElement('div');
+    body.className = 'accordion-body' + (idx === 0 ? ' open' : '');
+
+    const grid = document.createElement('div');
+    grid.className = 'options-grid';
+    grid.id = `opts-${q.id}`;
+
+    q.options.forEach(o => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = o.text;
+
+      /* Restore selected state */
+      const cur = appState.answers[q.id];
+      if (cur) {
+        if (Array.isArray(cur) && cur.includes(o.id)) btn.classList.add('selected');
+        else if (cur === o.id) btn.classList.add('selected');
+      }
+
+      btn.onclick = () => handleOptionClick(q, o, btn);
+      grid.appendChild(btn);
+    });
+
+    body.appendChild(grid);
+
+    if (q.type === 'multi') {
+      const note = document.createElement('p');
+      note.className = 'multi-note';
+      note.textContent = `Select up to ${q.max} choices`;
+      body.appendChild(note);
+    }
+
+    acc.appendChild(header);
+    acc.appendChild(body);
+    container.appendChild(acc);
+  });
+}
+
+function toggleAccordion(header, body) {
+  header.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+function handleOptionClick(q, opt, btn) {
+  const pid = appState.currentPattern;
+
+  if (q.type === 'single') {
+    document.querySelectorAll(`#opts-${q.id} .option-btn`).forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+    appState.answers[q.id] = opt.id;
+
+  } else if (q.type === 'multi') {
+    let cur = appState.answers[q.id] || [];
+    if (!Array.isArray(cur)) cur = [];
+
+    if (cur.includes(opt.id)) {
+      cur = cur.filter(id => id !== opt.id);
+      btn.classList.remove('selected');
+    } else {
+      if (cur.length >= q.max) {
+        showNotice(`Max ${q.max} selections for this question.`, 'err', 'actionNotice');
+        return;
+      }
+      cur = [...cur, opt.id];
+      btn.classList.add('selected');
+    }
+    appState.answers[q.id] = cur;
+  }
+
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: RANDOM HELPERS
+   ============================================================ */
+function randomizeField(qId) {
+  if (!appState.currentPattern) return;
+  const q = PATTERNS[appState.currentPattern].questions.find(q => q.id === qId);
+  if (!q) return;
+
+  if (q.type === 'single') {
+    appState.answers[qId] = q.options[Math.floor(Math.random() * q.options.length)].id;
+  } else {
+    const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+    const count    = Math.floor(Math.random() * q.max) + 1;
+    appState.answers[qId] = shuffled.slice(0, count).map(o => o.id);
+  }
+
+  renderQuestions();
+  updatePreview();
+}
+
+function randomizeAll() {
+  if (!appState.currentPattern) return;
+  PATTERNS[appState.currentPattern].questions.forEach(q => {
+    if (q.type === 'single') {
+      appState.answers[q.id] = q.options[Math.floor(Math.random() * q.options.length)].id;
+    } else {
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      const count    = Math.floor(Math.random() * q.max) + 1;
+      appState.answers[q.id] = shuffled.slice(0, count).map(o => o.id);
+    }
+  });
+  renderQuestions();
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: PROMPT BUILDER AND PREVIEW
+   ============================================================ */
+function buildPrompt() {
+  if (!appState.currentPattern) return '';
+  return PATTERNS[appState.currentPattern].assemblePrompt(appState.answers);
+}
+
+function updatePreview() {
+  const el     = document.getElementById('livePreview');
+  const prompt = buildPrompt();
+
+  if (!prompt) {
+    el.textContent = 'Select a pattern type and answer the questions to build your prompt.';
+    el.className = 'prompt-display empty';
+    return;
+  }
+
+  el.textContent = prompt;
+  el.className = 'prompt-display';
+}
+
+function copyPrompt() {
+  const prompt = buildPrompt();
+  if (!prompt || prompt.includes('[not selected]')) return;
+  navigator.clipboard.writeText(prompt).then(() => {
+    showNotice('Prompt copied to clipboard.', 'ok', 'copyNotice');
+    setTimeout(() => hideNotice('copyNotice'), 2000);
+  });
+}
+
+
+
+
+/* ============================================================
+   JS: SAVE / LOAD / RESET
+   Uses localStorage to persist the current pattern and answers.
+   ============================================================ */
+function saveCurrent() {
+  if (!appState.currentPattern) {
+    showNotice('Select a pattern first.', 'err', 'actionNotice'); return;
+  }
+  localStorage.setItem('patternGenSave', JSON.stringify(appState));
+  showNotice('Saved.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function loadSaved() {
+  const data = JSON.parse(localStorage.getItem('patternGenSave') || 'null');
+  if (!data) { showNotice('No saved data found.', 'err', 'actionNotice'); return; }
+  appState = data;
+  renderPatternGrid();
+  renderQuestions();
+  updatePreview();
+  showNotice('Loaded.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function clearSaved() {
+  localStorage.removeItem('patternGenSave');
+  showNotice('Cleared.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function resetApp() {
+  appState = { currentPattern: null, answers: {} };
+  renderPatternGrid();
+  renderQuestions();
+  updatePreview();
+}
+
+
+/* ============================================================
+   JS: NOTICE HELPERS
+   ============================================================ */
+function showNotice(msg, type, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'notice ' + type;
+}
+function hideNotice(id) {
+  const el = document.getElementById(id);
+  if (el) el.className = 'notice';
+}
+
+
+/* ============================================================
+   JS: INIT
+   ============================================================ */
+renderPatternGrid();
+renderQuestions();
+
+</script>
+</body>
+</html>
