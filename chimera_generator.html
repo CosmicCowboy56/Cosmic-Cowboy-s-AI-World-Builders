@@ -1129,24 +1129,32 @@ async function assemblePrompt() {
   const sys = `You are the prompt engine for Cosmic Cowboy's CHIMERA GENERATOR. Output ONLY a dense, comma-separated image generation prompt. No labels, no preamble, no explanation — start immediately with descriptive terms.
 
 ━━━ THE INTEGRATION RULE — applies EXCLUSIVELY to the Contributors list ━━━
-Contributors define the creature's physical body. Each contributor — regardless of what it is — is fully dissolved and biologically integrated into ONE continuous organism. The creature has one body, one skin, one unbroken form. Nothing is layered, overlaid, or kept as a separate element.
+Contributors define what the creature's body IS MADE OF. Every body part — torso, limbs, head, spine, skin surface, internal structure — is physically constituted from contributor materials. There is no underlying generic body. The contributors ARE the body.
 
-Contributor percentage controls visual dominance: a 60% contributor drives the creature's primary anatomy, proportions, silhouette, and dominant texture; a 20% contributor is a present but secondary biological influence that shapes secondary features, surface detail, or structural undertones. All percentages must be honored proportionally.
+STRUCTURAL SUBSTITUTION (not decoration): Each anatomical part must be described as literally being the contributor material or form, not as having it applied, attached, growing from it, or layered on top:
+  WRONG: "a humanoid body with cityscape elements overlaid", "skin covered in building facades", "gears embedded in flesh"
+  RIGHT: "torso structured as a glass-and-steel skyscraper facade", "spine formed from load-bearing I-beams", "ribcage as an open steel framework", "skin surface is an aerial city grid of illuminated streets"
 
-ANY contributor is valid — animals, objects, weather phenomena, materials, concepts, celestial bodies, emotions, abstract forces. Abstract contributors (thunderstorm, obsidian, void, gravity, fire) do not appear literally — they manifest as anatomy, surface quality, structural logic, texture, or behavioral energy woven into the creature's biology. The integration rule applies equally to all of them.
+This applies to ANY contributor type:
+  - Animal → body parts structurally take the animal's anatomy: musculature, skeletal geometry, skin/scale/feather texture, proportions
+  - Inanimate object/material → body parts ARE that material or structure: stone bones, crystal musculature, wooden grain skin, woven-fabric surface
+  - Abstract/phenomenon (fire, storm, void, gravity, obsidian) → anatomy embodies the physical properties: fracture-plane joints, electromagnetic muscle striations, pressure-distortion silhouette, event-horizon skin depth
+  - Architectural/urban (cityscape, cathedral, machine) → skeleton is the structural framework, skin is the facade surface, veins are conduit or wiring, joints are load-bearing connections
 
-FORBIDDEN during integration: contributor names, percentages, "blend of", "combination of", "part X", "X%", any literal reference to source materials by name.
+Contributor percentage controls structural dominance: 60% drives primary silhouette, skeleton, and surface area; 40% governs secondary anatomy regions, subsurface structure, and material undertone. Both must be visibly and structurally present.
+
+FORBIDDEN: contributor names, percentages, "blend of", "combination of", "part X", "X%", decorative language ("adorned with", "covered in", "accented by", "elements of", "features of", "aspects of"), any phrase implying a base body with things applied to it.
 
 ━━━ ALL OTHER FIELDS — scene descriptors, not subject to the integration rule ━━━
-Everything outside the Contributors list describes the scene, presentation, and rendering of the creature. These fields are passed through faithfully and directly — they are NOT dissolved, NOT integrated, NOT reinterpreted:
-- Base Mode, Gender, Scale → describe the creature's physical category and size
-- Palette → the creature's skin and body covering color language
+Everything outside the Contributors list describes the scene, presentation, and rendering. These are passed through faithfully — NOT dissolved, NOT integrated, NOT reinterpreted:
+- Base Mode, Gender, Scale → creature's physical category and size
+- Palette → skin and body covering color language
 - Clothing / Adornment → worn or attached items, described as-is
-- Pose, Expression → the creature's body position and emotional state, described directly
-- Background, Lighting, Environmental Detail → the surrounding scene, atmosphere, and world around the creature
+- Pose, Expression → body position and emotional state
+- Background, Lighting, Environmental Detail → surrounding scene, atmosphere, world
 - Art Style, Image Size → rendering treatment and framing
 
-Build the output in this order: [creature body built from integrated contributors] [clothing/adornment if set] [pose and expression] [scale context] [background and environment] [lighting and atmosphere] [environmental details] [art style] [image size if specified].
+Build the output in this order: [creature body — structural anatomy built from contributors] [clothing/adornment if set] [pose and expression] [scale context] [background and environment] [lighting and atmosphere] [environmental details] [art style] [image size if specified].
 
 QUALITY CLOSE: end every prompt with — ultra-fine surface detail, sharp focus, cinematic physically plausible lighting, dense creature anatomy, production-grade rendering.`;
 
