@@ -2,19 +2,13 @@
 <html lang="en">
 <head>
 
-<!-- ============================================================
-     HEAD: Page metadata and Google Fonts import
-     ============================================================ -->
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Claude D&D Generator v2.0 — Cosmic Cowboy</title>
+<title>D&D Character Generator — Cosmic Cowboy</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
 
 <style>
 
-/* ============================================================
-   CSS: VARIABLES
-   ============================================================ */
 :root {
   --dark-blue:   #023E8A;
   --ocean-blue:  #0077B6;
@@ -54,6 +48,7 @@ body {
 ::-webkit-scrollbar-thumb        { background: rgba(144,224,239,0.3); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover  { background: rgba(144,224,239,0.6); }
 
+/* ── HEADER ── */
 .header {
   flex-shrink: 0;
   height: 52px;
@@ -66,7 +61,6 @@ body {
   position: relative;
   z-index: 10;
 }
-
 .header::after {
   content: '';
   position: absolute;
@@ -75,7 +69,6 @@ body {
   background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
   opacity: 0.5;
 }
-
 .hdr-title {
   font-family: 'Cinzel', serif;
   font-size: 1.10rem;
@@ -84,7 +77,6 @@ body {
   color: var(--pale-blue);
   text-shadow: 0 0 18px rgba(144,224,239,0.4);
 }
-
 .hdr-sub {
   font-size: 0.60rem;
   color: var(--soft-cyan);
@@ -92,6 +84,7 @@ body {
   margin-top: 2px;
 }
 
+/* ── API BAR ── */
 .api-bar {
   flex-shrink: 0;
   display: flex;
@@ -102,7 +95,6 @@ body {
   background: rgba(0,0,0,0.25);
   border-bottom: 1px solid var(--border);
 }
-
 .api-lbl {
   font-size: 0.62rem;
   letter-spacing: 0.12em;
@@ -111,38 +103,18 @@ body {
   font-weight: 500;
 }
 
-input[type="text"],
-input[type="password"],
-input[type="number"],
-input[type="url"],
-select,
-textarea {
-  background: var(--surface2);
-  border: 1px solid var(--border);
-  color: var(--pale-blue);
-  font-family: 'Exo 2', sans-serif;
-  font-size: 0.92rem;
-  font-weight: 300;
-  border-radius: 4px;
-  padding: 7px 10px;
-  outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  -webkit-appearance: none;
-  width: 100%;
+/* ── ACTION BAR ── */
+.action-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 16px;
+  background: rgba(0,0,0,0.18);
+  border-bottom: 1px solid var(--border);
 }
 
-input:focus, select:focus, textarea:focus {
-  border-color: var(--soft-cyan);
-  box-shadow: var(--glow);
-}
-
-input::placeholder, textarea::placeholder { color: var(--dim); }
-
-select option            { background: #011830; color: var(--pale-blue); }
-select[multiple]         { min-height: 100px; padding: 4px; }
-select[multiple] option  { padding: 4px 8px; border-radius: 2px; }
-select[multiple] option:checked { background: rgba(144,224,239,0.2); color: var(--pale-blue); }
-
+/* ── BUTTONS ── */
 .btn {
   font-family: 'Exo 2', sans-serif;
   font-weight: 600;
@@ -159,8 +131,8 @@ select[multiple] option:checked { background: rgba(144,224,239,0.2); color: var(
   display: inline-flex;
   align-items: center;
   justify-content: center;
+  text-decoration: none;
 }
-
 .btn:hover:not(:disabled) { border-color: var(--soft-cyan); background: rgba(144,224,239,0.10); }
 .btn:disabled              { opacity: 0.30; cursor: not-allowed; }
 
@@ -175,12 +147,10 @@ select[multiple] option:checked { background: rgba(144,224,239,0.2); color: var(
 }
 
 .btn-rand {
-  width: 32px;
-  height: 32px;
+  width: 30px; height: 30px;
   padding: 0;
   flex-shrink: 0;
   font-size: 1rem;
-  font-family: inherit;
   align-self: flex-end;
   margin-bottom: 1px;
 }
@@ -189,60 +159,112 @@ select[multiple] option:checked { background: rgba(144,224,239,0.2); color: var(
 .btn-connect.ok  { background: rgba(0,160,90,0.15);  color: var(--green); border-color: rgba(0,160,90,0.35); }
 .btn-connect.bad { background: rgba(200,30,30,0.12); color: var(--red);   border-color: rgba(200,30,30,0.35); }
 
-.outer {
+/* ── INPUTS ── */
+input[type="text"],
+input[type="password"],
+input[type="number"],
+select,
+textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.92rem;
+  font-weight: 300;
+  border-radius: 4px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  width: 100%;
+}
+input:focus, select:focus, textarea:focus {
+  border-color: var(--soft-cyan);
+  box-shadow: var(--glow);
+}
+input::placeholder, textarea::placeholder { color: var(--dim); }
+select option            { background: #011830; color: var(--pale-blue); }
+select[multiple]         { min-height: 90px; padding: 4px; }
+select[multiple] option  { padding: 4px 8px; border-radius: 2px; }
+select[multiple] option:checked { background: rgba(144,224,239,0.2); }
+
+/* ── WORKSPACE ── */
+.workspace {
   flex: 1;
   overflow: hidden;
   display: grid;
-  grid-template-rows: 1fr 420px;
+  grid-template-columns: 1fr 270px;
 }
 
-.top-row {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+/* ── ACCORDION COLUMN ── */
+.acc-col {
+  overflow-y: auto;
+  padding: 12px 16px 24px;
+}
+
+.acc-section {
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  margin-bottom: 8px;
+  background: var(--surface);
   overflow: hidden;
-  border-bottom: 2px solid var(--border-hi);
 }
 
-.panel-head {
-  padding: 8px 14px;
-  font-family: 'Exo 2', sans-serif;
-  font-size: 0.76rem;
-  font-weight: 700;
-  letter-spacing: 0.14em;
-  color: var(--accent);
-  border-bottom: 1px solid var(--border);
-  background: rgba(0,0,0,0.22);
-  flex-shrink: 0;
+.acc-header {
+  padding: 10px 14px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  text-transform: uppercase;
+  cursor: pointer;
+  user-select: none;
+  background: rgba(0,0,0,0.20);
+  transition: background 0.15s;
+}
+.acc-header:hover { background: rgba(0,119,182,0.18); }
+
+.acc-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.82rem;
+  font-weight: 700;
+  letter-spacing: 0.10em;
+  color: var(--soft-cyan);
 }
 
-.question-panel {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-right: 1px solid var(--border);
+.acc-chevron {
+  font-size: 0.70rem;
+  color: var(--dim);
+  transition: transform 0.2s;
 }
+.acc-section.open .acc-chevron { transform: rotate(180deg); }
 
-.q-scroll { flex: 1; overflow-y: auto; padding: 14px 16px; }
+.acc-body {
+  padding: 12px 14px;
+  display: none;
+}
+.acc-section.open .acc-body { display: block; }
+
+/* ── QUESTION BLOCKS ── */
+.q-block {
+  margin-bottom: 16px;
+}
+.q-block:last-child { margin-bottom: 0; }
+.q-block.hidden { display: none; }
 
 .q-label {
   font-family: 'Cinzel', serif;
-  font-size: 0.95rem;
+  font-size: 0.88rem;
   font-weight: 700;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.06em;
   color: var(--soft-cyan);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
 }
 
 .q-hint {
-  font-size: 0.84rem;
+  font-size: 0.80rem;
   color: var(--dim);
   font-style: italic;
   line-height: 1.50;
-  margin-bottom: 10px;
+  margin-bottom: 8px;
 }
 
 .q-input-row {
@@ -253,106 +275,83 @@ select[multiple] option:checked { background: rgba(144,224,239,0.2); color: var(
 .q-input-row > :first-child { flex: 1; min-width: 0; }
 
 .field-lbl {
-  font-size: 0.70rem;
+  font-size: 0.68rem;
   color: var(--dim);
-  letter-spacing: 0.06em;
-  margin-bottom: 4px;
+  letter-spacing: 0.05em;
+  margin-bottom: 3px;
 }
 
-.custom-wrap { margin-top: 8px; }
-.custom-lbl  {
-  font-size: 0.70rem;
+.custom-wrap  { margin-top: 6px; }
+.custom-lbl {
+  font-size: 0.68rem;
   color: var(--dim);
-  letter-spacing: 0.06em;
-  margin-bottom: 4px;
+  letter-spacing: 0.05em;
+  margin-bottom: 3px;
 }
 
-.q-notice { font-size: 0.80rem; padding: 6px 10px; border-radius: 4px; margin-top: 8px; display: none; }
-.q-notice.err {
-  display: block;
-  background: rgba(200,30,30,0.15);
-  border: 1px solid rgba(200,30,30,0.4);
-  color: var(--red);
-}
-
-.q-nav {
-  padding: 10px 14px;
-  border-top: 1px solid var(--border);
-  flex-shrink: 0;
-  display: flex;
-  gap: 8px;
-}
-.q-nav .btn { flex: 1; font-size: 0.74rem; padding: 8px; }
-
-.summary-panel {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-}
-
-.summary-scroll {
-  flex: 1;
+/* ── GENERATE PANEL ── */
+.gen-panel {
+  border-left: 1px solid var(--border);
+  background: rgba(0,0,0,0.18);
   overflow-y: auto;
-  padding: 8px 12px;
   display: flex;
   flex-direction: column;
-  gap: 5px;
+  gap: 10px;
+  padding: 14px;
 }
 
-.sum-item {
-  background: var(--surface);
+.gp-count {
+  font-size: 0.74rem;
+  color: var(--dim);
+  letter-spacing: 0.06em;
+  text-align: center;
+  padding: 6px 0;
+}
+
+.gp-btn {
+  width: 100%;
+  padding: 11px 0;
+  font-size: 0.76rem;
+  letter-spacing: 0.10em;
+}
+
+.gp-divider {
+  height: 1px;
+  background: var(--border);
+  margin: 2px 0;
+}
+
+.gen-bar {
+  display: none;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  background: rgba(0,119,182,0.14);
   border: 1px solid var(--border);
   border-radius: 4px;
-  padding: 6px 11px;
-  display: flex;
-  gap: 10px;
-  align-items: baseline;
-  cursor: pointer;
-  transition: border-color 0.15s;
+  font-size: 0.78rem;
+  color: var(--soft-cyan);
 }
-.sum-item:hover { border-color: var(--soft-cyan); }
+.gen-bar.visible { display: flex; }
 
-.sum-key {
-  font-family: 'Exo 2', sans-serif;
-  font-size: 0.66rem;
-  font-weight: 700;
-  letter-spacing: 0.08em;
-  color: var(--accent);
+.spinner {
+  width: 14px; height: 14px;
+  border: 2px solid rgba(144,224,239,0.2);
+  border-top-color: var(--soft-cyan);
+  border-radius: 50%;
   flex-shrink: 0;
-  min-width: 105px;
-  text-transform: uppercase;
+  animation: spin 0.8s linear infinite;
 }
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.sum-val {
-  color: var(--pale-blue);
-  flex: 1;
-  word-break: break-word;
-  line-height: 1.35;
-  font-size: 0.84rem;
-}
-
-.sum-empty {
-  color: var(--dim);
-  font-style: italic;
-  font-size: 0.82rem;
-  text-align: center;
-  padding: 24px 0;
-  line-height: 1.7;
-}
-
-.summary-actions {
-  padding: 10px 14px;
-  border-top: 1px solid var(--border);
-  display: flex;
-  gap: 8px;
-  flex-shrink: 0;
-}
-.summary-actions .btn { flex: 1; font-size: 0.72rem; }
-
+/* ── OUTPUT ROW ── */
 .output-row {
+  flex-shrink: 0;
+  height: 360px;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
   overflow: hidden;
+  border-top: 2px solid var(--border-hi);
   background: rgba(0,0,0,0.20);
 }
 
@@ -405,34 +404,10 @@ select[multiple] option:checked { background: rgba(144,224,239,0.2); color: var(
 }
 .out-body.empty { color: var(--dim); font-style: italic; }
 
-.gen-bar {
-  display: none;
-  align-items: center;
-  gap: 10px;
-  padding: 8px 14px;
-  background: rgba(0,119,182,0.14);
-  border-top: 1px solid var(--border);
-  font-size: 0.80rem;
-  color: var(--soft-cyan);
-  flex-shrink: 0;
-}
-.gen-bar.visible { display: flex; }
-
-.spinner {
-  width: 15px; height: 15px;
-  border: 2px solid rgba(144,224,239,0.2);
-  border-top-color: var(--soft-cyan);
-  border-radius: 50%;
-  flex-shrink: 0;
-  animation: spin 0.8s linear infinite;
-}
-@keyframes spin { to { transform: rotate(360deg); } }
-
-@media (max-width: 720px) {
-  .top-row       { grid-template-columns: 1fr; }
-  .summary-panel { display: none; }
-  .output-row    { grid-template-columns: 1fr; }
-  .outer         { grid-template-rows: 1fr 640px; }
+@media (max-width: 760px) {
+  .workspace     { grid-template-columns: 1fr; }
+  .gen-panel     { display: none; }
+  .output-row    { grid-template-columns: 1fr; height: 600px; }
 }
 
 </style>
@@ -441,98 +416,73 @@ select[multiple] option:checked { background: rgba(144,224,239,0.2); color: var(
 
 <header class="header">
   <div>
-    <div class="hdr-title">⚔ CLAUDE D&amp;D GENERATOR</div>
-    <div class="hdr-sub">v2.0 &mdash; COSMIC COWBOY'S AI WORLDBUILDERS</div>
+    <div class="hdr-title">⚔ D&amp;D CHARACTER GENERATOR</div>
+    <div class="hdr-sub">COSMIC COWBOY'S AI WORLDBUILDERS</div>
   </div>
-  <button class="btn" onclick="resetAll()">✦ NEW CHARACTER</button>
+  <a class="btn" href="index.html">◀ HUB</a>
 </header>
 
 <div class="api-bar">
   <span class="api-lbl">xAI API KEY</span>
   <input type="password" id="apiKey" placeholder="your-xai-api-key"
     style="flex:1;min-width:100px;" oninput="onKeyInput()">
-  <span style="font-size:0.62rem;color:var(--dim);white-space:nowrap;">
-    Powered by xAI &mdash; grok-4.3
-  </span>
+  <span style="font-size:0.62rem;color:var(--dim);white-space:nowrap;">Powered by xAI — grok-4.3</span>
   <button class="btn btn-connect" id="connectBtn" onclick="confirmConnect()">CONNECT</button>
 </div>
 
-<div class="outer">
+<div class="action-bar">
+  <button class="btn" onclick="randomizeAll()">⚄ RANDOMIZE ALL</button>
+  <button class="btn" onclick="clearAll()">✕ CLEAR ALL</button>
+</div>
 
-  <div class="top-row">
+<div class="workspace">
 
-    <div class="question-panel">
-      <div class="panel-head">
-        <span id="panelHeading">Character Builder</span>
-      </div>
+  <div class="acc-col" id="accCol"></div>
 
-      <div class="q-scroll" id="qScroll">
-        <div style="color:var(--dim);font-style:italic;padding:20px 0;font-size:0.90rem;">
-          Fill in the API fields above and click CONNECT to begin building your character.
-        </div>
-      </div>
-
-      <div class="gen-bar" id="genBar">
-        <div class="spinner"></div>
-        <span id="genText">Generating character — this may take a moment...</span>
-      </div>
-
-      <div class="q-nav" id="qNav" style="display:none;">
-        <button class="btn"             id="btnBack" onclick="goBack()">&#8592; BACK</button>
-        <button class="btn btn-primary" id="btnNext" onclick="goNext()">NEXT &#8594;</button>
-      </div>
+  <div class="gen-panel">
+    <div class="gp-count" id="gpCount">Fill in fields to begin</div>
+    <button class="btn btn-primary gp-btn" id="btnGenerate" onclick="generateCharacter()" disabled>
+      GENERATE CHARACTER
+    </button>
+    <div class="gen-bar" id="genBar">
+      <div class="spinner"></div>
+      <span id="genText">Generating character...</span>
     </div>
-
-    <div class="summary-panel">
-      <div class="panel-head">
-        <span>Your Selections</span>
-        <span id="sumCount" style="font-size:0.66rem;color:var(--dim);font-weight:300;letter-spacing:0.04em;text-transform:none;">0 answered</span>
-      </div>
-
-      <div class="summary-scroll" id="sumScroll">
-        <div class="sum-empty" id="sumEmpty">
-          Answers appear here as you work through the questions.<br>
-          Click any row to go back and change it.
-        </div>
-      </div>
-
-      <div class="summary-actions">
-        <button class="btn"             onclick="resetAll()">CLEAR ALL</button>
-        <button class="btn btn-primary" id="btnGenerate" onclick="generateCharacter()" disabled>
-          GENERATE CHARACTER
-        </button>
-      </div>
+    <div class="gp-divider"></div>
+    <div style="font-size:0.72rem;color:var(--dim);line-height:1.6;">
+      Fill in <strong style="color:var(--soft-cyan)">Name</strong> and
+      <strong style="color:var(--soft-cyan)">Class</strong> to unlock
+      generation. All other fields are optional.
     </div>
-
   </div>
 
-  <div class="output-row">
+</div>
 
-    <div class="out-panel">
-      <div class="out-head">
-        <span class="out-title">Character Stats</span>
-        <button class="btn" style="font-size:0.60rem;padding:3px 10px;" onclick="copyOut('outStats',this)">COPY</button>
-      </div>
-      <div class="out-body empty" id="outStats">Awaiting generation...</div>
+<div class="output-row">
+
+  <div class="out-panel">
+    <div class="out-head">
+      <span class="out-title">Character Stats</span>
+      <button class="btn" style="font-size:0.60rem;padding:3px 10px;" onclick="copyOut('outStats',this)">COPY</button>
     </div>
+    <div class="out-body empty" id="outStats">Awaiting generation...</div>
+  </div>
 
-    <div class="out-panel">
-      <div class="out-head">
-        <span class="out-title">Character Lore</span>
-        <span class="out-note">Lore may need editing to match your vision.</span>
-        <button class="btn" style="font-size:0.60rem;padding:3px 10px;" onclick="copyOut('outLore',this)">COPY</button>
-      </div>
-      <div class="out-body empty" id="outLore">Awaiting generation...</div>
+  <div class="out-panel">
+    <div class="out-head">
+      <span class="out-title">Character Lore</span>
+      <span class="out-note">Lore may need editing to match your vision.</span>
+      <button class="btn" style="font-size:0.60rem;padding:3px 10px;" onclick="copyOut('outLore',this)">COPY</button>
     </div>
+    <div class="out-body empty" id="outLore">Awaiting generation...</div>
+  </div>
 
-    <div class="out-panel">
-      <div class="out-head">
-        <span class="out-title">Portrait Prompt</span>
-        <button class="btn" style="font-size:0.60rem;padding:3px 10px;" onclick="copyOut('outPrompt',this)">COPY</button>
-      </div>
-      <div class="out-body empty" id="outPrompt">Awaiting generation...</div>
+  <div class="out-panel">
+    <div class="out-head">
+      <span class="out-title">Portrait Prompt</span>
+      <button class="btn" style="font-size:0.60rem;padding:3px 10px;" onclick="copyOut('outPrompt',this)">COPY</button>
     </div>
-
+    <div class="out-body empty" id="outPrompt">Awaiting generation...</div>
   </div>
 
 </div>
@@ -541,7 +491,7 @@ select[multiple] option:checked { background: rgba(144,224,239,0.2); color: var(
 <script>
 
 /* ============================================================
-   JS: DATA — SUBCLASS OPTIONS
+   DATA — SUBCLASSES
    ============================================================ */
 const SUBCLASSES = {
   'Barbarian':    ['Path of the Berserker','Path of the Totem Warrior','Path of the Ancestral Guardian','Path of the Storm Herald','Path of the Zealot','Path of the Beast','Path of Wild Magic'],
@@ -572,27 +522,16 @@ const SPELLCASTING_CLASSES = new Set([
 
 
 /* ============================================================
-   JS: DATA — QUESTION DEFINITIONS
+   DATA — QUESTIONS
    ============================================================ */
 const QUESTIONS = [
 
-  /* ── CORE ─────────────────────────────────────────────── */
+  /* ── CORE ── */
   {
     id: 'edition', label: 'Edition', required: true,
-    hint: 'Determines the mechanical rules used for ability scores, class features, and equipment. The generator enforces the selected edition throughout.',
+    hint: 'Determines the mechanical rules used for ability scores, class features, and equipment.',
     type: 'select', allowRandom: false, allowCustom: false,
-    options: [
-      'D&D 5e',
-      'D&D 2024 Revision',
-      'OSR style generic fantasy',
-      'System neutral',
-    ],
-  },
-  {
-    id: 'mode', label: 'Build Mode', required: true,
-    hint: 'Step by Step walks through every question. Random auto-fills all core choices at once — you can still go back and change any answer in the Selections panel on the right.',
-    type: 'select', allowRandom: false, allowCustom: false,
-    options: ['Step by step','Random'],
+    options: ['D&D 5e','D&D 2024 Revision','OSR style generic fantasy','System neutral'],
   },
   {
     id: 'level', label: 'Character Level', required: true,
@@ -601,83 +540,32 @@ const QUESTIONS = [
     allowRandom: true, allowCustom: false,
   },
 
-  /* ── IDENTITY ─────────────────────────────────────────── */
+  /* ── IDENTITY ── */
   {
     id: 'ancestry', label: 'Ancestry / Race', required: true,
     hint: 'Choose from the list. Use the field below to specify a subrace or add detail.',
     type: 'select', allowRandom: true, allowCustom: true,
     options: [
-      'Human',
-      'Variant Human',
-      'Elf',
-      'High Elf',
-      'Wood Elf',
-      'Drow (Dark Elf)',
-      'Half-Elf',
-      'Dwarf',
-      'Mountain Dwarf',
-      'Hill Dwarf',
-      'Halfling',
-      'Lightfoot Halfling',
-      'Stout Halfling',
-      'Gnome',
-      'Forest Gnome',
-      'Rock Gnome',
-      'Orc',
-      'Half-Orc',
-      'Tiefling',
-      'Asmodeus Tiefling',
-      'Dragonborn',
-      'Chromatic Dragonborn',
-      'Metallic Dragonborn',
-      'Genasi — Air',
-      'Genasi — Earth',
-      'Genasi — Fire',
-      'Genasi — Water',
-      'Goliath',
-      'Aasimar',
-      'Fallen Aasimar',
-      'Protector Aasimar',
-      'Scourge Aasimar',
-      'Tabaxi',
-      'Centaur',
-      'Firbolg',
-      'Kenku',
-      'Triton',
-      'Warforged',
-      'Changeling',
-      'Shifter',
-      'Kalashtar',
-      'Lizardfolk',
-      'Tortle',
-      'Bugbear',
-      'Goblin',
-      'Hobgoblin',
-      'Kobold',
-      'Yuan-Ti Pureblood',
-      'Loxodon',
-      'Vedalken',
-      'Simic Hybrid',
-      'Leonin',
-      'Satyr',
-      'Harengon',
-      'Owlin',
+      'Human','Variant Human','Elf','High Elf','Wood Elf','Drow (Dark Elf)','Half-Elf',
+      'Dwarf','Mountain Dwarf','Hill Dwarf','Halfling','Lightfoot Halfling','Stout Halfling',
+      'Gnome','Forest Gnome','Rock Gnome','Orc','Half-Orc','Tiefling','Asmodeus Tiefling',
+      'Dragonborn','Chromatic Dragonborn','Metallic Dragonborn',
+      'Genasi — Air','Genasi — Earth','Genasi — Fire','Genasi — Water',
+      'Goliath','Aasimar','Fallen Aasimar','Protector Aasimar','Scourge Aasimar',
+      'Tabaxi','Centaur','Firbolg','Kenku','Triton','Warforged','Changeling','Shifter',
+      'Kalashtar','Lizardfolk','Tortle','Bugbear','Goblin','Hobgoblin','Kobold',
+      'Yuan-Ti Pureblood','Loxodon','Vedalken','Simic Hybrid','Leonin','Satyr','Harengon','Owlin',
     ],
   },
   {
     id: 'gender', label: 'Gender', required: true,
     hint: '',
     type: 'select', allowRandom: true, allowCustom: false,
-    options: [
-      'Male',
-      'Female',
-      'Nonbinary',
-      'Unknown',
-    ],
+    options: ['Male','Female','Nonbinary','Unknown'],
   },
   {
     id: 'skin', label: 'Skin / Body Covering Palette', required: true,
-    hint: 'This palette is enforced explicitly in the portrait prompt and cannot be overridden by the art style. Use the field below to add specific colour detail.',
+    hint: 'This palette is enforced explicitly in the portrait prompt and cannot be overridden by the art style.',
     type: 'select', allowRandom: true, allowCustom: true,
     options: [
       'Natural — medium earth tones, warm brown',
@@ -698,24 +586,14 @@ const QUESTIONS = [
     ],
   },
 
-  /* ── CLASS ────────────────────────────────────────────── */
+  /* ── CLASS ── */
   {
     id: 'charClass', label: 'Class', required: true,
-    hint: 'Choose one class. For multiclassing, use the field below to specify both classes and the level split (e.g. "Fighter 3, Wizard 2"). Multiclass prerequisites are enforced — STR or DEX 13 for Fighter, INT 13 for Wizard, WIS 13 for Cleric/Druid, CHA 13 for Bard/Paladin/Sorcerer/Warlock, DEX and WIS 13 for Monk.',
+    hint: 'Choose one class. For multiclassing, use the field below to specify both classes and the level split.',
     type: 'select', allowRandom: true, allowCustom: true,
     options: [
-      'Barbarian',
-      'Bard',
-      'Cleric',
-      'Druid',
-      'Fighter',
-      'Monk',
-      'Paladin',
-      'Ranger',
-      'Rogue',
-      'Sorcerer',
-      'Warlock',
-      'Wizard',
+      'Barbarian','Bard','Cleric','Druid','Fighter','Monk','Paladin','Ranger',
+      'Rogue','Sorcerer','Warlock','Wizard',
       'Artificer (5e and 2024 only)',
       'Blood Hunter (homebrew / Critical Role)',
     ],
@@ -733,67 +611,35 @@ const QUESTIONS = [
     },
   },
 
-  /* ── BACKGROUND & ALIGNMENT ───────────────────────────── */
+  /* ── BACKGROUND & ALIGNMENT ── */
   {
     id: 'background', label: 'Background', required: true,
-    hint: 'Background determines starting skill proficiencies, languages, and equipment in most editions. Use the field below to describe a custom background.',
+    hint: 'Background determines starting skill proficiencies, languages, and equipment. Use the field below to describe a custom background.',
     type: 'select', allowRandom: true, allowCustom: true,
     options: [
-      'Acolyte',
-      'Charlatan',
-      'Criminal',
-      'Spy',
-      'Entertainer',
-      'Gladiator',
-      'Folk Hero',
-      'Guild Artisan',
-      'Guild Merchant',
-      'Hermit',
-      'Noble',
-      'Knight',
-      'Outlander',
-      'Sage',
-      'Sailor',
-      'Pirate',
-      'Soldier',
-      'Urchin',
-      'Haunted One',
-      'Far Traveler',
-      'Investigator',
-      'Witchlight Hand',
-      'City Watch',
-      'Clan Crafter',
-      'Cloistered Scholar',
-      'Courtier',
-      'Faction Agent',
-      'Inheritor',
-      'Mercenary Veteran',
-      'Urban Bounty Hunter',
-      'Feylost',
+      'Acolyte','Charlatan','Criminal','Spy','Entertainer','Gladiator','Folk Hero',
+      'Guild Artisan','Guild Merchant','Hermit','Noble','Knight','Outlander','Sage',
+      'Sailor','Pirate','Soldier','Urchin','Haunted One','Far Traveler','Investigator',
+      'Witchlight Hand','City Watch','Clan Crafter','Cloistered Scholar','Courtier',
+      'Faction Agent','Inheritor','Mercenary Veteran','Urban Bounty Hunter','Feylost',
     ],
   },
   {
     id: 'alignment', label: 'Alignment', required: true,
-    hint: 'Reflects moral and ethical outlook. Some classes and subclasses restrict alignment options — the generator will flag conflicts.',
+    hint: 'Reflects moral and ethical outlook. Some classes and subclasses restrict alignment options.',
     type: 'select', allowRandom: true, allowCustom: false,
     options: [
-      'Lawful Good',
-      'Neutral Good',
-      'Chaotic Good',
-      'Lawful Neutral',
-      'True Neutral',
-      'Chaotic Neutral',
-      'Lawful Evil',
-      'Neutral Evil',
-      'Chaotic Evil',
+      'Lawful Good','Neutral Good','Chaotic Good',
+      'Lawful Neutral','True Neutral','Chaotic Neutral',
+      'Lawful Evil','Neutral Evil','Chaotic Evil',
       'None or Unaligned',
     ],
   },
 
-  /* ── ABILITY SCORES ───────────────────────────────────── */
+  /* ── MECHANICS ── */
   {
     id: 'abilityMethod', label: 'Ability Score Method', required: true,
-    hint: 'Determines how the six ability scores (STR, DEX, CON, INT, WIS, CHA) are generated. "Pre-assigned by class optimization" places the highest available scores in the primary stats for the selected class. If you choose User Input, specify your six scores in the Clarifications step at the end.',
+    hint: '"Pre-assigned by class optimization" places the highest available scores in the primary stats for the selected class.',
     type: 'select', allowRandom: false, allowCustom: false,
     options: [
       'Standard array (15, 14, 13, 12, 10, 8)',
@@ -804,8 +650,6 @@ const QUESTIONS = [
       'User input — I will specify each score in the Clarifications step',
     ],
   },
-
-  /* ── SKILLS ───────────────────────────────────────────── */
   {
     id: 'skills', label: 'Skill Proficiencies', required: true,
     hint: 'Choose the preset that best fits your class and background. Use the field below to add or substitute specific skills.',
@@ -849,11 +693,9 @@ const QUESTIONS = [
       'Jack of All Trades — four skills of your choice (specify in the field below)',
     ],
   },
-
-  /* ── LANGUAGES ────────────────────────────────────────── */
   {
     id: 'languages', label: 'Languages Known', required: true,
-    hint: 'Typically Common plus 1–3 additional languages based on ancestry and background. Use the field below to specify or substitute languages.',
+    hint: 'Typically Common plus 1–3 additional languages based on ancestry and background.',
     type: 'select', allowRandom: true, allowCustom: true,
     options: [
       'Common, Dwarvish, Orcish',
@@ -868,13 +710,11 @@ const QUESTIONS = [
       'Common, Dwarvish, Gnomish, Halfling',
       'Common, Draconic, Infernal, Abyssal',
       'Common, Celestial, Primordial, Sylvan',
-      'Common, Thieves\' Cant, one language of your choice',
+      "Common, Thieves' Cant, one language of your choice",
       'Common, Gnomish, Dwarvish, Halfling',
       'Common plus three languages of your choice (specify in the field below)',
     ],
   },
-
-  /* ── FEATS ────────────────────────────────────────────── */
   {
     id: 'feats', label: 'Feats', required: false,
     hint: 'Available at levels 4, 8, 12, 16, 19 in 5e and 2024. Use the field below to describe a custom or homebrew feat.',
@@ -913,7 +753,7 @@ const QUESTIONS = [
       'Mage Slayer — reaction attack when creature casts nearby; impose disadvantage on concentration',
       'Mounted Combatant — advantage on attacks vs unmounted creatures; redirect attacks to mount',
       'Shield Master — bonus shove after Attack; add shield bonus to DEX saves; no damage on successful DEX save',
-      'Skulker — hide when lightly obscured; no reveal on missed ranged attack; dim light does not impose disadvantage on Perception',
+      'Skulker — hide when lightly obscured; no reveal on missed ranged attack',
       'Tavern Brawler — proficiency with improvised weapons; bonus action grapple on hit',
     ],
     condition: (a) => {
@@ -923,8 +763,6 @@ const QUESTIONS = [
       return lvl >= 4;
     },
   },
-
-  /* ── HIT POINTS ───────────────────────────────────────── */
   {
     id: 'hp', label: 'Hit Points', required: true,
     hint: 'Choose a calculation method. To set a specific total, type it in the field below.',
@@ -936,35 +774,19 @@ const QUESTIONS = [
     ],
   },
 
-  /* ── PERSONALITY ──────────────────────────────────────── */
+  /* ── PERSONALITY ── */
   {
     id: 'traits', label: 'Personality Traits', required: true,
     hint: 'Hold Ctrl / Cmd to select up to two. Use the field below to write your own.',
     type: 'multiselect', allowRandom: true, allowCustom: true,
     options: [
-      'Brave and fearless',
-      'Cautious and calculated',
-      'Reckless and impulsive',
-      'Scholarly and bookish',
-      'Charismatic and silver-tongued',
-      'Stoic and unreadable',
-      'Curious and inquisitive',
-      'Compassionate and selfless',
-      'Ambitious and driven',
-      'Cynical and world-weary',
-      'Optimistic and upbeat',
-      'Pragmatic and no-nonsense',
-      'Idealistic and principled',
-      'Sardonic and dry-witted',
-      'Energetic and enthusiastic',
-      'Methodical and precise',
-      'Darkly humorous',
-      'Serious and mission-focused',
-      'Warm and outgoing',
-      'Quiet and introspective',
-      'Fiercely loyal to companions',
-      'Intensely competitive',
-      'Deeply superstitious',
+      'Brave and fearless','Cautious and calculated','Reckless and impulsive','Scholarly and bookish',
+      'Charismatic and silver-tongued','Stoic and unreadable','Curious and inquisitive',
+      'Compassionate and selfless','Ambitious and driven','Cynical and world-weary',
+      'Optimistic and upbeat','Pragmatic and no-nonsense','Idealistic and principled',
+      'Sardonic and dry-witted','Energetic and enthusiastic','Methodical and precise',
+      'Darkly humorous','Serious and mission-focused','Warm and outgoing','Quiet and introspective',
+      'Fiercely loyal to companions','Intensely competitive','Deeply superstitious',
       'Surprisingly gentle despite fierce appearance',
     ],
   },
@@ -984,7 +806,7 @@ const QUESTIONS = [
       'Justice — The law must be upheld and wrongdoers punished',
       'Tradition — The old ways have value and must be preserved',
       'Independence — I answer to no one but myself',
-      'Faith — My deity\'s will guides everything I do',
+      "Faith — My deity's will guides everything I do",
       'Greed — Wealth and possessions are the measure of success',
       'Redemption — Everyone deserves a second chance, including me',
       'Glory — Legendary deeds are what a life is for',
@@ -1020,28 +842,20 @@ const QUESTIONS = [
     hint: 'Hold Ctrl / Cmd to select up to two. Use the field below to write your own.',
     type: 'multiselect', allowRandom: true, allowCustom: true,
     options: [
-      'Impulsive — acts before thinking',
-      'Arrogant — cannot admit mistakes or accept criticism',
-      'Distrustful — suspicious of everyone\'s motives',
-      'Secretive — withholds information even from allies',
-      'Hot-tempered — quick to anger, slow to forgive',
-      'Overconfident — consistently underestimates danger',
-      'Cowardly — avoids confrontation whenever possible',
-      'Greedy — values wealth over people',
-      'Stubborn — refuses to change course once decided',
-      'Naive — always assumes the best in others',
-      'Vengeful — cannot let a slight go unanswered',
-      'Jealous — envious of others\' success or possessions',
-      'Addicted — dependent on a substance, habit, or vice',
-      'Reckless — courts danger for the thrill of it',
-      'Dishonest — lies easily and often',
-      'Self-sacrificing — cannot accept help; must shoulder every burden',
+      'Impulsive — acts before thinking','Arrogant — cannot admit mistakes or accept criticism',
+      'Distrustful — suspicious of everyone\'s motives','Secretive — withholds information even from allies',
+      'Hot-tempered — quick to anger, slow to forgive','Overconfident — consistently underestimates danger',
+      'Cowardly — avoids confrontation whenever possible','Greedy — values wealth over people',
+      'Stubborn — refuses to change course once decided','Naive — always assumes the best in others',
+      'Vengeful — cannot let a slight go unanswered','Jealous — envious of others\' success or possessions',
+      'Addicted — dependent on a substance, habit, or vice','Reckless — courts danger for the thrill of it',
+      'Dishonest — lies easily and often','Self-sacrificing — cannot accept help; must shoulder every burden',
       'Condescending — cannot hide contempt for those less capable',
       'Obsessive — becomes fixated on problems or enemies to an unhealthy degree',
     ],
   },
 
-  /* ── PHYSICAL ─────────────────────────────────────────── */
+  /* ── PHYSICAL ── */
   {
     id: 'physical', label: 'Physical Details', required: true,
     hint: 'Age range, build, height, and distinguishing features. Use the field below to add specific details.',
@@ -1070,11 +884,9 @@ const QUESTIONS = [
       'Elderly (66+), still vigorous and wiry, weathered skin, commanding presence',
     ],
   },
-
-  /* ── VOICE & MANNERISMS ───────────────────────────────── */
   {
     id: 'voice', label: 'Voice and Mannerisms', required: true,
-    hint: 'Speech patterns and physical habits that define how the character carries themselves. Add detail in the field below.',
+    hint: 'Speech patterns and physical habits that define how the character carries themselves.',
     type: 'select', allowRandom: true, allowCustom: true,
     options: [
       'Deep, resonant voice — speaks slowly and deliberately; stands with arms crossed',
@@ -1099,11 +911,9 @@ const QUESTIONS = [
       'Singsong, lyrical cadence — hums between sentences; moves with theatrical flair',
     ],
   },
-
-  /* ── MOTIVATIONS ──────────────────────────────────────── */
   {
     id: 'motivations', label: 'Deeper Motivations', required: true,
-    hint: 'Core fears, desires, internal conflicts, and relationship to faith or deity. Add specific names and details in the field below.',
+    hint: 'Core fears, desires, internal conflicts, and relationship to faith or deity.',
     type: 'select', allowRandom: true, allowCustom: true,
     options: [
       'Fear: failure and letting others down. Desire: prove worth to family. Conflict: duty vs personal wants.',
@@ -1129,27 +939,15 @@ const QUESTIONS = [
     ],
   },
 
-  /* ── APPEARANCE & EQUIPMENT ───────────────────────────── */
+  /* ── APPEARANCE & EQUIPMENT ── */
   {
     id: 'appearance', label: 'Appearance Profile', required: true,
     hint: 'Overall visual impression of the character. Hold Ctrl / Cmd to select up to two.',
     type: 'multiselect', allowRandom: true, allowCustom: true,
     options: [
-      'Rugged',
-      'Regal',
-      'Scholarly',
-      'Mysterious',
-      'Battle-worn',
-      'Elegant',
-      'Minimalist',
-      'Cultural or traditional',
-      'Weathered and road-worn',
-      'Youthful',
-      'Physically imposing',
-      'Unassuming and easy to overlook',
-      'Eccentric and unusual',
-      'Quietly menacing',
-      'Approachably friendly',
+      'Rugged','Regal','Scholarly','Mysterious','Battle-worn','Elegant','Minimalist',
+      'Cultural or traditional','Weathered and road-worn','Youthful','Physically imposing',
+      'Unassuming and easy to overlook','Eccentric and unusual','Quietly menacing','Approachably friendly',
     ],
   },
   {
@@ -1160,7 +958,7 @@ const QUESTIONS = [
       'Standard class kit',
       'Heavy military plate and arms',
       'Arcane focus, robes, and component pouch',
-      'Hunter\'s gear — practical, weathered, utilitarian',
+      "Hunter's gear — practical, weathered, utilitarian",
       'Stealth kit — dark clothing, minimal noise, hidden blades',
       'Holy regalia — symbol, vestments, sacred weapon',
       'Artisan or crafter tools alongside weapons',
@@ -1168,7 +966,7 @@ const QUESTIONS = [
       'Noble courtly attire with concealed or ceremonial weapons',
       'Scavenged and improvised — mismatched but functional',
       'Sea-worn — rope, oilskin, boarding weapons',
-      'Wizard\'s laboratory aesthetic — pouches, scrolls, strange devices',
+      "Wizard's laboratory aesthetic — pouches, scrolls, strange devices",
       'Monastic — simple robes, minimal gear, exceptional quality weapons',
       'Druidic — living materials, carved wood, feathers, vine-work',
       'Military campaign kit — travel-worn armor, spare rations, field gear',
@@ -1183,8 +981,6 @@ const QUESTIONS = [
       'Starting gold to purchase equipment',
     ],
   },
-
-  /* ── SPELLCASTING (conditional) ───────────────────────── */
   {
     id: 'spells', label: 'Spellcasting Details', required: false,
     hint: 'How spells are selected. Type a specific spell list in the field below if you have particular spells in mind.',
@@ -1204,7 +1000,7 @@ const QUESTIONS = [
     },
   },
 
-  /* ── PORTRAIT SETTINGS ────────────────────────────────── */
+  /* ── PORTRAIT SETTINGS ── */
   {
     id: 'artStyle', label: 'Portrait Art Style', required: true,
     hint: 'This style descriptor opens the portrait generation prompt. Add style detail in the field below.',
@@ -1244,23 +1040,19 @@ const QUESTIONS = [
     id: 'imageSize', label: 'Image Aspect Ratio', required: true,
     hint: 'Determines the proportions of the portrait generation prompt.',
     type: 'select', allowRandom: false, allowCustom: false,
-    options: [
-      'Square (1:1)',
-      'Portrait — tall (2:3)',
-      'Landscape — wide (3:2)',
-    ],
+    options: ['Square (1:1)','Portrait — tall (2:3)','Landscape — wide (3:2)'],
   },
 
-  /* ── FINAL ────────────────────────────────────────────── */
+  /* ── FINAL ── */
   {
     id: 'revisions', label: 'Clarifications and Overrides', required: false,
-    hint: 'Anything typed here overrides earlier answers. Use this to specify exact ability scores, rename equipment, correct conflicts, or add detail the dropdowns could not capture. Leave blank or type "None" to skip.',
+    hint: 'Anything typed here overrides earlier answers. Use this to specify exact ability scores, rename equipment, correct conflicts, or add detail the dropdowns could not capture. Leave blank to skip.',
     type: 'textarea',
     allowRandom: false, allowCustom: false,
   },
   {
     id: 'name', label: 'Character Name', required: true,
-    hint: 'What is your character\'s name?',
+    hint: "What is your character's name?",
     type: 'text',
     allowRandom: false, allowCustom: false,
   },
@@ -1269,19 +1061,36 @@ const QUESTIONS = [
 
 
 /* ============================================================
-   JS: STATE
+   SECTIONS — accordion layout
+   ============================================================ */
+const SECTIONS = [
+  { title: 'Core Setup',              ids: ['edition','level'] },
+  { title: 'Identity',                ids: ['ancestry','gender','skin'] },
+  { title: 'Class',                   ids: ['charClass','subclass'] },
+  { title: 'Background and Alignment',ids: ['background','alignment'] },
+  { title: 'Mechanics',               ids: ['abilityMethod','skills','languages','feats','hp'] },
+  { title: 'Personality',             ids: ['traits','ideal','bond','flaws'] },
+  { title: 'Physical',                ids: ['physical','voice','motivations'] },
+  { title: 'Appearance and Equipment',ids: ['appearance','equipTheme','equipMethod','spells'] },
+  { title: 'Portrait Settings',       ids: ['artStyle','composition','imageSize'] },
+  { title: 'Clarifications and Name', ids: ['revisions','name'] },
+];
+
+const QMAP = {};
+QUESTIONS.forEach(q => QMAP[q.id] = q);
+
+
+/* ============================================================
+   STATE
    ============================================================ */
 const STATE = {
-  connected:   false,
-  stepIndex:   0,
-  activeQs:    [],
-  answers:     {},
-  generating:  false,
+  answers:    {},
+  generating: false,
 };
 
 
 /* ============================================================
-   JS: ANSWER STORAGE
+   ANSWER STORAGE
    ============================================================ */
 function getDropdown(id) { return (STATE.answers[id] || {}).dropdown || ''; }
 function getCustom(id)   { return (STATE.answers[id] || {}).custom   || ''; }
@@ -1302,11 +1111,6 @@ function getCombined(id) {
   return d || c || '';
 }
 
-function hasValue(id) {
-  const v = getCombined(id);
-  return !!(v && v.length);
-}
-
 function flatAnswers() {
   const out = {};
   QUESTIONS.forEach(q => { out[q.id] = getCombined(q.id); });
@@ -1315,7 +1119,7 @@ function flatAnswers() {
 
 
 /* ============================================================
-   JS: API KEY PERSISTENCE
+   API KEY PERSISTENCE
    ============================================================ */
 const KEY_STORE = 'xaiKey_dndChar';
 
@@ -1333,13 +1137,12 @@ function onKeyInput() {
 
 
 /* ============================================================
-   JS: API CONNECTION
+   API CONNECTION
    ============================================================ */
 function resetConnect() {
   const btn = document.getElementById('connectBtn');
   btn.textContent = 'CONNECT';
   btn.className   = 'btn btn-connect';
-  STATE.connected = false;
 }
 
 const XAI_ENDPOINT = 'https://api.x.ai/v1/chat/completions';
@@ -1348,343 +1151,300 @@ const XAI_MODEL    = 'grok-4.3';
 function confirmConnect() {
   const key = document.getElementById('apiKey').value.trim();
   const btn = document.getElementById('connectBtn');
-
   if (!key || key.length < 6) {
     btn.textContent = 'NEED API KEY'; btn.className = 'btn btn-connect bad'; return;
   }
-
   localStorage.setItem(KEY_STORE, key);
   btn.textContent = 'CONNECTED';
   btn.className = 'btn btn-connect ok';
-  STATE.connected = true;
-  startBuilder();
 }
 
 
 /* ============================================================
-   JS: BUILDER INIT
+   RENDER ACCORDION
    ============================================================ */
-function startBuilder() {
-  STATE.answers   = {};
-  STATE.stepIndex = 0;
-  rebuildActiveQs();
-  renderQuestion();
-  document.getElementById('qNav').style.display = 'flex';
+function renderAll() {
+  const col = document.getElementById('accCol');
+  col.innerHTML = '';
+
+  SECTIONS.forEach((sec, si) => {
+    const section = document.createElement('div');
+    section.className = 'acc-section open';
+    section.id = 'sec-' + si;
+
+    const header = document.createElement('div');
+    header.className = 'acc-header';
+    header.innerHTML = `<span class="acc-title">${sec.title}</span><span class="acc-chevron">▼</span>`;
+    header.onclick = () => toggleSection(section);
+
+    const body = document.createElement('div');
+    body.className = 'acc-body';
+
+    sec.ids.forEach(qid => {
+      const q = QMAP[qid];
+      if (!q) return;
+      body.appendChild(buildQBlock(q));
+    });
+
+    section.appendChild(header);
+    section.appendChild(body);
+    col.appendChild(section);
+  });
+
+  updateConditionals();
 }
 
-function rebuildActiveQs() {
-  const flat = flatAnswers();
-  STATE.activeQs = QUESTIONS.filter(q => !q.condition || q.condition(flat));
-}
-
-
-/* ============================================================
-   JS: QUESTION RENDERER
-   ============================================================ */
-function renderQuestion() {
-  rebuildActiveQs();
-
-  const total = STATE.activeQs.length;
-  const idx   = Math.min(STATE.stepIndex, total - 1);
-  STATE.stepIndex = idx;
-
-  const q = STATE.activeQs[idx];
-
-  if (q.id === 'subclass') {
-    const cls = getCombined('charClass').split('(')[0].split(',')[0].trim();
-    q.options = SUBCLASSES[cls] || [];
-  }
-
-  const savedDrop   = getDropdown(q.id);
-  const savedCustom = getCustom(q.id);
+function buildQBlock(q) {
+  const wrap = document.createElement('div');
+  wrap.className = 'q-block';
+  wrap.id = 'q-' + q.id;
 
   let html = `<div class="q-label">${q.label}</div>`;
   if (q.hint) html += `<div class="q-hint">${q.hint}</div>`;
 
   if (q.type === 'select') {
-    html += `<div class="q-input-row">
-      <div>
-        <div class="field-lbl">Choose an option</div>
-        <select id="qDrop" onchange="onDropChange()">
-          <option value="">— Select —</option>`;
-    q.options.forEach(o => {
-      html += `<option value="${esc(o)}"${savedDrop === o ? ' selected' : ''}>${esc(o)}</option>`;
-    });
-    html += `</select></div>`;
-    if (q.allowRandom) {
-      html += `<button class="btn btn-rand" title="Pick for me" onclick="randomise()">&#9861;</button>`;
-    }
+    html += `<div class="q-input-row"><div>
+      <div class="field-lbl">Choose an option</div>
+      <select id="f-${q.id}" onchange="onFieldChange('${q.id}')">
+        <option value="">— Select —</option>
+        ${q.options.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('')}
+      </select>
+    </div>`;
+    if (q.allowRandom) html += `<button class="btn btn-rand" title="Pick for me" onclick="randField('${q.id}')">⚄</button>`;
     html += `</div>`;
-
-    if (q.allowCustom) {
-      html += `<div class="custom-wrap">
-        <div class="custom-lbl">Additional detail — appended to the selection above:</div>
-        <input type="text" id="qCustom" placeholder="Type to add or refine..." value="${esc(savedCustom)}" oninput="onCustomChange()">
-      </div>`;
-    }
+    if (q.allowCustom) html += customFieldHtml(q.id);
   }
 
   else if (q.type === 'multiselect') {
-    const savedArr = savedDrop ? savedDrop.split('||') : [];
-    html += `<div class="q-input-row">
-      <div>
-        <div class="field-lbl">Hold Ctrl / Cmd to select multiple</div>
-        <select id="qDrop" multiple onchange="onDropChange()">`;
-    q.options.forEach(o => {
-      html += `<option value="${esc(o)}"${savedArr.includes(o) ? ' selected' : ''}>${esc(o)}</option>`;
-    });
-    html += `</select></div>`;
-    if (q.allowRandom) {
-      html += `<button class="btn btn-rand" title="Pick for me" onclick="randomise()">&#9861;</button>`;
-    }
+    html += `<div class="q-input-row"><div>
+      <div class="field-lbl">Hold Ctrl / Cmd to select multiple</div>
+      <select id="f-${q.id}" multiple onchange="onFieldChange('${q.id}')">
+        ${q.options.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('')}
+      </select>
+    </div>`;
+    if (q.allowRandom) html += `<button class="btn btn-rand" title="Pick for me" onclick="randField('${q.id}')">⚄</button>`;
     html += `</div>`;
-
-    if (q.allowCustom) {
-      html += `<div class="custom-wrap">
-        <div class="custom-lbl">Additional detail — appended to selections above:</div>
-        <input type="text" id="qCustom" placeholder="Type to add or refine..." value="${esc(savedCustom)}" oninput="onCustomChange()">
-      </div>`;
-    }
+    if (q.allowCustom) html += customFieldHtml(q.id);
   }
 
   else if (q.type === 'number') {
-    html += `<div class="q-input-row">
-      <div>
-        <div class="field-lbl">Enter a number (${q.min}–${q.max})</div>
-        <input type="number" id="qDrop" min="${q.min}" max="${q.max}" value="${esc(savedDrop)}" oninput="onDropChange()">
-      </div>`;
-    if (q.allowRandom) {
-      html += `<button class="btn btn-rand" title="Pick for me" onclick="randomise()">&#9861;</button>`;
-    }
+    html += `<div class="q-input-row"><div>
+      <div class="field-lbl">Enter a number (${q.min}–${q.max})</div>
+      <input type="number" id="f-${q.id}" min="${q.min}" max="${q.max}" oninput="onFieldChange('${q.id}')">
+    </div>`;
+    if (q.allowRandom) html += `<button class="btn btn-rand" title="Pick for me" onclick="randField('${q.id}')">⚄</button>`;
     html += `</div>`;
   }
 
   else if (q.type === 'text') {
     html += `<div class="field-lbl">Type your answer</div>
-      <input type="text" id="qDrop" value="${esc(savedDrop)}" oninput="onDropChange()">`;
+      <input type="text" id="f-${q.id}" oninput="onFieldChange('${q.id}')">`;
   }
 
   else if (q.type === 'textarea') {
     html += `<div class="field-lbl">Type here, or leave blank to skip</div>
-      <textarea id="qDrop" rows="5" oninput="onDropChange()">${esc(savedDrop)}</textarea>`;
+      <textarea id="f-${q.id}" rows="4" oninput="onFieldChange('${q.id}')"></textarea>`;
   }
 
-  html += `<div class="q-notice" id="qNotice"></div>`;
+  wrap.innerHTML = html;
+  return wrap;
+}
 
-  document.getElementById('qScroll').innerHTML = html;
-  document.getElementById('panelHeading').textContent = `Step ${idx + 1} of ${total} — ${q.label}`;
+function customFieldHtml(id) {
+  return `<div class="custom-wrap">
+    <div class="custom-lbl">Additional detail — appended to the selection above:</div>
+    <input type="text" id="fc-${id}" placeholder="Type to add or refine..." oninput="onCustomChange('${id}')">
+  </div>`;
+}
 
-  document.getElementById('btnBack').disabled = (idx === 0);
-  const isLast  = (idx === total - 1);
-  const nextBtn = document.getElementById('btnNext');
-  nextBtn.textContent = isLast ? 'FINISH ✦' : 'NEXT →';
-  nextBtn.classList.toggle('btn-primary', isLast);
-
-  updateGenerateBtn();
+function toggleSection(section) {
+  section.classList.toggle('open');
 }
 
 
 /* ============================================================
-   JS: INPUT CHANGE HANDLERS
+   INPUT HANDLERS
    ============================================================ */
-function onDropChange() {
-  const q  = STATE.activeQs[STATE.stepIndex];
-  const el = document.getElementById('qDrop');
+function onFieldChange(id) {
+  const q  = QMAP[id];
+  const el = document.getElementById('f-' + id);
   if (!el) return;
 
   if (q.type === 'multiselect') {
     const vals = Array.from(el.selectedOptions).map(o => o.value);
-    setDropdown(q.id, vals.join('||'));
+    setDropdown(id, vals.join('||'));
   } else {
-    setDropdown(q.id, el.value);
+    setDropdown(id, el.value);
   }
 
-  clearNotice();
-  updateSummary();
-  updateGenerateBtn();
+  if (id === 'charClass') refreshSubclassOptions();
+  updateConditionals();
+  updateGenBtn();
 }
 
-function onCustomChange() {
-  const q  = STATE.activeQs[STATE.stepIndex];
-  const el = document.getElementById('qCustom');
+function onCustomChange(id) {
+  const el = document.getElementById('fc-' + id);
   if (!el) return;
-  setCustom(q.id, el.value.trim());
-  clearNotice();
-  updateSummary();
-  updateGenerateBtn();
+  setCustom(id, el.value.trim());
+  updateGenBtn();
 }
 
 
 /* ============================================================
-   JS: RANDOM BUTTON
+   SUBCLASS OPTIONS
    ============================================================ */
-function randomise() {
-  const q = STATE.activeQs[STATE.stepIndex];
-
-  if (q.type === 'number') {
-    setDropdown(q.id, String(Math.floor(Math.random() * (q.max - q.min + 1)) + q.min));
-    renderQuestion();
-    updateSummary();
-    updateGenerateBtn();
-    return;
-  }
-
-  if (!q.options || !q.options.length) return;
-
-  if (q.type === 'multiselect') {
-    const shuffled = [...q.options].sort(() => Math.random() - 0.5);
-    const count    = Math.random() < 0.5 ? 1 : 2;
-    setDropdown(q.id, shuffled.slice(0, count).join('||'));
-  } else {
-    setDropdown(q.id, q.options[Math.floor(Math.random() * q.options.length)]);
-  }
-
-  renderQuestion();
-  updateSummary();
-  updateGenerateBtn();
+function refreshSubclassOptions() {
+  const sel  = document.getElementById('f-subclass');
+  if (!sel) return;
+  const cls  = getDropdown('charClass').split('(')[0].split(',')[0].trim();
+  const opts = SUBCLASSES[cls] || [];
+  sel.innerHTML = `<option value="">— Select —</option>` +
+    opts.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
+  setDropdown('subclass', '');
 }
 
-function autoRandomise() {
-  const coreIds = ['level','ancestry','gender','skin','charClass','subclass','background',
-                   'alignment','abilityMethod','skills','languages','feats','hp',
-                   'traits','ideal','bond','flaws','physical','voice','motivations',
-                   'appearance','equipTheme','equipMethod','spells'];
 
-  rebuildActiveQs();
+/* ============================================================
+   CONDITIONALS
+   ============================================================ */
+function updateConditionals() {
+  const flat = flatAnswers();
+  QUESTIONS.forEach(q => {
+    if (!q.condition) return;
+    const block = document.getElementById('q-' + q.id);
+    if (!block) return;
+    const visible = q.condition(flat);
+    block.classList.toggle('hidden', !visible);
+    if (!visible) {
+      setDropdown(q.id, '');
+      const el = document.getElementById('f-' + q.id);
+      if (el) {
+        if (el.tagName === 'SELECT') el.value = el.multiple ? [] : '';
+        else el.value = '';
+      }
+    }
+  });
+}
 
-  STATE.activeQs.forEach(q => {
-    if (!coreIds.includes(q.id)) return;
+
+/* ============================================================
+   RANDOMIZE
+   ============================================================ */
+function randField(id) {
+  const q = QMAP[id];
+  if (!q) return;
+
+  if (q.type === 'number') {
+    const val = String(Math.floor(Math.random() * (q.max - q.min + 1)) + q.min);
+    setDropdown(id, val);
+    const el = document.getElementById('f-' + id);
+    if (el) el.value = val;
+  } else if (q.options && q.options.length) {
+    if (q.type === 'multiselect') {
+      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+      const count    = Math.random() < 0.5 ? 1 : 2;
+      const chosen   = shuffled.slice(0, count);
+      setDropdown(id, chosen.join('||'));
+      const el = document.getElementById('f-' + id);
+      if (el) Array.from(el.options).forEach(o => { o.selected = chosen.includes(o.value); });
+    } else {
+      const chosen = q.options[Math.floor(Math.random() * q.options.length)];
+      setDropdown(id, chosen);
+      const el = document.getElementById('f-' + id);
+      if (el) el.value = chosen;
+    }
+  }
+
+  if (id === 'charClass') refreshSubclassOptions();
+  updateConditionals();
+  updateGenBtn();
+}
+
+function randomizeAll() {
+  const skip = new Set(['edition','abilityMethod','equipMethod','imageSize','revisions','name']);
+  const flat = flatAnswers();
+
+  QUESTIONS.forEach(q => {
+    if (skip.has(q.id)) return;
+    if (q.condition && !q.condition(flat)) return;
 
     if (q.type === 'number') {
-      setDropdown(q.id, String(Math.floor(Math.random() * (q.max - q.min + 1)) + q.min));
-    } else if (q.type === 'multiselect' && q.options.length) {
-      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
-      setDropdown(q.id, shuffled.slice(0, Math.random() < 0.5 ? 1 : 2).join('||'));
+      const val = String(Math.floor(Math.random() * (q.max - q.min + 1)) + q.min);
+      setDropdown(q.id, val);
+      const el = document.getElementById('f-' + q.id);
+      if (el) el.value = val;
     } else if (q.options && q.options.length) {
-      setDropdown(q.id, q.options[Math.floor(Math.random() * q.options.length)]);
+      if (q.type === 'multiselect') {
+        const shuffled = [...q.options].sort(() => Math.random() - 0.5);
+        const count    = Math.random() < 0.5 ? 1 : 2;
+        const chosen   = shuffled.slice(0, count);
+        setDropdown(q.id, chosen.join('||'));
+        const el = document.getElementById('f-' + q.id);
+        if (el) Array.from(el.options).forEach(o => { o.selected = chosen.includes(o.value); });
+      } else if (q.type === 'select') {
+        const opts   = q.id === 'subclass'
+          ? (SUBCLASSES[getDropdown('charClass').split('(')[0].split(',')[0].trim()] || [])
+          : q.options;
+        if (!opts.length) return;
+        const chosen = opts[Math.floor(Math.random() * opts.length)];
+        setDropdown(q.id, chosen);
+        const el = document.getElementById('f-' + q.id);
+        if (el) el.value = chosen;
+      }
     }
   });
 
-  rebuildActiveQs();
-  updateSummary();
+  refreshSubclassOptions();
+  const subOpts = SUBCLASSES[getDropdown('charClass').split('(')[0].split(',')[0].trim()] || [];
+  if (subOpts.length) {
+    const chosen = subOpts[Math.floor(Math.random() * subOpts.length)];
+    setDropdown('subclass', chosen);
+    const el = document.getElementById('f-subclass');
+    if (el) el.value = chosen;
+  }
+
+  updateConditionals();
+  updateGenBtn();
 }
 
 
 /* ============================================================
-   JS: NAVIGATION
+   GENERATE BUTTON STATE
    ============================================================ */
-function goBack() {
-  if (STATE.stepIndex > 0) {
-    STATE.stepIndex--;
-    renderQuestion();
-  }
-}
-
-function goNext() {
-  const q   = STATE.activeQs[STATE.stepIndex];
-  const val = getCombined(q.id);
-
-  if (q.required && !val) {
-    showNotice('Please provide an answer before continuing.'); return;
-  }
-
-  if (q.id === 'mode' && getDropdown('mode') === 'Random') {
-    autoRandomise();
-    const portraitIdx = STATE.activeQs.findIndex(x => x.id === 'artStyle');
-    STATE.stepIndex = portraitIdx >= 0 ? portraitIdx : STATE.stepIndex + 1;
-    renderQuestion();
-    return;
-  }
-
-  if (STATE.stepIndex < STATE.activeQs.length - 1) {
-    STATE.stepIndex++;
-    rebuildActiveQs();
-    renderQuestion();
-  } else {
-    generateCharacter();
-  }
-}
-
-function jumpTo(qId) {
-  rebuildActiveQs();
-  const idx = STATE.activeQs.findIndex(q => q.id === qId);
-  if (idx >= 0) {
-    STATE.stepIndex = idx;
-    renderQuestion();
-  }
-}
-
-
-/* ============================================================
-   JS: SUMMARY PANEL
-   ============================================================ */
-function updateSummary() {
-  const scroll = document.getElementById('sumScroll');
-  const empty  = document.getElementById('sumEmpty');
-  const count  = document.getElementById('sumCount');
+function updateGenBtn() {
+  const btn  = document.getElementById('btnGenerate');
+  const nameVal  = getCombined('name');
+  const classVal = getCombined('charClass');
+  btn.disabled = !(nameVal && classVal) || STATE.generating;
 
   const flat     = flatAnswers();
-  const answered = STATE.activeQs.filter(q => flat[q.id]);
-  count.textContent = `${answered.length} answered`;
-
-  Array.from(scroll.querySelectorAll('.sum-item')).forEach(el => el.remove());
-
-  if (answered.length === 0) {
-    if (empty) empty.style.display = 'block';
-    return;
-  }
-  if (empty) empty.style.display = 'none';
-
-  answered.forEach(q => {
-    const item = document.createElement('div');
-    item.className = 'sum-item';
-    item.title = 'Click to edit';
-    item.onclick = () => jumpTo(q.id);
-
-    const key = document.createElement('span');
-    key.className = 'sum-key';
-    key.textContent = q.label;
-
-    const val = document.createElement('span');
-    val.className = 'sum-val';
-    val.textContent = (flat[q.id] || '').replace(/\|\|/g, ', ');
-
-    item.appendChild(key);
-    item.appendChild(val);
-    scroll.appendChild(item);
-  });
-
-  scroll.scrollTop = scroll.scrollHeight;
-}
-
-function updateGenerateBtn() {
-  const btn  = document.getElementById('btnGenerate');
-  const last = STATE.activeQs[STATE.activeQs.length - 1];
-  const done = last && hasValue(last.id);
-  btn.disabled = !done || STATE.generating;
+  const filled   = QUESTIONS.filter(q =>
+    flat[q.id] && (!q.condition || q.condition(flat))
+  ).length;
+  const total = QUESTIONS.filter(q => !q.condition || q.condition(flat)).length;
+  document.getElementById('gpCount').textContent = `${filled} / ${total} fields filled`;
 }
 
 
 /* ============================================================
-   JS: NOTICES
+   CLEAR ALL
    ============================================================ */
-function showNotice(msg) {
-  const el = document.getElementById('qNotice');
-  if (el) { el.textContent = msg; el.className = 'q-notice err'; }
-}
-function clearNotice() {
-  const el = document.getElementById('qNotice');
-  if (el) { el.textContent = ''; el.className = 'q-notice'; }
-}
-
-
-/* ============================================================
-   JS: RESET
-   ============================================================ */
-function resetAll() {
-  STATE.answers    = {};
-  STATE.stepIndex  = 0;
+function clearAll() {
+  STATE.answers = {};
   STATE.generating = false;
+
+  QUESTIONS.forEach(q => {
+    const el = document.getElementById('f-' + q.id);
+    if (!el) return;
+    if (el.tagName === 'SELECT') {
+      if (el.multiple) Array.from(el.options).forEach(o => o.selected = false);
+      else el.value = '';
+    } else {
+      el.value = '';
+    }
+    const cEl = document.getElementById('fc-' + q.id);
+    if (cEl) cEl.value = '';
+  });
 
   ['outStats','outLore','outPrompt'].forEach(id => {
     const el = document.getElementById(id);
@@ -1693,28 +1453,21 @@ function resetAll() {
   });
 
   document.getElementById('genBar').classList.remove('visible');
-  updateSummary();
-
-  if (STATE.connected) {
-    startBuilder();
-  } else {
-    document.getElementById('qScroll').innerHTML =
-      '<div style="color:var(--dim);font-style:italic;padding:20px 0;font-size:0.90rem;">Fill in the API fields above and click CONNECT to begin.</div>';
-    document.getElementById('qNav').style.display = 'none';
-  }
+  updateConditionals();
+  updateGenBtn();
 }
 
 
 /* ============================================================
-   JS: GENERATE CHARACTER
+   GENERATE CHARACTER
    ============================================================ */
 async function generateCharacter() {
   if (STATE.generating) return;
 
   const flat = flatAnswers();
 
-  const lines = STATE.activeQs
-    .filter(q => flat[q.id])
+  const lines = QUESTIONS
+    .filter(q => flat[q.id] && (!q.condition || q.condition(flat)))
     .map(q => {
       const val = (flat[q.id] || '').replace(/\|\|/g, ', ');
       return `${q.label}: ${val}`;
@@ -1803,7 +1556,6 @@ Formatting rules: plain text only, no markdown asterisks or hash symbols, use AL
   STATE.generating = true;
   document.getElementById('genBar').classList.add('visible');
   document.getElementById('btnGenerate').disabled = true;
-  document.getElementById('btnNext').disabled     = true;
   document.getElementById('genText').textContent  = 'Generating character — this may take a moment...';
 
   try {
@@ -1814,22 +1566,16 @@ Formatting rules: plain text only, no markdown asterisks or hash symbols, use AL
   } finally {
     STATE.generating = false;
     document.getElementById('genBar').classList.remove('visible');
-    document.getElementById('btnGenerate').disabled = false;
-    document.getElementById('btnNext').disabled     = false;
+    updateGenBtn();
   }
 }
 
 
 /* ============================================================
-   JS: API CALL
+   API CALL
    ============================================================ */
 async function callAPI(userPrompt) {
   const key = document.getElementById('apiKey').value.trim();
-
-  const headers = {
-    'Content-Type':  'application/json',
-    'Authorization': 'Bearer ' + key,
-  };
 
   const sysPrompt = `You are an expert D&D character generator with deep knowledge of D&D 5e, the 2024 revision, OSR systems, and system-neutral play.
 
@@ -1853,20 +1599,21 @@ Follow these absolute rules:
     ]
   };
 
-  const res  = await fetch(XAI_ENDPOINT, { method: 'POST', headers, body: JSON.stringify(body) });
+  const res  = await fetch(XAI_ENDPOINT, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
+    body: JSON.stringify(body)
+  });
   const data = await res.json();
 
   if (!res.ok) throw new Error(data.error?.message || `API error ${res.status}`);
-
-  if (data.choices && data.choices[0]) {
-    return data.choices[0].message?.content || '';
-  }
+  if (data.choices && data.choices[0]) return data.choices[0].message?.content || '';
   throw new Error('No valid response from xAI.');
 }
 
 
 /* ============================================================
-   JS: OUTPUT PARSER
+   OUTPUT PARSER
    ============================================================ */
 function parseAndDisplay(text) {
   const markers = [
@@ -1874,16 +1621,14 @@ function parseAndDisplay(text) {
     'SECTION: CHARACTER LORE',
     'SECTION: PORTRAIT PROMPT',
   ];
-  const ids = ['outStats', 'outLore', 'outPrompt'];
+  const ids = ['outStats','outLore','outPrompt'];
 
   const positions = markers
     .map(m => ({ m, idx: text.indexOf(m) }))
     .filter(x => x.idx !== -1)
     .sort((a, b) => a.idx - b.idx);
 
-  if (positions.length === 0) {
-    setOutput('outStats', text); return;
-  }
+  if (positions.length === 0) { setOutput('outStats', text); return; }
 
   positions.forEach((pos, i) => {
     const start   = pos.idx + pos.m.length;
@@ -1902,7 +1647,7 @@ function setOutput(id, text) {
 
 
 /* ============================================================
-   JS: COPY BUTTONS
+   COPY BUTTONS
    ============================================================ */
 function copyOut(id, btn) {
   const el = document.getElementById(id);
@@ -1916,7 +1661,7 @@ function copyOut(id, btn) {
 
 
 /* ============================================================
-   JS: UTILITY — HTML ESCAPE
+   UTILITY
    ============================================================ */
 function esc(str) {
   if (!str) return '';
@@ -1926,6 +1671,13 @@ function esc(str) {
     .replace(/</g,'&lt;')
     .replace(/>/g,'&gt;');
 }
+
+
+/* ============================================================
+   INIT
+   ============================================================ */
+renderAll();
+updateGenBtn();
 
 </script>
 </body>
