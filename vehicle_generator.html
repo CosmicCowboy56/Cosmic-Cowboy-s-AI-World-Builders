@@ -1226,13 +1226,8 @@ const QUESTIONS = {
     {id:'3',  text:'Heavily worn'},
     {id:'4',  text:'Battle damaged'},
     {id:'5',  text:'Derelict or abandoned'},
-    {id:'8',  text:'Ceremonially decorated'},
-    {id:'9',  text:'Camouflaged or disguised'},
     {id:'10', text:'Well-patched and maintained'},
-    {id:'11', text:'Jury-rigged or improvised'},
     {id:'13', text:'War trophy with enemy markings'},
-    {id:'14', text:'Heavily customized'},
-    {id:'15', text:'Stripped and bare-bones'},
   ]},
 
   Q12: { title:'Background', type:'multi', max:2, allowCustom:true, options:[
@@ -1285,7 +1280,6 @@ const QUESTIONS = {
     {id:'8',  text:'Front-facing head-on'},
     {id:'9',  text:'Cross-section cutaway'},
     {id:'10', text:'Technical blueprint'},
-    {id:'12', text:'Worm\'s eye view'},
   ]},
 
   Q15: { title:'Color Palette', type:'single', allowCustom:true, options:[
@@ -1307,26 +1301,33 @@ const QUESTIONS = {
 
   Q16: { title:'Art Style', type:'single', allowCustom:true, options:[
     {id:'1',  text:'Photorealism'},
+    {id:'2',  text:'Hyper realism'},
     {id:'3',  text:'Cinematic realism'},
     {id:'4',  text:'Fantasy realism'},
     {id:'5',  text:'Digital painting or concept art'},
-    {id:'6',  text:'Anime or manga illustration'},
-    {id:'7',  text:'Comic book or graphic novel'},
+    {id:'6',  text:'Anime illustration'},
+    {id:'7',  text:'Comic book'},
     {id:'8',  text:'Technical blueprint'},
     {id:'9',  text:'Vintage travel poster'},
     {id:'10', text:'Gritty pulp fiction art'},
     {id:'11', text:'Dark fantasy illustration'},
     {id:'12', text:'Retro sci-fi magazine cover'},
-    {id:'13', text:'Watercolor or impressionist'},
-    {id:'14', text:'Oil painting or classical'},
+    {id:'13', text:'Watercolor'},
+    {id:'14', text:'Oil painting'},
     {id:'15', text:'Ink linework and hatching'},
     {id:'16', text:'Propaganda or constructivist art'},
+    {id:'17', text:'Impressionist'},
   ]},
 
   Q17: { title:'Image Size', type:'single', options:[
-    {id:'1', text:'Square (1:1)'},
-    {id:'2', text:'Portrait — tall (2:3)'},
-    {id:'3', text:'Landscape — wide (3:2)'},
+    {id:'1', text:'Square — 1:1'},
+    {id:'2', text:'Portrait — 2:3'},
+    {id:'3', text:'Portrait — 3:4'},
+    {id:'4', text:'Portrait — 9:16'},
+    {id:'5', text:'Landscape — 3:2'},
+    {id:'6', text:'Landscape — 4:3'},
+    {id:'7', text:'Landscape — 16:9'},
+    {id:'8', text:'Cinematic — 21:9'},
   ]},
 
 };
@@ -1772,7 +1773,7 @@ function assemblePrompt() {
   // Q17 — Image size
   const sz = getAns('Q17');
   if (sz) {
-    const sizeMap = {'1':'square 1:1','2':'portrait tall 2:3','3':'landscape wide 3:2'};
+    const sizeMap = {'1':'square 1:1','2':'portrait 2:3','3':'portrait 3:4','4':'portrait 9:16','5':'landscape 3:2','6':'landscape 4:3','7':'landscape 16:9','8':'cinematic 21:9'};
     const szId = ST.answers.Q17;
     parts.push(`, ${sizeMap[szId] || sz.toLowerCase()} aspect ratio`);
   }
