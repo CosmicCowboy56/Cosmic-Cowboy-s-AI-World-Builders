@@ -1,0 +1,1222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Horror Nightmare Engine v2.0 - Cosmic Cowboy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deepest:    #010E1F;
+  --ocean-blue: #0077B6;
+  --soft-cyan:  #90E0EF;
+  --pale-blue:  #CAF0F8;
+  --accent:     #FFD166;
+  --surface:    rgba(0,119,182,0.09);
+  --surface2:   rgba(0,119,182,0.17);
+  --border:     rgba(144,224,239,0.22);
+  --border-hi:  rgba(144,224,239,0.50);
+  --dim:        rgba(202,240,248,0.45);
+  --green:      #4ade80;
+  --red:        #f87171;
+  --blood:      rgba(180,20,20,0.15);
+  --blood-bdr:  rgba(220,50,50,0.42);
+  --glow:       0 0 12px rgba(144,224,239,0.30);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; font-family: 'Exo 2', sans-serif; font-weight: 300; font-size: 15px; background: var(--deepest); color: var(--pale-blue); }
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.15); }
+::-webkit-scrollbar-thumb { background: rgba(144,224,239,0.28); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(144,224,239,0.55); }
+
+.header { height: 52px; background: rgba(0,0,0,0.50); border-bottom: 1px solid var(--border-hi); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.header::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent); opacity: 0.5; }
+.hdr-title { font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 900; letter-spacing: 0.12em; color: var(--pale-blue); text-shadow: 0 0 18px rgba(144,224,239,0.4); }
+.hdr-sub { font-size: 0.62rem; color: var(--soft-cyan); letter-spacing: 0.2em; text-transform: uppercase; }
+
+.page-title { text-align: center; padding: 28px 24px 18px; border-bottom: 1px solid var(--border); }
+.page-title h1 { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 900; letter-spacing: 0.08em; color: var(--pale-blue); text-shadow: 0 0 24px rgba(144,224,239,0.35); margin-bottom: 4px; }
+.page-title .v-tag { font-size: 0.72rem; color: var(--soft-cyan); letter-spacing: 0.25em; text-transform: uppercase; }
+
+.api-bar { background: rgba(0,0,0,0.40); border-bottom: 1px solid var(--border); padding: 9px 24px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.api-lbl { font-size: 0.68rem; color: var(--soft-cyan); letter-spacing: 0.18em; text-transform: uppercase; white-space: nowrap; }
+.api-bar input[type="password"] { flex: 1; min-width: 240px; background: rgba(0,0,0,0.40); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.83rem; padding: 5px 10px; border-radius: 3px; outline: none; transition: border-color 0.2s; }
+.api-bar input:focus { border-color: var(--soft-cyan); }
+.connect-btn { background: rgba(0,119,182,0.15); border: 1px solid var(--border-hi); color: var(--soft-cyan); font-family: 'Exo 2', sans-serif; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; padding: 6px 16px; border-radius: 3px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.connect-btn:hover { background: rgba(0,119,182,0.30); }
+
+.page-body { display: grid; grid-template-columns: 1fr 400px; min-height: calc(100vh - 52px); align-items: start; }
+.form-col { padding: 22px 24px; border-right: 1px solid var(--border); }
+.out-col { padding: 22px 20px; position: sticky; top: 52px; max-height: calc(100vh - 52px); overflow-y: auto; }
+
+.section { background: var(--surface); border: 1px solid var(--border); border-radius: 5px; margin-bottom: 14px; overflow: hidden; }
+.section-title { font-family: 'Cinzel', serif; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft-cyan); padding: 9px 14px; background: rgba(0,0,0,0.28); border-bottom: 1px solid var(--border); }
+.section-body { padding: 14px; }
+
+.field-wrap { margin-bottom: 13px; }
+.field-label { font-size: 0.70rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--soft-cyan); margin-bottom: 7px; display: flex; align-items: center; justify-content: space-between; }
+.field-label .multi-note { font-size: 0.62rem; color: var(--dim); text-transform: none; letter-spacing: 0.04em; }
+
+.opts { display: flex; flex-wrap: wrap; gap: 5px; }
+.opt { background: rgba(0,0,0,0.32); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.78rem; padding: 4px 10px; border-radius: 3px; cursor: pointer; transition: all 0.14s; }
+.opt:hover { background: var(--surface2); border-color: var(--soft-cyan); }
+.opt.on { background: rgba(0,119,182,0.38); border-color: var(--soft-cyan); box-shadow: 0 0 5px rgba(144,224,239,0.18); }
+
+.dice { background: none; border: 1px solid var(--border); color: var(--soft-cyan); font-size: 0.70rem; padding: 3px 7px; border-radius: 3px; cursor: pointer; transition: background 0.14s; }
+.dice:hover { background: var(--surface2); }
+.sec-btn { background: rgba(0,0,0,0.30); border: 1px solid var(--border); color: var(--dim); font-family: 'Exo 2', sans-serif; font-size: 0.72rem; padding: 4px 9px; border-radius: 3px; cursor: pointer; transition: all 0.14s; white-space: nowrap; }
+.sec-btn:hover { background: var(--surface2); color: var(--pale-blue); }
+
+.txt { width: 100%; background: rgba(0,0,0,0.35); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.83rem; padding: 6px 9px; border-radius: 3px; outline: none; transition: border-color 0.2s; }
+.txt:focus { border-color: var(--soft-cyan); }
+textarea.txt { resize: vertical; min-height: 64px; }
+
+.custom-row { display: flex; gap: 5px; margin-top: 6px; }
+.custom-row .txt { flex: 1; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(0,119,182,0.22); border: 1px solid rgba(144,224,239,0.32); color: var(--soft-cyan); font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; }
+.tag button { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 0.82rem; padding: 0; line-height: 1; }
+.tag button:hover { color: var(--red); }
+
+.contrib-item { background: rgba(0,0,0,0.22); border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px 10px 10px; margin-bottom: 8px; position: relative; }
+.contrib-lbl { font-size: 0.60rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+.contrib-row { display: flex; gap: 6px; align-items: center; }
+.contrib-name { flex: 1; background: rgba(0,0,0,0.35); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.82rem; padding: 5px 8px; border-radius: 3px; outline: none; transition: border-color 0.2s; }
+.contrib-name:focus { border-color: var(--soft-cyan); }
+.contrib-pct { width: 56px; background: rgba(0,0,0,0.35); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.82rem; padding: 5px 6px; border-radius: 3px; outline: none; text-align: center; transition: border-color 0.2s; }
+.contrib-pct:focus { border-color: var(--soft-cyan); }
+.rm-btn { position: absolute; top: 6px; right: 7px; background: none; border: 1px solid rgba(248,113,113,0.28); color: rgba(248,113,113,0.50); font-size: 0.70rem; width: 18px; height: 18px; border-radius: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.14s; line-height: 1; }
+.rm-btn:hover { background: rgba(248,113,113,0.15); color: var(--red); border-color: var(--red); }
+.pct-total { font-size: 0.72rem; letter-spacing: 0.08em; color: var(--dim); margin-top: 6px; padding: 3px 8px; border-radius: 3px; background: rgba(0,0,0,0.20); display: inline-block; transition: all 0.2s; }
+.pct-total.ok { color: var(--green); background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.20); }
+.pct-total.over { color: var(--red); background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.20); }
+
+.preset-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.preset-btn { background: rgba(255,209,102,0.07); border: 1px solid rgba(255,209,102,0.28); color: var(--accent); font-family: 'Exo 2', sans-serif; font-size: 0.76rem; padding: 5px 11px; border-radius: 3px; cursor: pointer; transition: background 0.14s; }
+.preset-btn:hover { background: rgba(255,209,102,0.16); }
+.save-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.notice { background: rgba(0,119,182,0.10); border-left: 2px solid var(--soft-cyan); padding: 7px 10px; border-radius: 0 3px 3px 0; font-size: 0.76rem; color: var(--dim); line-height: 1.5; }
+.notice strong { color: var(--soft-cyan); font-weight: 600; }
+.horror-notice { background: var(--blood); border-left: 2px solid var(--blood-bdr); padding: 7px 10px; border-radius: 0 3px 3px 0; font-size: 0.76rem; color: rgba(240,140,140,0.85); line-height: 1.5; }
+
+.err { font-size: 0.74rem; color: var(--red); background: rgba(248,113,113,0.09); border: 1px solid rgba(248,113,113,0.22); border-radius: 3px; padding: 6px 9px; margin-top: 7px; display: none; }
+
+.out-lbl { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.20em; text-transform: uppercase; color: var(--soft-cyan); margin-bottom: 8px; }
+.out-body { background: rgba(0,0,0,0.42); border: 1px solid var(--border); border-radius: 3px; padding: 13px; font-size: 0.81rem; line-height: 1.68; white-space: pre-wrap; min-height: 120px; color: var(--pale-blue); margin-bottom: 12px; }
+.out-body.empty { color: var(--dim); font-style: italic; }
+
+.gen-btn { width: 100%; background: linear-gradient(135deg, var(--ocean-blue), rgba(0,119,182,0.65)); border: 1px solid var(--soft-cyan); color: var(--pale-blue); font-family: 'Cinzel', serif; font-size: 0.80rem; font-weight: 700; letter-spacing: 0.12em; padding: 11px; border-radius: 3px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; box-shadow: var(--glow); display: flex; align-items: center; justify-content: center; gap: 8px; }
+.gen-btn:hover { box-shadow: 0 0 20px rgba(144,224,239,0.40); }
+.gen-btn:disabled { opacity: 0.40; cursor: not-allowed; }
+
+.action-row { display: flex; gap: 6px; margin-top: 7px; }
+.copy-btn, .reset-btn { flex: 1; background: rgba(0,0,0,0.28); border: 1px solid var(--border); color: var(--dim); font-family: 'Exo 2', sans-serif; font-size: 0.72rem; padding: 5px; border-radius: 3px; cursor: pointer; transition: all 0.14s; }
+.copy-btn:hover, .reset-btn:hover { background: var(--surface2); color: var(--pale-blue); }
+
+.preview-lbl { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); margin: 16px 0 6px; }
+.preview-body { background: rgba(0,0,0,0.25); border: 1px solid rgba(144,224,239,0.12); border-radius: 3px; padding: 10px 12px; font-size: 0.75rem; line-height: 1.55; color: var(--dim); }
+
+.spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(144,224,239,0.18); border-top-color: var(--soft-cyan); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+footer { text-align: center; padding: 16px; font-size: 0.70rem; color: var(--dim); border-top: 1px solid var(--border); letter-spacing: 0.08em; }
+
+@media (max-width: 960px) {
+  .page-body { grid-template-columns: 1fr; }
+  .form-col { border-right: none; border-bottom: 1px solid var(--border); }
+  .out-col { position: static; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <span class="hdr-title">COSMIC COWBOY'S AI WORLDBUILDERS</span>
+  <span class="hdr-sub">Horror Nightmare Engine v2.0</span>
+</header>
+
+<div class="page-title">
+  <h1>HORROR NIGHTMARE ENGINE</h1>
+  <div class="v-tag">v2.0 — xAI Powered — Psychological · Cosmic · Body · Gothic · Folk</div>
+</div>
+
+<div class="api-bar">
+  <span class="api-lbl">xAI API Key</span>
+  <input type="password" id="apiKey" placeholder="xai-..." autocomplete="off" oninput="onKeyInput()">
+  <button class="connect-btn" id="connectBtn" onclick="confirmConnect()">CONNECT</button>
+  <span class="api-lbl" style="margin-left:8px;opacity:0.55">grok-4.3</span>
+</div>
+
+<div class="page-body">
+<div class="form-col">
+
+  <!-- PRESETS -->
+  <div class="section">
+    <div class="section-title">Quick Start Presets</div>
+    <div class="section-body">
+      <p style="font-size:0.76rem;color:var(--dim);margin-bottom:10px">Click any preset to auto-fill all fields. Modify freely, then generate.</p>
+      <div class="preset-row">
+        <button class="preset-btn" onclick="applyPreset('revenant')">Rotting Revenant</button>
+        <button class="preset-btn" onclick="applyPreset('leviathan')">Cosmic Leviathan</button>
+        <button class="preset-btn" onclick="applyPreset('cursedMirror')">The Cursed Mirror</button>
+        <button class="preset-btn" onclick="applyPreset('wendigo')">Wendigo Hunt</button>
+        <button class="preset-btn" onclick="applyPreset('drownedAsylum')">The Drowned Asylum</button>
+        <button class="preset-btn" onclick="applyPreset('folkRitual')">Folk Horror Ritual</button>
+        <button class="preset-btn" onclick="applyPreset('random')">Randomize All</button>
+      </div>
+      <div class="save-row">
+        <button class="sec-btn" onclick="saveCurrent()">Save Session</button>
+        <button class="sec-btn" onclick="loadSaved()">Load Session</button>
+        <button class="sec-btn" onclick="clearSaved()">Clear Saved</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q2: CREATION TYPE -->
+  <div class="section">
+    <div class="section-title">Creation Type</div>
+    <div class="section-body">
+      <div class="field-wrap">
+        <div class="field-label">What are you creating?</div>
+        <div class="opts" id="Q2-opts"></div>
+      </div>
+      <div class="horror-notice" style="margin-top:10px">
+        Creation type filters the options in Setting, Nature, Traits, Posture, Scale, Texture, and Narrative Role. Select your type first.
+      </div>
+    </div>
+  </div>
+
+  <!-- Q4: CONTRIBUTORS -->
+  <div class="section" id="contrib-section">
+    <div class="section-title">Horror Inspirations</div>
+    <div class="section-body">
+      <div class="notice" style="margin-bottom:12px">
+        <strong>1 to 4 inspirations, percentages must total 100.</strong><br>
+        Name horror films, artists, creatures, or characters. Dominance percentage controls visual weight in the final prompt. Examples: "Nosferatu 60%, The Thing 40%" · "H.R. Giger 50%, Silent Hill nurse 30%, Jacob's Ladder 20%"
+      </div>
+      <div id="contrib-list"></div>
+      <div style="display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;">
+        <button class="sec-btn" id="addBtn" onclick="addContrib()">+ Add Inspiration</button>
+        <button class="sec-btn" onclick="randomizeContribs()">Randomize</button>
+        <span class="pct-total" id="pctTotal">Total: 0%</span>
+      </div>
+      <div class="err" id="contrib-err"></div>
+    </div>
+  </div>
+
+  <!-- Q3 + Q5: HORROR DNA -->
+  <div class="section">
+    <div class="section-title">Horror DNA</div>
+    <div class="section-body">
+
+      <div class="field-wrap">
+        <div class="field-label">
+          Horror Subgenre <span class="multi-note">up to 2</span>
+          <button class="dice" onclick="randField('Q3')">Randomize</button>
+        </div>
+        <div class="opts" id="Q3-opts"></div>
+      </div>
+
+      <div class="field-wrap">
+        <div class="field-label">
+          Era / Temporal Flavor
+          <button class="dice" onclick="randField('Q5')">Randomize</button>
+        </div>
+        <div class="opts" id="Q5-opts"></div>
+        <div class="custom-row"><input type="text" class="txt" id="Q5-custom" placeholder="Custom era..."><button class="sec-btn" onclick="addCustom('Q5')">Add</button></div>
+        <div class="tags" id="Q5-tags"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Q6: SETTING (hidden for Location type) -->
+  <div class="section" id="Q6-section">
+    <div class="section-title">Setting</div>
+    <div class="section-body">
+      <div class="field-wrap">
+        <div class="field-label">
+          Scene Location <span class="multi-note">up to 2</span>
+          <button class="dice" onclick="randCondField('Q6')">Randomize</button>
+        </div>
+        <div class="opts" id="Q6-opts"></div>
+        <div class="custom-row"><input type="text" class="txt" id="Q6-custom" placeholder="Custom setting..."><button class="sec-btn" onclick="addCustom('Q6')">Add</button></div>
+        <div class="tags" id="Q6-tags"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Q7, Q8, Q9: SUBJECT CHARACTER -->
+  <div class="section">
+    <div class="section-title">Subject Character</div>
+    <div class="section-body">
+
+      <div class="field-wrap">
+        <div class="field-label" id="Q7-label">
+          Nature <span class="multi-note">up to 2</span>
+          <button class="dice" onclick="randCondField('Q7')">Randomize</button>
+        </div>
+        <div class="opts" id="Q7-opts"></div>
+        <div class="custom-row"><input type="text" class="txt" id="Q7-custom" placeholder="Custom nature..."><button class="sec-btn" onclick="addCustom('Q7')">Add</button></div>
+        <div class="tags" id="Q7-tags"></div>
+      </div>
+
+      <div class="field-wrap">
+        <div class="field-label">
+          Physical / Existential Traits <span class="multi-note">up to 2</span>
+          <button class="dice" onclick="randCondField('Q8')">Randomize</button>
+        </div>
+        <div class="opts" id="Q8-opts"></div>
+        <div class="custom-row"><input type="text" class="txt" id="Q8-custom" placeholder="Custom trait..."><button class="sec-btn" onclick="addCustom('Q8')">Add</button></div>
+        <div class="tags" id="Q8-tags"></div>
+      </div>
+
+      <div class="field-wrap">
+        <div class="field-label">
+          Internal Logic
+          <button class="dice" onclick="randField('Q9')">Randomize</button>
+        </div>
+        <div class="opts" id="Q9-opts"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Q10, Q11, Q12: FORM AND PRESENCE -->
+  <div class="section">
+    <div class="section-title">Form &amp; Presence</div>
+    <div class="section-body">
+
+      <div class="field-wrap" id="Q10-section">
+        <div class="field-label">
+          Posture / Stance <span class="multi-note">up to 2</span>
+          <button class="dice" onclick="randCondField('Q10')">Randomize</button>
+        </div>
+        <div class="opts" id="Q10-opts"></div>
+        <div class="custom-row"><input type="text" class="txt" id="Q10-custom" placeholder="Custom posture..."><button class="sec-btn" onclick="addCustom('Q10')">Add</button></div>
+        <div class="tags" id="Q10-tags"></div>
+      </div>
+
+      <div class="field-wrap">
+        <div class="field-label" id="Q11-label">
+          Scale
+          <button class="dice" onclick="randCondField('Q11')">Randomize</button>
+        </div>
+        <div class="opts" id="Q11-opts"></div>
+      </div>
+
+      <div class="field-wrap">
+        <div class="field-label">
+          Surface &amp; Texture <span class="multi-note">up to 2</span>
+          <button class="dice" onclick="randCondField('Q12')">Randomize</button>
+        </div>
+        <div class="opts" id="Q12-opts"></div>
+        <div class="custom-row"><input type="text" class="txt" id="Q12-custom" placeholder="Custom texture..."><button class="sec-btn" onclick="addCustom('Q12')">Add</button></div>
+        <div class="tags" id="Q12-tags"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Q13, Q14: CONTEXT AND ROLE -->
+  <div class="section">
+    <div class="section-title">Context &amp; Role</div>
+    <div class="section-body">
+
+      <div class="field-wrap">
+        <div class="field-label">
+          Origin or Source <span class="multi-note">up to 2</span>
+          <button class="dice" onclick="randField('Q13')">Randomize</button>
+        </div>
+        <div class="opts" id="Q13-opts"></div>
+      </div>
+
+      <div class="field-wrap">
+        <div class="field-label">
+          Narrative Role <span class="multi-note">up to 2</span>
+          <button class="dice" onclick="randCondField('Q14')">Randomize</button>
+        </div>
+        <div class="opts" id="Q14-opts"></div>
+        <div class="custom-row"><input type="text" class="txt" id="Q14-custom" placeholder="Custom role..."><button class="sec-btn" onclick="addCustom('Q14')">Add</button></div>
+        <div class="tags" id="Q14-tags"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Q15, Q16, Q17: ATMOSPHERE -->
+  <div class="section">
+    <div class="section-title">Atmosphere</div>
+    <div class="section-body">
+
+      <div class="field-wrap">
+        <div class="field-label">
+          Mood / Emotional Tone <span class="multi-note">up to 2</span>
+          <button class="dice" onclick="randField('Q15')">Randomize</button>
+        </div>
+        <div class="opts" id="Q15-opts"></div>
+      </div>
+
+      <div class="field-wrap">
+        <div class="field-label">
+          Lighting
+          <button class="dice" onclick="randField('Q16')">Randomize</button>
+        </div>
+        <div class="opts" id="Q16-opts"></div>
+      </div>
+
+      <div class="field-wrap">
+        <div class="field-label">
+          Color Palette <span class="multi-note">up to 2</span>
+          <button class="dice" onclick="randField('Q17')">Randomize</button>
+        </div>
+        <div class="opts" id="Q17-opts"></div>
+        <div class="custom-row"><input type="text" class="txt" id="Q17-custom" placeholder="Custom palette..."><button class="sec-btn" onclick="addCustom('Q17')">Add</button></div>
+        <div class="tags" id="Q17-tags"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Q18, Q19, Q20: CINEMATICS -->
+  <div class="section">
+    <div class="section-title">Cinematics</div>
+    <div class="section-body">
+
+      <div class="field-wrap">
+        <div class="field-label">
+          Framing Approach
+          <button class="dice" onclick="randField('Q18')">Randomize</button>
+        </div>
+        <div class="opts" id="Q18-opts"></div>
+      </div>
+
+      <div class="field-wrap">
+        <div class="field-label">
+          Camera Technique <span class="multi-note">up to 2</span>
+          <button class="dice" onclick="randField('Q19')">Randomize</button>
+        </div>
+        <div class="opts" id="Q19-opts"></div>
+      </div>
+
+      <div class="field-wrap">
+        <div class="field-label">
+          Art Style
+          <button class="dice" onclick="randField('Q20')">Randomize</button>
+        </div>
+        <div class="opts" id="Q20-opts"></div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Q21: OVERRIDES -->
+  <div class="section">
+    <div class="section-title">Overrides</div>
+    <div class="section-body">
+      <div class="horror-notice" style="margin-bottom:10px">Everything entered here supersedes all previous selections and is passed verbatim to the model.</div>
+      <textarea class="txt" id="Q21-input" placeholder="Any clarifications, additions, removals, or absolute overrides. Leave blank if none." rows="4"></textarea>
+    </div>
+  </div>
+
+</div><!-- /form-col -->
+
+<div class="out-col">
+  <div class="out-lbl">Generated Prompt</div>
+  <div class="out-body empty" id="outPrompt">Connect your API key, fill the form, and click Generate.</div>
+  <button class="gen-btn" id="genBtn" onclick="generatePrompt()">Generate Horror Prompt</button>
+  <div class="err" id="gen-err"></div>
+  <div class="action-row">
+    <button class="copy-btn" onclick="copyPrompt()">Copy Prompt</button>
+    <button class="reset-btn" onclick="resetApp()">Reset All</button>
+  </div>
+  <div class="preview-lbl">Form Summary</div>
+  <div class="preview-body" id="livePreview">Select a creation type to begin...</div>
+</div>
+
+</div><!-- /page-body -->
+
+<footer>r/CCsAIWorldBuilders — Cosmic Cowboy's AI Worldbuilders — Horror Nightmare Engine — Original work only</footer>
+
+<script>
+const XAI_ENDPOINT = 'https://api.x.ai/v1/chat/completions';
+const XAI_MODEL    = 'grok-4.3';
+const KEY_STORE    = 'xaiKey_horror';
+const SESS_STORE   = 'cc_horror_v2';
+
+/* ── STATIC OPTION SETS ───────────────────────────────────────────── */
+const OPTS = {
+  Q2: [
+    'Horror Character',
+    'Monster / Supernatural Entity',
+    'Possessed or Cursed Object',
+    'Horror Creature',
+    'Location or Environment'
+  ],
+  Q3: [
+    'Psychological', 'Cosmic / Lovecraftian', 'Body Horror', 'Gothic',
+    'Folk Horror', 'Occult / Demonic', 'Survival Horror', 'Existential',
+    'Slasher / Splatter', 'Supernatural / Paranormal', 'Eco-Horror',
+    'Techno-Horror', 'Religious / Sacrilegious', 'Hauntological'
+  ],
+  Q5: [
+    'Ancient / Prehistoric', 'Classical Antiquity', 'Medieval / Feudal',
+    'Renaissance', 'Victorian / Gothic', 'Early 20th Century',
+    'Mid-Century Modern', 'Contemporary', 'Near-Future',
+    'Post-Apocalyptic', 'Far Future', 'Timeless / Undefined'
+  ],
+  Q9: [
+    'Realistic and Grounded', 'Ritualistic or Symbolic', 'Dreamlike and Inconsistent',
+    'Biological or Anatomical', 'Esoteric or Unknowable', 'Mechanical or Procedural',
+    'Folklore and Myth-Based', 'Psychological Projection', 'Parasitic Logic',
+    'Non-Linear or Temporal'
+  ],
+  Q13: [
+    'Curse or Supernatural Binding', 'Ritual or Occult Practice', 'Cosmic Influence',
+    'Disease or Mutation', 'Psychological Manifestation', 'Unknown',
+    'Ancient Lineage or Bloodline', 'Scientific Experiment Gone Wrong',
+    'Forbidden Knowledge', 'Divine Punishment or Abandonment',
+    'Parasitic Infection', 'Temporal Anomaly'
+  ],
+  Q15: [
+    'Oppressive', 'Dread-Filled', 'Paranoid', 'Melancholic', 'Violent',
+    'Quietly Unsettling', 'Despairing', 'Feverish or Delirious',
+    'Predatory', 'Eerily Calm', 'Claustrophobic', 'Alienating'
+  ],
+  Q16: [
+    'Near-Total Darkness', 'Single Harsh Light Source', 'Harsh Contrast (Chiaroscuro)',
+    'Overcast or Obscured Daylight', 'Unnatural Illumination', 'Flickering or Unstable',
+    'Bioluminescent Glow', 'Candlelight or Torchlight', 'Neon / Artificial Urban Light',
+    'Moonlight or Starlight', 'Reflected or Refracted Light', 'Ambient Only (No Source)'
+  ],
+  Q17: [
+    'Desaturated / Grayscale', 'Sickly Greens and Yellows', 'Deep Reds and Browns',
+    'Cold Blues and Blacks', 'Warm Sepias and Ambers', 'Bruised Purples and Grays',
+    'Washed-Out Pastels', 'Industrial Rust and Ochre', 'Midnight and Silver',
+    'Bile Yellows and Rot Greens', 'Crimson and Charcoal'
+  ],
+  Q18: [
+    'Observer-Level', 'Close and Invasive', 'Distant and Voyeuristic',
+    'Wide Environmental', 'Obscured or Partially Hidden', 'From Below (Worm\'s Eye)',
+    'From Above (God\'s Eye)', 'Dutch Angle (Tilted)', 'Through Aperture (Door / Window)',
+    'Reflected (Mirror / Water / Glass)'
+  ],
+  Q19: [
+    'Naturalistic Realism', 'Distorted Perspective', 'Extreme Close-Up',
+    'Off-Center / Unbalanced', 'Claustrophobic Framing', 'Static / Surveillance-Like',
+    'Long Exposure or Motion Blur', 'Shallow Depth of Field', 'Deep Focus',
+    'Anamorphic Lens Distortion', 'Film Grain and Noise', 'Found Footage Aesthetic',
+    'Double Exposure'
+  ],
+  Q20: [
+    'Photorealistic', 'Hyper-Realistic', 'Cinematic Realism', 'Gritty Concept Art',
+    'Painterly Horror Illustration', 'Surreal or Nightmarish', 'Dark Fantasy Illustration',
+    'Medical Illustration Style', 'Victorian Engraving', 'Horror Comic / Graphic Novel',
+    'Digital Expressionism', 'Analog Photography', 'Woodblock or Linocut Print'
+  ]
+};
+
+// Single-select fields (store string); all others store array
+const SINGLE = new Set(['Q2', 'Q5', 'Q9', 'Q11', 'Q16', 'Q18', 'Q20']);
+
+/* ── CONDITIONAL OPTION SETS (indexed 0-4 by creation type) ──────── */
+const CHAR_MONSTER_CREATURE_SETTINGS = [
+  'Isolated Wilderness', 'Underground Cavern or Tomb', 'Abandoned Building',
+  'Liminal / Transitional Space', 'Ruined Structure or Temple', 'Fog-Choked Battlefield',
+  'Urban Decay', 'Deep Forest', 'Coastal / Maritime',
+  'Institutional (Asylum, Hospital, Prison)', 'Domestic Interior',
+  'Sacred Site Turned Profane', 'Underwater / Submerged', 'No Setting (Subject Alone)'
+];
+
+const ENTITY_POSTURES = [
+  'Standing or Looming', 'Crouched or Hunched', 'Crawling Position',
+  'Suspended or Floating', 'Twisted or Contorted', 'Emerging (from Shadows / Ground / Walls)',
+  'Reaching or Grasping', 'Unnaturally Still', 'Fleeing or Retreating',
+  'Feeding or Consuming', 'Ritual Posture or Supplication', 'Broken-Limbed but Moving',
+  'Partially Submerged', 'Mid-Transformation'
+];
+
+const ENTITY_TEXTURES = [
+  'Rotting Flesh or Decay', 'Scarred Skin or Bone', 'Wet, Sinewy, or Organic Surfaces',
+  'Clean but Unsettling', 'Filthy, Diseased, or Infested', 'Pallid or Bloodless',
+  'Chitinous or Scaled', 'Fungal or Mycological', 'Burned or Charred',
+  'Translucent or Veined', 'Leaking or Seeping', 'Covered in Hair, Quills, or Filaments'
+];
+
+const ENTITY_TRAITS = [
+  'Frail or Emaciated', 'Familiar but Wrong', 'Grotesque or Mutilated',
+  'Shapeless or Amorphous', 'Ancient or Primordial', 'Unstable or Transforming',
+  'Bloated or Swollen', 'Partially Visible or Hidden', 'Wrongly Jointed or Angled',
+  'Skin Like Something Else Entirely', 'Too Many or Too Few Features', 'Exuding Fluid or Residue'
+];
+
+const ENTITY_ROLES = [
+  'Stalker or Pursuer', 'Guardian or Watcher', 'Predator', 'Victim Turned Threat',
+  'Symbolic or Allegorical', 'Harbinger or Omen', 'Vessel or Conduit',
+  'Last Survivor of Something Terrible', 'Unknowing Monster', 'Ancient Being with Alien Motives'
+];
+
+const SUBJECT_SCALE = ['Tiny / Subtle', 'Human-Scale', 'Large / Imposing', 'Vast or Incomprehensible'];
+const LOCATION_SCALE = ['Confined / Intimate', 'Room-Scale', 'Building or Structure', 'Landscape-Scale'];
+
+const C = {
+  Q6: [
+    CHAR_MONSTER_CREATURE_SETTINGS, // 0: Character
+    CHAR_MONSTER_CREATURE_SETTINGS, // 1: Monster
+    ['Domestic Interior', 'Abandoned Structure', 'Sacred or Profane Site',
+     'Collector\'s Space', 'Hidden or Concealed Location', 'Decayed Library or Archive',
+     'Laboratory or Workshop', 'Ritualistic Chamber', 'On Display in a Museum',
+     'Overgrown Ruins'],             // 2: Object
+    ['Isolated Wilderness', 'Underground Cavern', 'Liminal / Transitional Space',
+     'Domestic Interior', 'Urban Decay', 'Deep Forest', 'Coastal / Marshland',
+     'Flooded Ruins', 'Institutional Ruin', 'Open Wasteland'], // 3: Creature
+    null                             // 4: Location — skipped
+  ],
+  Q7: [
+    // 0: Character
+    ['Fully Human but Corrupted', 'Once-Human, Transformed', 'Partially Human Hybrid',
+     'Undead or Revenant', 'Possessed Human', 'Cult Member or Ritual Victim',
+     'Grieving and Unraveling', 'Survivor Turned Predator',
+     'Scholar Corrupted by Knowledge', 'Child of Something Inhuman'],
+    // 1: Monster
+    ['Non-Human Intelligence', 'Aberration / Unnatural Hybrid', 'Undead or Revenant',
+     'Shapeless or Amorphous', 'Otherworldly / Cosmic Entity', 'Parasitic Organism',
+     'Thoughtform or Psychic Manifestation', 'Ancient Predator',
+     'Elemental Corruption', 'Swarm Entity'],
+    // 2: Object
+    ['Organic / Flesh-Based', 'Corrupted Material (Wood, Metal, Stone)',
+     'Merged / Hybrid Object', 'Mundane Object with Supernatural Presence',
+     'Mirror or Reflective Surface', 'Ritual Implement or Weapon',
+     'Book or Written Artifact', 'Mechanical Device'],
+    // 3: Creature
+    ['Animal-Based Aberration', 'Chimeric Hybrid', 'Undead Animal', 'Mutated Creature',
+     'Non-Terrestrial Organism', 'Deep-Sea Aberration', 'Insectoid Horror',
+     'Fungal / Plant Hybrid', 'Parasitic Swarm', 'Devolved Predator'],
+    // 4: Location
+    ['Natural Environment Corrupted', 'Artificial Structure Decaying',
+     'Liminal / Threshold Space', 'Impossible Geometry', 'Subterranean Void',
+     'Flooded or Drowned Place', 'Burned or Blasted Wasteland', 'Place of Ancient Ritual']
+  ],
+  Q8: [
+    ENTITY_TRAITS, ENTITY_TRAITS, // 0: Character, 1: Monster
+    ['Corrupted or Damaged', 'Grafted or Merged with Organic Matter', 'Pulsing or Quasi-Alive',
+     'Painfully Wrong to Observe', 'Impossibly Heavy / Light Presence',
+     'Moving When Unobserved', 'Wet or Weeping', 'Blackened or Charred',
+     'Covered in Inscriptions', 'Older Than It Should Be'], // 2: Object
+    ENTITY_TRAITS, // 3: Creature
+    ['Decaying or Collapsing', 'Geometrically Impossible', 'Overwhelming or Claustrophobic',
+     'Unnatural Vegetation or Growth', 'Temporally Fractured', 'Sounds Present but No Source',
+     'Flooded or Waterlogged', 'Covered in Ash or Residue',
+     'Wrong Scale Relative to Occupants', 'Reeks of Something Biological'] // 4: Location
+  ],
+  Q10: [
+    ENTITY_POSTURES, ENTITY_POSTURES, null, ENTITY_POSTURES, null
+  ],
+  Q11: [
+    SUBJECT_SCALE, SUBJECT_SCALE, SUBJECT_SCALE, SUBJECT_SCALE, LOCATION_SCALE
+  ],
+  Q12: [
+    ENTITY_TEXTURES, ENTITY_TEXTURES, // 0: Character, 1: Monster
+    ['Corrupted Materials (Wood, Stone, Metal)', 'Wet, Sinewy, or Organic Surfaces',
+     'Clean but Unsettling', 'Filthy, Diseased, or Infested', 'Grafted or Fused Surface Layers',
+     'Tarnished or Corroded', 'Inscribed or Carved', 'Burned or Heat-Warped',
+     'Smooth and Impossibly Perfect', 'Covered in Residue or Stains'], // 2: Object
+    ENTITY_TEXTURES, // 3: Creature
+    ['Corrupted Materials (Wood, Stone, Metal)', 'Wet or Slick Surfaces',
+     'Crumbling, Eroded, or Pitted', 'Overgrown or Infested', 'Clean but Unsettling',
+     'Covered in Ash or Char', 'Blood-Stained or Residue-Marked',
+     'Fungal or Biological Growth', 'Ice-Encrusted or Frozen', 'Waterlogged and Bloated'] // 4: Location
+  ],
+  Q14: [
+    ENTITY_ROLES, ENTITY_ROLES, // 0: Character, 1: Monster
+    ['Lure or Trap', 'Vessel of Corruption', 'Catalyst for Transformation',
+     'Guardian or Watcher', 'Symbolic or Allegorical', 'Key or Access Point',
+     'Memory or Echo Holder', 'Weapon of the Supernatural',
+     'Anchor to the Mundane World', 'Source of the Horror'], // 2: Object
+    ENTITY_ROLES, // 3: Creature
+    ['Environmental Menace', 'Prison or Trap', 'Sacred Ground Turned Profane',
+     'Threshold to Something Worse', 'Symbolic or Allegorical', 'Site of Past Atrocity',
+     'Place of Power', 'Maze or Labyrinth',
+     'Mirror of the Protagonist\'s Psychology', 'Point of No Return'] // 4: Location
+  ]
+};
+
+// Max selections for conditional fields [char, monster, object, creature, location]
+const CMAX = {
+  Q6:  [2, 2, 2, 2, 0],
+  Q7:  [2, 2, 1, 2, 1],
+  Q8:  [2, 2, 2, 2, 2],
+  Q10: [2, 2, 0, 2, 0],
+  Q11: [1, 1, 1, 1, 1],
+  Q12: [2, 2, 2, 2, 2],
+  Q14: [2, 2, 2, 2, 2]
+};
+
+/* ── STATE ────────────────────────────────────────────────────────── */
+let ans = {};
+let custom = {};
+let contribs = [];
+let cid = 0;
+
+/* ── TYPE INDEX ───────────────────────────────────────────────────── */
+const TYPE_IDX = {
+  'Horror Character': 0, 'Monster / Supernatural Entity': 1,
+  'Possessed or Cursed Object': 2, 'Horror Creature': 3, 'Location or Environment': 4
+};
+function getTypeIdx() { return TYPE_IDX[ans.Q2] ?? -1; }
+
+/* ── PRESETS ──────────────────────────────────────────────────────── */
+const PRESETS = {
+  revenant: {
+    Q2:'Horror Character',
+    contributors:[{name:'medieval knight',pct:60},{name:'plague victim',pct:40}],
+    Q3:['Gothic','Body Horror'], Q5:'Medieval / Feudal',
+    Q6:['Ruined Structure or Temple'], Q7:['Undead or Revenant'],
+    Q8:['Grotesque or Mutilated','Unstable or Transforming'], Q9:'Biological or Anatomical',
+    Q10:['Standing or Looming','Reaching or Grasping'], Q11:'Large / Imposing',
+    Q12:['Rotting Flesh or Decay','Wet, Sinewy, or Organic Surfaces'],
+    Q13:['Curse or Supernatural Binding'], Q14:['Stalker or Pursuer'],
+    Q15:['Oppressive','Dread-Filled'], Q16:'Near-Total Darkness',
+    Q17:['Desaturated / Grayscale','Deep Reds and Browns'],
+    Q18:'Observer-Level', Q19:['Off-Center / Unbalanced'], Q20:'Cinematic Realism'
+  },
+  leviathan: {
+    Q2:'Monster / Supernatural Entity',
+    contributors:[{name:'deep sea creature',pct:60},{name:'cosmic void entity',pct:40}],
+    Q3:['Cosmic / Lovecraftian','Existential'], Q5:'Timeless / Undefined',
+    Q6:['Underwater / Submerged'], Q7:['Otherworldly / Cosmic Entity'],
+    Q8:['Shapeless or Amorphous','Ancient or Primordial'], Q9:'Esoteric or Unknowable',
+    Q10:['Suspended or Floating'], Q11:'Vast or Incomprehensible',
+    Q12:['Wet, Sinewy, or Organic Surfaces','Translucent or Veined'],
+    Q13:['Cosmic Influence'], Q14:['Ancient Being with Alien Motives'],
+    Q15:['Dread-Filled','Alienating'], Q16:'Bioluminescent Glow',
+    Q17:['Cold Blues and Blacks','Sickly Greens and Yellows'],
+    Q18:'Wide Environmental', Q19:['Distorted Perspective'], Q20:'Hyper-Realistic'
+  },
+  cursedMirror: {
+    Q2:'Possessed or Cursed Object',
+    contributors:[{name:'Victorian antique mirror',pct:70},{name:'shadow reflection',pct:30}],
+    Q3:['Psychological','Gothic'], Q5:'Victorian / Gothic',
+    Q6:['Domestic Interior'], Q7:['Mirror or Reflective Surface'],
+    Q8:['Painfully Wrong to Observe','Moving When Unobserved'], Q9:'Ritualistic or Symbolic',
+    Q11:'Human-Scale',
+    Q12:['Clean but Unsettling','Tarnished or Corroded'],
+    Q13:['Curse or Supernatural Binding'], Q14:['Lure or Trap'],
+    Q15:['Quietly Unsettling','Paranoid'], Q16:'Single Harsh Light Source',
+    Q17:['Desaturated / Grayscale','Cold Blues and Blacks'],
+    Q18:'Close and Invasive', Q19:['Naturalistic Realism'], Q20:'Photorealistic'
+  },
+  wendigo: {
+    Q2:'Horror Creature',
+    contributors:[{name:'wendigo',pct:80},{name:'winter elk',pct:20}],
+    Q3:['Folk Horror','Survival Horror'], Q5:'Contemporary',
+    Q6:['Deep Forest'], Q7:['Chimeric Hybrid','Animal-Based Aberration'],
+    Q8:['Frail or Emaciated','Wrongly Jointed or Angled'], Q9:'Folklore and Myth-Based',
+    Q10:['Standing or Looming','Crawling Position'], Q11:'Large / Imposing',
+    Q12:['Scarred Skin or Bone','Rotting Flesh or Decay'],
+    Q13:['Ancient Lineage or Bloodline'], Q14:['Predator'],
+    Q15:['Predatory','Dread-Filled'], Q16:'Overcast or Obscured Daylight',
+    Q17:['Desaturated / Grayscale','Warm Sepias and Ambers'],
+    Q18:'Distant and Voyeuristic', Q19:['Claustrophobic Framing'], Q20:'Gritty Concept Art'
+  },
+  drownedAsylum: {
+    Q2:'Location or Environment',
+    contributors:[{name:'Victorian asylum',pct:60},{name:'flooded ruin',pct:40}],
+    Q3:['Psychological','Gothic'], Q5:'Victorian / Gothic',
+    Q7:['Artificial Structure Decaying','Liminal / Threshold Space'],
+    Q8:['Flooded or Waterlogged','Decaying or Collapsing'], Q9:'Psychological Projection',
+    Q11:'Building or Structure',
+    Q12:['Wet or Slick Surfaces','Crumbling, Eroded, or Pitted'],
+    Q13:['Psychological Manifestation'], Q14:['Prison or Trap'],
+    Q15:['Oppressive','Melancholic'], Q16:'Unnatural Illumination',
+    Q17:['Cold Blues and Blacks','Bruised Purples and Grays'],
+    Q18:'Wide Environmental', Q19:['Static / Surveillance-Like'], Q20:'Cinematic Realism'
+  },
+  folkRitual: {
+    Q2:'Horror Character',
+    contributors:[{name:'village elder',pct:50},{name:'harvest deity',pct:50}],
+    Q3:['Folk Horror','Occult / Demonic'], Q5:'Contemporary',
+    Q6:['Sacred Site Turned Profane'], Q7:['Cult Member or Ritual Victim'],
+    Q8:['Familiar but Wrong','Ancient or Primordial'], Q9:'Ritualistic or Symbolic',
+    Q10:['Ritual Posture or Supplication'], Q11:'Human-Scale',
+    Q12:['Clean but Unsettling','Scarred Skin or Bone'],
+    Q13:['Ritual or Occult Practice'], Q14:['Symbolic or Allegorical'],
+    Q15:['Eerily Calm','Dread-Filled'], Q16:'Candlelight or Torchlight',
+    Q17:['Warm Sepias and Ambers','Sickly Greens and Yellows'],
+    Q18:'Observer-Level', Q19:['Off-Center / Unbalanced'], Q20:'Painterly Horror Illustration'
+  }
+};
+
+/* ── RENDER ───────────────────────────────────────────────────────── */
+function renderField(qid, optsArr) {
+  const cont = document.getElementById(`${qid}-opts`);
+  if (!cont || !optsArr) return;
+  const isSingle = SINGLE.has(qid);
+  cont.innerHTML = '';
+  optsArr.forEach(opt => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.textContent = opt;
+    if (isSingle ? ans[qid] === opt : (ans[qid] || []).includes(opt))
+      b.classList.add('on');
+    b.onclick = () => toggleOpt(qid, opt, isSingle, optsArr);
+    cont.appendChild(b);
+  });
+  renderTags(qid);
+}
+
+function toggleOpt(qid, opt, isSingle, optsArr) {
+  if (isSingle) {
+    ans[qid] = (ans[qid] === opt) ? null : opt;
+    renderField(qid, optsArr);
+    if (qid === 'Q2') onTypeChange();
+  } else {
+    const max = getMax(qid);
+    const cur = ans[qid] || [];
+    if (cur.includes(opt)) ans[qid] = cur.filter(v => v !== opt);
+    else if (cur.length < max) ans[qid] = [...cur, opt];
+    renderField(qid, optsArr);
+  }
+  updatePreview();
+}
+
+function getMax(qid) {
+  const idx = getTypeIdx();
+  if (CMAX[qid] && idx >= 0) return CMAX[qid][idx];
+  const defaults = { Q3:2, Q5:1, Q9:1, Q13:2, Q15:2, Q16:1, Q17:2, Q18:1, Q19:2, Q20:1 };
+  return defaults[qid] || 1;
+}
+
+function renderTags(qid) {
+  const wrap = document.getElementById(`${qid}-tags`);
+  if (!wrap) return;
+  wrap.innerHTML = (custom[qid] || []).map((t, i) =>
+    `<span class="tag">${esc(t)}<button onclick="removeCustom('${qid}',${i})">×</button></span>`
+  ).join('');
+}
+
+function addCustom(qid) {
+  const inp = document.getElementById(`${qid}-custom`);
+  const val = inp?.value.trim(); if (!val) return;
+  if (!custom[qid]) custom[qid] = [];
+  custom[qid].push(val); inp.value = '';
+  renderTags(qid); updatePreview();
+}
+
+function removeCustom(qid, idx) {
+  custom[qid].splice(idx, 1);
+  renderTags(qid); updatePreview();
+}
+
+function randField(qid) {
+  const optsArr = OPTS[qid]; if (!optsArr) return;
+  const isSingle = SINGLE.has(qid);
+  if (isSingle) {
+    ans[qid] = optsArr[Math.floor(Math.random() * optsArr.length)];
+  } else {
+    const max = getMax(qid);
+    const n = Math.floor(Math.random() * max) + 1;
+    ans[qid] = [...optsArr].sort(() => 0.5 - Math.random()).slice(0, n);
+  }
+  renderField(qid, optsArr);
+  updatePreview();
+}
+
+function randCondField(qid) {
+  const idx = getTypeIdx(); if (idx < 0) return;
+  const optsArr = C[qid]?.[idx]; if (!optsArr) return;
+  const max = CMAX[qid][idx]; if (!max) return;
+  if (max === 1) {
+    ans[qid] = optsArr[Math.floor(Math.random() * optsArr.length)];
+  } else {
+    const n = Math.floor(Math.random() * max) + 1;
+    ans[qid] = [...optsArr].sort(() => 0.5 - Math.random()).slice(0, n);
+  }
+  renderField(qid, optsArr);
+  updatePreview();
+}
+
+function onTypeChange() {
+  const idx = getTypeIdx();
+
+  // Q6 section — hidden for Location (idx 4)
+  const q6sec = document.getElementById('Q6-section');
+  if (idx === 4 || idx < 0) {
+    q6sec.style.display = 'none';
+  } else {
+    q6sec.style.display = '';
+    refreshCond('Q6', idx);
+  }
+
+  // Q10 section — hidden for Object (idx 2) and Location (idx 4)
+  const q10sec = document.getElementById('Q10-section');
+  if (idx === 2 || idx === 4 || idx < 0) {
+    q10sec.style.display = 'none';
+  } else {
+    q10sec.style.display = '';
+    refreshCond('Q10', idx);
+  }
+
+  // Always-visible conditional fields
+  ['Q7','Q8','Q11','Q12','Q14'].forEach(qid => {
+    if (idx >= 0) refreshCond(qid, idx);
+    else {
+      const cont = document.getElementById(`${qid}-opts`);
+      if (cont) cont.innerHTML = '<span style="color:var(--dim);font-size:0.76rem">Select a creation type first.</span>';
+    }
+  });
+
+  // Update Q7 label based on max
+  const q7lbl = document.getElementById('Q7-label');
+  if (q7lbl && idx >= 0) {
+    const max = CMAX.Q7[idx];
+    q7lbl.innerHTML = `Nature${max > 1 ? ' <span class="multi-note">up to 2</span>' : ''} <button class="dice" onclick="randCondField('Q7')">Randomize</button>`;
+  }
+
+  // Update Q11 label based on type
+  const q11lbl = document.getElementById('Q11-label');
+  if (q11lbl) {
+    const label = idx === 4 ? 'Scope' : 'Scale';
+    q11lbl.innerHTML = `${label} <button class="dice" onclick="randCondField('Q11')">Randomize</button>`;
+  }
+
+  updatePreview();
+}
+
+function refreshCond(qid, idx) {
+  const optsArr = C[qid]?.[idx]; if (!optsArr) return;
+  const max = CMAX[qid][idx]; if (!max) return;
+  // Clear stale selections
+  if (SINGLE.has(qid) || max === 1) {
+    if (ans[qid] && !optsArr.includes(ans[qid])) ans[qid] = null;
+  } else {
+    ans[qid] = (ans[qid] || []).filter(v => optsArr.includes(v));
+  }
+  renderField(qid, optsArr);
+}
+
+function renderAll() {
+  // Static fields
+  Object.keys(OPTS).forEach(qid => {
+    if (qid !== 'Q2') renderField(qid, OPTS[qid]);
+  });
+  renderField('Q2', OPTS.Q2);
+  renderContribs();
+  onTypeChange();
+  updatePreview();
+}
+
+/* ── CONTRIBUTORS ─────────────────────────────────────────────────── */
+function renderContribs() {
+  const list = document.getElementById('contrib-list');
+  list.innerHTML = '';
+  contribs.forEach((c, i) => {
+    const div = document.createElement('div');
+    div.className = 'contrib-item';
+    div.innerHTML = `
+      <button class="rm-btn" onclick="removeContrib(${c.id})">×</button>
+      <div class="contrib-lbl">INSPIRATION ${i + 1}</div>
+      <div class="contrib-row">
+        <input type="text" class="contrib-name" placeholder="e.g. Nosferatu, The Thing, H.R. Giger, Silent Hill nurse..." value="${esc(c.name)}" oninput="updateContrib(${c.id},'name',this.value)">
+        <input type="number" class="contrib-pct" min="1" max="100" placeholder="%" value="${c.pct||''}" oninput="updateContrib(${c.id},'pct',this.value)">
+      </div>`;
+    list.appendChild(div);
+  });
+  document.getElementById('addBtn').style.display = contribs.length >= 4 ? 'none' : '';
+  calcPct();
+}
+
+function addContrib() {
+  if (contribs.length >= 4) return;
+  contribs.push({ id: ++cid, name: '', pct: '' });
+  renderContribs();
+}
+
+function removeContrib(id) {
+  contribs = contribs.filter(c => c.id !== id);
+  renderContribs(); updatePreview();
+}
+
+function updateContrib(id, field, val) {
+  const c = contribs.find(c => c.id === id); if (!c) return;
+  c[field] = field === 'pct' ? (parseInt(val) || '') : val;
+  calcPct(); updatePreview();
+}
+
+function calcPct() {
+  const total = contribs.reduce((s, c) => s + (parseInt(c.pct) || 0), 0);
+  const el = document.getElementById('pctTotal');
+  el.textContent = `Total: ${total}%`;
+  el.className = 'pct-total' + (total === 100 ? ' ok' : total > 100 ? ' over' : '');
+}
+
+function validateContribs() {
+  if (contribs.length === 0) return 'Add at least one horror inspiration.';
+  if (contribs.some(c => !c.name.trim())) return 'All inspirations must have a name.';
+  const total = contribs.reduce((s, c) => s + (parseInt(c.pct) || 0), 0);
+  if (total !== 100) return `Percentages must total 100. Currently ${total}%.`;
+  return null;
+}
+
+function randomizeContribs() {
+  const pool = [
+    'Nosferatu','The Thing','Silent Hill nurse','Jacob\'s Ladder','The Fly',
+    'Alien xenomorph','Hellraiser cenobite','The Babadook','Pennywise',
+    'H.R. Giger biomechanical','Francis Bacon distorted figure','Zdzisław Beksiński nightmare',
+    'The Ring ghost','Ju-On spirit','Event Horizon hull','Annihilation shimmer',
+    'Midsommar ritual figure','The Wicker Man effigy','Hereditary tragedy',
+    'Lovecraftian cultist','Victorian cadaver','plague doctor','medieval penitent',
+    'drowned sailor','burned witch','hanged man','exsanguinated aristocrat',
+    'subterranean dweller','cave organism','tidal creature','ancient statue come alive'
+  ];
+  contribs = []; cid = Math.max(cid, 0);
+  const count = Math.floor(Math.random() * 3) + 1;
+  let remaining = 100;
+  for (let i = 0; i < count; i++) {
+    const name = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+    const pct = i === count - 1 ? remaining
+      : Math.round(Math.random() * (remaining - (count - i - 1) * 10) + 10);
+    remaining -= pct;
+    contribs.push({ id: ++cid, name, pct });
+  }
+  renderContribs(); updatePreview();
+}
+
+/* ── API ──────────────────────────────────────────────────────────── */
+function onKeyInput() {
+  const key = document.getElementById('apiKey').value.trim();
+  if (key) localStorage.setItem(KEY_STORE, key);
+  else localStorage.removeItem(KEY_STORE);
+  const btn = document.getElementById('connectBtn');
+  btn.textContent = 'CONNECT';
+  btn.style.cssText = '';
+}
+
+function confirmConnect() {
+  const key = document.getElementById('apiKey').value.trim();
+  const btn = document.getElementById('connectBtn');
+  if (!key || key.length < 6) {
+    btn.textContent = 'NEED KEY';
+    btn.style.cssText = 'background:rgba(200,30,30,0.12);color:var(--red);border-color:rgba(200,30,30,0.35);';
+    return;
+  }
+  localStorage.setItem(KEY_STORE, key);
+  btn.textContent = 'CONNECTED';
+  btn.style.cssText = 'background:rgba(0,160,90,0.15);color:var(--green);border-color:rgba(0,160,90,0.35);';
+}
+
+function apiKey()   { return document.getElementById('apiKey').value.trim(); }
+function apiReady() { return document.getElementById('connectBtn').textContent === 'CONNECTED'; }
+
+/* ── GENERATE ─────────────────────────────────────────────────────── */
+async function generatePrompt() {
+  if (!apiReady()) { showErr('Connect your API key first.'); return; }
+  if (!ans.Q2)     { showErr('Select a creation type first.'); return; }
+
+  const contribErr = validateContribs();
+  if (contribErr) {
+    const el = document.getElementById('contrib-err');
+    el.textContent = contribErr; el.style.display = 'block'; return;
+  }
+  document.getElementById('contrib-err').style.display = 'none';
+  hideErr();
+
+  const typeIdx = getTypeIdx();
+  const isLocation = typeIdx === 4;
+
+  const systemPrompt = `You are the prompt engine for Cosmic Cowboy's HORROR NIGHTMARE ENGINE. Output ONLY a dense, vivid, comma-separated image generation prompt. No labels, no preamble, no explanation — start immediately with descriptive terms.
+
+CREATION TYPE: ${ans.Q2}
+INSPIRATIONS: ${contribs.map(c => `${c.name} (${c.pct}%)`).join(', ')}
+
+INSPIRATION RULE: Translate inspiration dominance percentages into visual weight and material language. A 60% inspiration dominates the form, surface, and atmosphere. A 20% inspiration is a present but secondary influence. Never name the inspirations explicitly in the output. Fuse them organically.
+
+HORROR COHERENCE RULE: Every visual element must serve psychological impact, physical dread, or supernatural menace. Maintain tonal consistency. No whimsical, comedic, or heroic elements unless explicitly overridden.
+
+QUALITY RULE: All output is ultra-fine, production-grade, hyper-detailed. Include: precise surface textures (decay, biological imperfection, corruption, grime), sharp focus and clean edges where appropriate, cinematic physically plausible lighting, dense organic or environmental detail. Low-detail or abstract output only if explicitly requested in overrides.
+
+FORBIDDEN in output: inspiration names, percentages, "blend of", "combination of", any reference to source materials by name, preamble text, explanation.`;
+
+  const btn = document.getElementById('genBtn');
+  const out = document.getElementById('outPrompt');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Generating...';
+  out.textContent = ''; out.className = 'out-body';
+
+  try {
+    const res = await fetch(XAI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey()}` },
+      body: JSON.stringify({
+        model: XAI_MODEL,
+        max_tokens: 700,
+        reasoning_effort: 'none',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user',   content: `Generate a horror image prompt for:\n\n${stateToText()}` }
+        ]
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `API error ${res.status}`);
+    const reply = (data.choices?.[0]?.message?.content || '').trim();
+    if (!reply) throw new Error('Empty response from API.');
+    out.textContent = reply; out.className = 'out-body';
+  } catch(e) {
+    showErr(e.message);
+    out.className = 'out-body empty';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Generate Horror Prompt';
+  }
+}
+
+function showErr(msg) { const el = document.getElementById('gen-err'); el.textContent = msg; el.style.display = 'block'; }
+function hideErr()    { document.getElementById('gen-err').style.display = 'none'; }
+
+/* ── PROMPT ASSEMBLY ──────────────────────────────────────────────── */
+function getVal(qid) {
+  const a = ans[qid]; const c = custom[qid] || [];
+  const base = Array.isArray(a) ? a.join(', ') : (a || '');
+  return [base, ...c].filter(Boolean).join(', ');
+}
+
+function stateToText() {
+  const lines = [];
+  const push = (label, qid) => { const v = getVal(qid); if (v) lines.push(`${label}: ${v}`); };
+  const type = ans.Q2; if (type) lines.push(`Creation Type: ${type}`);
+  lines.push(`Inspirations: ${contribs.map(c => `${c.name} (${c.pct}%)`).join(', ')}`);
+  push('Horror Subgenre', 'Q3');
+  push('Era', 'Q5');
+  if (getTypeIdx() !== 4) push('Setting', 'Q6');
+  push('Nature', 'Q7');
+  push('Physical / Existential Traits', 'Q8');
+  push('Internal Logic', 'Q9');
+  if (getTypeIdx() !== 2 && getTypeIdx() !== 4) push('Posture / Stance', 'Q10');
+  push(getTypeIdx() === 4 ? 'Scope' : 'Scale', 'Q11');
+  push('Surface & Texture', 'Q12');
+  push('Origin', 'Q13');
+  push('Narrative Role', 'Q14');
+  push('Mood', 'Q15');
+  push('Lighting', 'Q16');
+  push('Color Palette', 'Q17');
+  push('Framing', 'Q18');
+  push('Camera Technique', 'Q19');
+  push('Art Style', 'Q20');
+  const ov = document.getElementById('Q21-input')?.value.trim();
+  if (ov) lines.push(`Overrides: ${ov}`);
+  return lines.join('\n');
+}
+
+function updatePreview() {
+  document.getElementById('livePreview').textContent = stateToText() || 'Select a creation type to begin...';
+}
+
+/* ── PRESETS ──────────────────────────────────────────────────────── */
+function applyPreset(name) {
+  if (name === 'random') { randomizeAll(); return; }
+  const p = PRESETS[name]; if (!p) return;
+  ans = {}; custom = {}; contribs = [];
+  Object.entries(p).forEach(([k, v]) => {
+    if (k === 'contributors') {
+      contribs = v.map(c => ({ id: ++cid, name: c.name, pct: c.pct }));
+    } else {
+      ans[k] = v;
+    }
+  });
+  renderAll();
+}
+
+function randomizeAll() {
+  ans = {}; custom = {}; contribs = [];
+  ans.Q2 = OPTS.Q2[Math.floor(Math.random() * OPTS.Q2.length)];
+  Object.keys(OPTS).filter(q => q !== 'Q2').forEach(qid => {
+    if (SINGLE.has(qid)) {
+      ans[qid] = OPTS[qid][Math.floor(Math.random() * OPTS[qid].length)];
+    } else {
+      const max = getMax(qid);
+      const n = Math.floor(Math.random() * max) + 1;
+      ans[qid] = [...OPTS[qid]].sort(() => 0.5 - Math.random()).slice(0, n);
+    }
+  });
+  // Randomize conditional fields
+  const idx = TYPE_IDX[ans.Q2] ?? 0;
+  Object.keys(C).forEach(qid => {
+    const optsArr = C[qid][idx]; if (!optsArr) return;
+    const max = CMAX[qid][idx]; if (!max) return;
+    if (max === 1) {
+      ans[qid] = optsArr[Math.floor(Math.random() * optsArr.length)];
+    } else {
+      const n = Math.floor(Math.random() * max) + 1;
+      ans[qid] = [...optsArr].sort(() => 0.5 - Math.random()).slice(0, n);
+    }
+  });
+  randomizeContribs();
+  renderAll();
+}
+
+/* ── COPY / RESET ─────────────────────────────────────────────────── */
+function copyPrompt() {
+  const out = document.getElementById('outPrompt');
+  if (!out.textContent.trim() || out.classList.contains('empty')) return;
+  navigator.clipboard.writeText(out.textContent).catch(() => {
+    const sel = window.getSelection(); const r = document.createRange();
+    r.selectNodeContents(out); sel.removeAllRanges(); sel.addRange(r);
+    document.execCommand('copy');
+  });
+}
+
+function resetApp() {
+  ans = {}; custom = {}; contribs = [];
+  document.getElementById('outPrompt').textContent = 'Connect your API key, fill the form, and click Generate.';
+  document.getElementById('outPrompt').className = 'out-body empty';
+  document.getElementById('Q21-input').value = '';
+  renderAll();
+}
+
+/* ── SAVE / LOAD ──────────────────────────────────────────────────── */
+function saveCurrent() {
+  const state = { ans, custom, contribs, cid, q21: document.getElementById('Q21-input').value };
+  localStorage.setItem(SESS_STORE, JSON.stringify(state));
+  alert('Session saved.');
+}
+
+function loadSaved() {
+  const raw = localStorage.getItem(SESS_STORE);
+  if (!raw) { alert('No saved session found.'); return; }
+  try {
+    const s = JSON.parse(raw);
+    ans = s.ans || {}; custom = s.custom || {}; contribs = s.contribs || []; cid = s.cid || 0;
+    if (s.q21) document.getElementById('Q21-input').value = s.q21;
+    renderAll();
+  } catch(e) { alert('Could not load saved session.'); }
+}
+
+function clearSaved() {
+  localStorage.removeItem(SESS_STORE);
+  alert('Saved session cleared.');
+}
+
+/* ── HELPERS ──────────────────────────────────────────────────────── */
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+/* ── INIT ─────────────────────────────────────────────────────────── */
+(function init() {
+  const savedKey = localStorage.getItem(KEY_STORE);
+  if (savedKey) {
+    document.getElementById('apiKey').value = savedKey;
+    confirmConnect();
+  }
+  renderAll();
+  // Show placeholder in conditional sections until type is selected
+  ['Q6','Q7','Q8','Q10','Q11','Q12','Q14'].forEach(qid => {
+    const cont = document.getElementById(`${qid}-opts`);
+    if (cont && !cont.innerHTML) {
+      cont.innerHTML = '<span style="color:var(--dim);font-size:0.76rem">Select a creation type first.</span>';
+    }
+  });
+})();
+</script>
+</body>
+</html>
