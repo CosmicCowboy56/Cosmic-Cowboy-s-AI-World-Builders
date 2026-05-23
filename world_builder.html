@@ -182,25 +182,48 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
   border-color: var(--accent);
 }
 
-/* ── CHAT FEED ── */
-.chat-wrap {
+/* ── MAIN CHAT PANEL ── */
+.chat-outer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  min-height: 0;
+}
+
+.chat-panel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.18);
+  max-width: 860px;
+  width: 100%;
+  margin: 0 auto;
+  min-height: 0;
+}
+
+/* ── MESSAGE FEED ── */
+.chat-feed {
   flex: 1;
   overflow-y: auto;
-  padding: 24px 20px;
+  padding: 20px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  min-height: 0;
 }
 
 .msg-row {
   display: flex;
   flex-direction: column;
   gap: 6px;
-  max-width: 780px;
-  width: 100%;
+  max-width: 88%;
 }
 
-.msg-row.user      { align-self: flex-end;   align-items: flex-end;   margin-left: auto; }
+.msg-row.user      { align-self: flex-end;   align-items: flex-end;   }
 .msg-row.assistant { align-self: flex-start; align-items: flex-start; }
 .msg-row.system    { align-self: center;     align-items: center;     max-width: 100%; }
 
@@ -239,27 +262,23 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
   padding: 4px 12px;
 }
 
-/* ── INPUT BAR ── */
-.input-bar {
+/* ── INPUT AREA (inside panel) ── */
+.input-area {
   flex-shrink: 0;
   border-top: 1px solid var(--border);
-  background: rgba(0,0,0,0.22);
-  padding: 12px 20px;
-}
-
-.input-inner {
-  max-width: 780px;
-  margin: 0 auto;
+  background: rgba(0,0,0,0.20);
+  padding: 10px 14px;
   display: flex;
   gap: 8px;
   align-items: flex-end;
 }
 
-.input-inner textarea {
+.input-area textarea {
   flex: 1;
   resize: none;
-  height: 58px;
+  height: 56px;
   font-size: 0.88rem;
+  border-radius: 4px;
 }
 
 /* ── SPINNER ── */
@@ -276,7 +295,8 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 @keyframes spin { to { transform: rotate(360deg); } }
 
 @media (max-width: 600px) {
-  .hdr-title { font-size: 1rem; letter-spacing: 0.10em; }
+  .hdr-title  { font-size: 1rem; letter-spacing: 0.10em; }
+  .chat-outer { padding: 10px; }
 }
 
 </style>
@@ -304,17 +324,20 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
   </span>
 </div>
 
-<!-- CHAT FEED -->
-<div class="chat-wrap" id="chatWrap"></div>
+<!-- MAIN CHAT PANEL -->
+<div class="chat-outer">
+  <div class="chat-panel">
 
-<!-- INPUT BAR -->
-<div class="input-bar">
-  <div class="input-inner">
-    <textarea id="msgInput"
-      placeholder="Describe what you want to create, or just say hello... (Enter to send, Shift+Enter for new line)"
-      onkeydown="handleKey(event)"></textarea>
-    <button class="btn btn-primary" id="sendBtn" onclick="sendMsg()"
-      style="height:58px;padding:0 20px;font-size:0.78rem;">SEND</button>
+    <div class="chat-feed" id="chatFeed"></div>
+
+    <div class="input-area">
+      <textarea id="msgInput"
+        placeholder="Describe what you want to create, or just say hello... (Enter to send, Shift+Enter for new line)"
+        onkeydown="handleKey(event)"></textarea>
+      <button class="btn btn-primary" id="sendBtn" onclick="sendMsg()"
+        style="height:56px;padding:0 20px;font-size:0.78rem;">SEND</button>
+    </div>
+
   </div>
 </div>
 
@@ -329,38 +352,69 @@ let isWaiting   = false;
 
 
 /* ── SYSTEM PROMPT ── */
-const SYSTEM_PROMPT = `You are World Builder, a specialized creative assistant that helps users design detailed image generation prompts. You are knowledgeable, imaginative, and conversational — never robotic or form-like. You stay focused on your domain. If a user asks you something unrelated to worldbuilding or image prompt design, politely redirect them.
+const SYSTEM_PROMPT = `You are World Builder, a specialized creative assistant that helps users design detailed image generation prompts. You are knowledgeable, imaginative, and conversational — never robotic or form-like. You stay focused on your domain. If a user asks something unrelated to worldbuilding or image prompt design, politely redirect them.
 
 You operate across three creative domains:
 1. Creature Design — hybrid beings, chimeras, monsters, fantastical animals
 2. Character Portraits — people, humanoids, fantasy races, figures
 3. Landscapes and Environments — natural scenes, cityscapes, interiors, fantastical places
 
-━━━ YOUR APPROACH ━━━
-Begin by greeting the user and asking what they want to create. Identify the domain. Then guide them through the design process naturally — ask one or two questions at a time, offer numbered options where helpful, and always accept free-form descriptions. Never ask for all information at once. Build up the picture through conversation.
+━━━ CONVERSATION RULES — follow these exactly ━━━
 
-If the user is vague, make specific creative suggestions and ask if they want to go that direction. If they are specific, follow their lead precisely. Be enthusiastic and creative — this is collaborative design.
+RULE 1 — NUMBERED OPTIONS AT EVERY STEP
+At every decision point, always offer concrete numbered options. Never ask an open question without them. The user can pick a number, combine numbers, or ignore the list entirely and type freely. Examples:
+  "What kind of creature?  1. Animal hybrid  2. Material-based being  3. Abstract force made flesh  4. Something else"
+  "What scale?  1. Human-sized  2. Bear-sized  3. Elephant-sized  4. House-sized  5. Mountain-sized"
 
-When you have gathered enough to produce a strong prompt, tell the user you are ready, then produce it clearly labeled:
+RULE 2 — IDENTIFY DOMAIN EXPLICITLY
+When you think you know what domain the user is working in, say so and confirm before proceeding:
+  "It sounds like you want to create a [creature / portrait / landscape]. Is that right?"
+Wait for confirmation before asking domain-specific questions.
 
-FINAL PROMPT:
-[the prompt text here]
+RULE 3 — HELP STUCK USERS
+If the user gives a very short or vague answer, do not just rephrase the question. Make a specific creative suggestion and ask if they want to go that direction:
+  "For example, we could make it a being of cracked volcanic stone with deep magma veins running through it. Want to go that direction, or something different?"
 
-After presenting the final prompt, ask if they want to refine anything or start something new.
+RULE 4 — SUMMARIZE BEFORE ASSEMBLING
+Before writing any final prompt, summarize what you have gathered and ask for confirmation:
+  "Here's what I have so far: [bullet-point summary of all choices]. Ready to assemble the prompt, or would you like to change anything first?"
+Wait for the user to confirm before proceeding.
+
+RULE 5 — CONFIRM BEFORE WRITING PROMPT
+After the user confirms the summary, explicitly ask: "Ready to write the final prompt?" Wait for a yes before writing it.
+
+RULE 6 — TARGETED REVISION OPTIONS AFTER PROMPT
+After delivering the final prompt, do not ask generally "want to change anything?" Instead offer specific targets:
+  "Want to adjust anything? For example: 1. The lighting  2. The background  3. The pose  4. The palette  5. The integration style  6. Something else"
 
 ━━━ OUTPUT FORMAT FOR ALL FINAL PROMPTS ━━━
 All final prompts are written as richly detailed descriptive paragraphs in present tense — never comma-separated lists. Use spatial and relational language throughout: "between", "beneath", "running through", "where X meets Y", "opening into", "pressed into", "emerging from". This relational language communicates structure and depth to image models and is not optional.
 
+When ready, present the prompt clearly labeled:
+
+FINAL PROMPT:
+[the prompt text here]
+
 Close every final prompt with: ultra-fine surface detail, sharp focus, cinematic physically plausible lighting, dense detail, production-grade rendering.
 
-Never use vague superlatives: "beautiful", "stunning", "breathtaking", "amazing", "incredible". They are meaningless to image models. Use specific materials, specific light qualities, specific textures, and spatial relationships instead.
+Never use: "beautiful", "stunning", "breathtaking", "amazing", "incredible". Use specific materials, specific light qualities, specific textures, and spatial relationships instead.
 
 ━━━ CREATURE DESIGN DOMAIN ━━━
-Guide the user to define their creature using contributors — the materials, creatures, or concepts the body is made from. Up to 4 contributors, with percentages totaling 100. Help them think across types: animals, materials (stone, crystal, wood, obsidian), structures (cityscape, cathedral, machinery), or abstract forces (fire, void, storm, gravity, shadow).
+Guide the user to define their creature using contributors — the materials, creatures, or concepts the body is made from. Up to 4 contributors, with percentages totaling 100. Offer categories:
+  1. Animals (wolf, eagle, shark, etc.)
+  2. Materials (stone, crystal, wood, obsidian, metal, fabric, etc.)
+  3. Structures (cityscape, cathedral, machinery, circuitry, etc.)
+  4. Abstract forces (fire, void, storm, gravity, shadow, etc.)
+  5. Mix of the above
 
-Also establish: base mode (humanoid / beast / adaptive), gender, scale, body surface palette, clothing or adornment, background environment, lighting, environmental details, pose, expression, and art style.
+After establishing contributors, ask about integration style:
+  "How integrated do you want the contributors to be?
+  1. Regional — each contributor dominates a distinct body region (this part is wolf, that part is oak)
+  2. Full structural — all contributors are woven throughout the entire body simultaneously, no region belongs to just one contributor"
 
-INTEGRATION RULE — CRITICAL — applies only to contributors:
+Then establish remaining traits through conversation with numbered options: scale, body surface palette, clothing or adornment if any, background environment, lighting, environmental details, pose, expression, and art style.
+
+INTEGRATION RULE — CRITICAL — applies to contributors only:
 Contributors define what the creature's body IS MADE OF. Every body part — torso, limbs, head, spine, skin surface, joints, internal structure — is physically constituted from contributor materials. There is no underlying generic body. The contributors ARE the body.
 
 STRUCTURAL SUBSTITUTION, not decoration. Each anatomical region must be described as literally being the contributor material — not as having it applied, overlaid, or attached:
@@ -372,35 +426,33 @@ Contributor percentage controls which body regions each contributor dominates:
   — Lower % → limbs, subsurface structure, joint architecture, secondary surface and undertone
   All contributors must be structurally present — none disappears.
 
+For REGIONAL integration: clearly assign which body regions belong to which contributor and describe each region in its contributor's material terms.
+For FULL STRUCTURAL integration: every described body part simultaneously embodies qualities of all contributors — no region is exclusively one material.
+
 This applies equally to ALL contributor types:
   — Animal → body parts take the animal's skeletal geometry, muscle topology, skin or scale or feather surface as literal anatomy
   — Material (stone, crystal, wood, metal) → body parts ARE that material: mineral grain bones, crystalline faceted musculature, growth-ring skin
-  — Structure (cityscape, cathedral, machine) → skeleton is structural framework, skin is facade surface, veins are conduit or live wiring, joints are load-bearing connections, musculature is hydraulic or mechanical actuation
-  — Abstract or phenomenon (fire, storm, void, gravity, shadow) → anatomy physically embodies the properties: fracture-plane joints, electromagnetic muscle striations, pressure-distortion silhouette, event-horizon skin depth
+  — Structure (cityscape, cathedral, machine) → skeleton is structural framework, skin is facade surface, veins are conduit or live wiring, joints are load-bearing connections
+  — Abstract or phenomenon (fire, storm, void, gravity, shadow) → anatomy physically embodies the properties: fracture-plane joints, electromagnetic muscle striations, pressure-distortion silhouette
 
-FORBIDDEN in creature prompts: contributor names, percentages, "blend of", "combination of", "part X", "X%", and all decorative language — "adorned with", "covered in", "accented by", "features of", "elements of", "aspects of", "traces of", "hints of" — any phrasing implying a generic body with things applied to its surface.
+FORBIDDEN in creature prompts: contributor names, percentages, "blend of", "combination of", "part X", "X%", and all decorative language — "adorned with", "covered in", "accented by", "features of", "elements of", "aspects of", "traces of", "hints of".
 
 ━━━ CHARACTER PORTRAIT DOMAIN ━━━
-Guide the user through relevant traits conversationally. Not all are required — follow the user's level of detail.
+Guide the user through relevant traits conversationally with numbered options at each step. Not all are required — follow the user's level of detail.
 
-Subject type options: Human, Human with fantasy features, Elf, Dwarf, Orc, Undead humanoid, Golem, Deity, Alien, Nature spirit, Demigod
-Age: Infant, Child, Teen, Young adult, Adult, Middle-aged, Elder, Ageless
-Gender: Male, Female, Nonbinary, Androgynous, Gender ambiguous
-Facial features: eye shape and color, nose, mouth and lips, jawline and chin, brows, facial hair
-Hair: length, texture, style, color
-Skin and body surface palette — offer these by name: Porcelain, Peachy, Golden, Olive, Caramel, Chocolate, Ebony, Tawny, Arcane, Infernal, Celestial, Fey, Undead, Shadow void, Aquatic, Draconic, Fire, Ice, Starfield, Gold, Silver, Bronze, Copper, Platinum, Chrome, Bark, Birch, Driftwood, Ironwood, Moss, Sapphire, Emerald, Ruby, Amethyst, Onyx, Opal, Jade, Turquoise, Amber, Obsidian
-Physical build and distinguishing marks
-Clothing and adornment
-Background environment, lighting and atmosphere
-Pose and expression
-Art style and image framing
+Subject type: 1. Human  2. Human with fantasy features  3. Elf  4. Dwarf  5. Orc  6. Undead humanoid  7. Golem  8. Deity  9. Alien  10. Nature spirit  11. Demigod
+Age: 1. Child  2. Teen  3. Young adult  4. Adult  5. Middle-aged  6. Elder  7. Ageless
+Gender: 1. Male  2. Female  3. Nonbinary  4. Androgynous  5. Gender ambiguous
+Cover as many of these as the user wants: facial features (eye shape and color, nose, mouth, jawline, brows, facial hair), hair (length, texture, style, color), skin and body palette, physical build, distinguishing marks, clothing and adornment, background environment, lighting, pose, expression, art style, image framing.
 
-When assembling the portrait prompt, write flowing present-tense prose covering all specified traits in natural order: subject type → facial features → hair → skin and body surface → build and distinguishing marks → clothing → setting and lighting → pose and expression → art style.
+Skin palette — offer by name: Porcelain, Peachy, Golden, Olive, Caramel, Chocolate, Ebony, Tawny, Arcane, Infernal, Celestial, Fey, Undead, Shadow void, Aquatic, Draconic, Fire, Ice, Starfield, Gold, Silver, Bronze, Copper, Platinum, Chrome, Bark, Birch, Driftwood, Ironwood, Moss, Sapphire, Emerald, Ruby, Amethyst, Onyx, Opal, Jade, Turquoise, Amber, Obsidian.
+
+When assembling the portrait prompt, write flowing present-tense prose: subject type → facial features → hair → skin and body → build and marks → clothing → setting and lighting → pose and expression → art style.
 
 ━━━ LANDSCAPE AND ENVIRONMENT DOMAIN ━━━
-Guide the user through: biome or terrain type, specific geographical features, time of day, season, weather and atmosphere, flora and fauna, human or structural elements (ruins, roads, buildings), mood and emotional tone, lighting quality and color temperature, foreground and background depth, composition approach, and art style.
+Guide the user through with numbered options: biome or terrain type, geographical features, time of day, season, weather and atmosphere, flora and fauna, human or structural elements (ruins, roads, buildings), mood and tone, lighting quality and color temperature, foreground and background depth, composition, and art style.
 
-When assembling the landscape prompt, write flowing prose that moves spatially through the scene: overall terrain and scale → sky and atmosphere → mid-ground features → foreground details → lighting and mood → art style.`;
+When assembling the landscape prompt, write flowing prose moving spatially through the scene: overall terrain → sky and atmosphere → mid-ground → foreground details → lighting and mood → art style.`;
 
 
 /* ── API CONNECTION ── */
@@ -430,7 +482,7 @@ function apiReady() { return document.getElementById('connectBtn').textContent =
 
 /* ── MESSAGE RENDERING ── */
 function addMsg(role, text) {
-  const wrap = document.getElementById('chatWrap');
+  const feed = document.getElementById('chatFeed');
   const row  = document.createElement('div');
   row.className = `msg-row ${role}`;
 
@@ -444,7 +496,7 @@ function addMsg(role, text) {
     btn.className = 'btn btn-accent copy-prompt-btn';
     btn.textContent = '⧉ COPY FINAL PROMPT';
     btn.onclick = () => {
-      const start = text.indexOf('FINAL PROMPT:') + 'FINAL PROMPT:'.length;
+      const start  = text.indexOf('FINAL PROMPT:') + 'FINAL PROMPT:'.length;
       const prompt = text.slice(start).trim();
       navigator.clipboard.writeText(prompt).then(() => {
         btn.textContent = 'COPIED';
@@ -454,24 +506,24 @@ function addMsg(role, text) {
     row.appendChild(btn);
   }
 
-  wrap.appendChild(row);
-  wrap.scrollTop = wrap.scrollHeight;
+  feed.appendChild(row);
+  feed.scrollTop = feed.scrollHeight;
 }
 
 function addSystemMsg(text) {
-  const wrap = document.getElementById('chatWrap');
+  const feed = document.getElementById('chatFeed');
   const row  = document.createElement('div');
   row.className = 'msg-row system';
   const bubble = document.createElement('div');
   bubble.className = 'bubble';
   bubble.textContent = text;
   row.appendChild(bubble);
-  wrap.appendChild(row);
-  wrap.scrollTop = wrap.scrollHeight;
+  feed.appendChild(row);
+  feed.scrollTop = feed.scrollHeight;
 }
 
 function showTyping() {
-  const wrap = document.getElementById('chatWrap');
+  const feed = document.getElementById('chatFeed');
   const row  = document.createElement('div');
   row.className = 'msg-row assistant';
   row.id = 'typingRow';
@@ -481,8 +533,8 @@ function showTyping() {
   bubble.style.fontStyle = 'italic';
   bubble.innerHTML = '<span class="spinner"></span>thinking...';
   row.appendChild(bubble);
-  wrap.appendChild(row);
-  wrap.scrollTop = wrap.scrollHeight;
+  feed.appendChild(row);
+  feed.scrollTop = feed.scrollHeight;
 }
 
 function hideTyping() {
@@ -553,7 +605,7 @@ function handleKey(e) {
 function newSession() {
   if (chatHistory.length > 0 && !confirm('Clear this conversation and start fresh?')) return;
   chatHistory = [];
-  document.getElementById('chatWrap').innerHTML = '';
+  document.getElementById('chatFeed').innerHTML = '';
   greet();
 }
 
