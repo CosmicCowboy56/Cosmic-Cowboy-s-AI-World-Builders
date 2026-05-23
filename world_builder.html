@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>World Builder</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+<style>
+
+:root {
+  --dark-blue:   #023E8A;
+  --ocean-blue:  #0077B6;
+  --soft-cyan:   #90E0EF;
+  --pale-blue:   #CAF0F8;
+  --deepest:     #010E1F;
+  --surface:     rgba(0,119,182,0.09);
+  --surface2:    rgba(0,119,182,0.17);
+  --border:      rgba(144,224,239,0.22);
+  --border-hi:   rgba(144,224,239,0.50);
+  --dim:         rgba(202,240,248,0.45);
+  --green:       #4ade80;
+  --red:         #f87171;
+  --glow:        0 0 12px rgba(144,224,239,0.30);
+  --accent:      #FFD166;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html, body {
+  height: 100%;
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 300;
+  font-size: 15px;
+  background: var(--deepest);
+  color: var(--pale-blue);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+::-webkit-scrollbar              { width: 8px; }
+::-webkit-scrollbar-track        { background: rgba(0,0,0,0.15); border-radius: 4px; }
+::-webkit-scrollbar-thumb        { background: rgba(144,224,239,0.3); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover  { background: rgba(144,224,239,0.6); }
+
+/* ── HEADER ── */
+.header {
+  flex-shrink: 0;
+  height: 52px;
+  background: rgba(0,0,0,0.40);
+  border-bottom: 1px solid var(--border-hi);
+  padding: 0 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  position: relative;
+  z-index: 10;
+}
+
+.header::after {
+  content: '';
+  position: absolute;
+  bottom: -1px; left: 0; right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
+  opacity: 0.5;
+}
+
+.hdr-title {
+  font-family: 'Cinzel', serif;
+  font-size: 1.25rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  color: var(--pale-blue);
+  text-shadow: 0 0 22px rgba(144,224,239,0.45);
+}
+
+.hdr-sub {
+  font-size: 0.58rem;
+  color: var(--soft-cyan);
+  letter-spacing: 0.22em;
+  margin-top: 2px;
+}
+
+/* ── API BAR ── */
+.api-bar {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px 10px;
+  padding: 7px 20px;
+  background: rgba(0,0,0,0.25);
+  border-bottom: 1px solid var(--border);
+}
+
+.api-lbl {
+  font-size: 0.62rem;
+  letter-spacing: 0.12em;
+  color: var(--soft-cyan);
+  white-space: nowrap;
+  font-weight: 500;
+}
+
+/* ── SHARED INPUTS ── */
+input[type="password"],
+input[type="text"],
+textarea {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.86rem;
+  font-weight: 300;
+  border-radius: 4px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+}
+
+input:focus, textarea:focus {
+  border-color: var(--soft-cyan);
+  box-shadow: var(--glow);
+}
+
+input::placeholder, textarea::placeholder { color: var(--dim); }
+
+/* ── BUTTONS ── */
+.btn {
+  font-family: 'Exo 2', sans-serif;
+  font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  padding: 6px 14px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--soft-cyan);
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+}
+
+.btn:hover:not(:disabled) { border-color: var(--soft-cyan); background: rgba(144,224,239,0.10); }
+.btn:disabled              { opacity: 0.30; cursor: not-allowed; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: 0 3px 14px rgba(0,119,182,0.40);
+}
+
+.btn-danger {
+  border-color: rgba(248,113,113,0.3);
+  color: rgba(248,113,113,0.7);
+}
+.btn-danger:hover:not(:disabled) {
+  background: rgba(248,113,113,0.10);
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.btn-accent {
+  border-color: rgba(255,209,102,0.35);
+  color: var(--accent);
+}
+.btn-accent:hover:not(:disabled) {
+  background: rgba(255,209,102,0.08);
+  border-color: var(--accent);
+}
+
+/* ── CHAT FEED ── */
+.chat-wrap {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.msg-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 780px;
+  width: 100%;
+}
+
+.msg-row.user      { align-self: flex-end;   align-items: flex-end;   margin-left: auto; }
+.msg-row.assistant { align-self: flex-start; align-items: flex-start; }
+.msg-row.system    { align-self: center;     align-items: center;     max-width: 100%; }
+
+.bubble {
+  padding: 11px 15px;
+  border-radius: 8px;
+  font-size: 0.88rem;
+  line-height: 1.68;
+  word-break: break-word;
+  white-space: pre-wrap;
+}
+
+.msg-row.user .bubble {
+  background: rgba(0,119,182,0.22);
+  border: 1px solid var(--border);
+  border-bottom-right-radius: 2px;
+}
+
+.msg-row.assistant .bubble {
+  background: rgba(0,0,0,0.28);
+  border: 1px solid var(--border);
+  border-bottom-left-radius: 2px;
+}
+
+.msg-row.system .bubble {
+  background: none;
+  border: none;
+  color: var(--dim);
+  font-size: 0.74rem;
+  font-style: italic;
+  text-align: center;
+}
+
+.copy-prompt-btn {
+  font-size: 0.66rem;
+  padding: 4px 12px;
+}
+
+/* ── INPUT BAR ── */
+.input-bar {
+  flex-shrink: 0;
+  border-top: 1px solid var(--border);
+  background: rgba(0,0,0,0.22);
+  padding: 12px 20px;
+}
+
+.input-inner {
+  max-width: 780px;
+  margin: 0 auto;
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.input-inner textarea {
+  flex: 1;
+  resize: none;
+  height: 58px;
+  font-size: 0.88rem;
+}
+
+/* ── SPINNER ── */
+.spinner {
+  display: inline-block;
+  width: 11px; height: 11px;
+  border: 2px solid rgba(144,224,239,0.2);
+  border-top-color: var(--soft-cyan);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+@media (max-width: 600px) {
+  .hdr-title { font-size: 1rem; letter-spacing: 0.10em; }
+}
+
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div>
+    <div class="hdr-title">WORLD BUILDER</div>
+    <div class="hdr-sub">COSMIC COWBOY'S AI WORLDBUILDERS &mdash; IMAGE PROMPT DESIGN</div>
+  </div>
+  <button class="btn btn-danger" onclick="newSession()">&#10005; NEW SESSION</button>
+</header>
+
+<!-- API BAR -->
+<div class="api-bar">
+  <span class="api-lbl">xAI API KEY</span>
+  <input type="password" id="apiKey" placeholder="your-xai-api-key"
+    style="flex:1;min-width:100px;max-width:320px;" oninput="resetConnect()">
+  <button class="btn" id="connectBtn" onclick="confirmConnect()"
+    style="font-size:0.66rem;padding:6px 16px;">CONNECT</button>
+  <span style="font-size:0.62rem;color:var(--dim);white-space:nowrap;margin-left:auto;">
+    Powered by xAI &mdash; grok-4.3
+  </span>
+</div>
+
+<!-- CHAT FEED -->
+<div class="chat-wrap" id="chatWrap"></div>
+
+<!-- INPUT BAR -->
+<div class="input-bar">
+  <div class="input-inner">
+    <textarea id="msgInput"
+      placeholder="Describe what you want to create, or just say hello... (Enter to send, Shift+Enter for new line)"
+      onkeydown="handleKey(event)"></textarea>
+    <button class="btn btn-primary" id="sendBtn" onclick="sendMsg()"
+      style="height:58px;padding:0 20px;font-size:0.78rem;">SEND</button>
+  </div>
+</div>
+
+
+<script>
+
+const XAI_ENDPOINT = 'https://api.x.ai/v1/chat/completions';
+const XAI_MODEL    = 'grok-4.3';
+
+let chatHistory = [];
+let isWaiting   = false;
+
+
+/* ── SYSTEM PROMPT ── */
+const SYSTEM_PROMPT = `You are World Builder, a specialized creative assistant that helps users design detailed image generation prompts. You are knowledgeable, imaginative, and conversational — never robotic or form-like. You stay focused on your domain. If a user asks you something unrelated to worldbuilding or image prompt design, politely redirect them.
+
+You operate across three creative domains:
+1. Creature Design — hybrid beings, chimeras, monsters, fantastical animals
+2. Character Portraits — people, humanoids, fantasy races, figures
+3. Landscapes and Environments — natural scenes, cityscapes, interiors, fantastical places
+
+━━━ YOUR APPROACH ━━━
+Begin by greeting the user and asking what they want to create. Identify the domain. Then guide them through the design process naturally — ask one or two questions at a time, offer numbered options where helpful, and always accept free-form descriptions. Never ask for all information at once. Build up the picture through conversation.
+
+If the user is vague, make specific creative suggestions and ask if they want to go that direction. If they are specific, follow their lead precisely. Be enthusiastic and creative — this is collaborative design.
+
+When you have gathered enough to produce a strong prompt, tell the user you are ready, then produce it clearly labeled:
+
+FINAL PROMPT:
+[the prompt text here]
+
+After presenting the final prompt, ask if they want to refine anything or start something new.
+
+━━━ OUTPUT FORMAT FOR ALL FINAL PROMPTS ━━━
+All final prompts are written as richly detailed descriptive paragraphs in present tense — never comma-separated lists. Use spatial and relational language throughout: "between", "beneath", "running through", "where X meets Y", "opening into", "pressed into", "emerging from". This relational language communicates structure and depth to image models and is not optional.
+
+Close every final prompt with: ultra-fine surface detail, sharp focus, cinematic physically plausible lighting, dense detail, production-grade rendering.
+
+Never use vague superlatives: "beautiful", "stunning", "breathtaking", "amazing", "incredible". They are meaningless to image models. Use specific materials, specific light qualities, specific textures, and spatial relationships instead.
+
+━━━ CREATURE DESIGN DOMAIN ━━━
+Guide the user to define their creature using contributors — the materials, creatures, or concepts the body is made from. Up to 4 contributors, with percentages totaling 100. Help them think across types: animals, materials (stone, crystal, wood, obsidian), structures (cityscape, cathedral, machinery), or abstract forces (fire, void, storm, gravity, shadow).
+
+Also establish: base mode (humanoid / beast / adaptive), gender, scale, body surface palette, clothing or adornment, background environment, lighting, environmental details, pose, expression, and art style.
+
+INTEGRATION RULE — CRITICAL — applies only to contributors:
+Contributors define what the creature's body IS MADE OF. Every body part — torso, limbs, head, spine, skin surface, joints, internal structure — is physically constituted from contributor materials. There is no underlying generic body. The contributors ARE the body.
+
+STRUCTURAL SUBSTITUTION, not decoration. Each anatomical region must be described as literally being the contributor material — not as having it applied, overlaid, or attached:
+  WRONG: "a body with cityscape elements on it", "skin covered in building facades", "gears embedded in flesh"
+  RIGHT: "torso structured as a glass-and-steel skyscraper facade, load-bearing I-beams forming the ribcage, skin surface an aerial city grid of illuminated street divisions"
+
+Contributor percentage controls which body regions each contributor dominates:
+  — Highest % → head, torso, primary silhouette, dominant surface texture
+  — Lower % → limbs, subsurface structure, joint architecture, secondary surface and undertone
+  All contributors must be structurally present — none disappears.
+
+This applies equally to ALL contributor types:
+  — Animal → body parts take the animal's skeletal geometry, muscle topology, skin or scale or feather surface as literal anatomy
+  — Material (stone, crystal, wood, metal) → body parts ARE that material: mineral grain bones, crystalline faceted musculature, growth-ring skin
+  — Structure (cityscape, cathedral, machine) → skeleton is structural framework, skin is facade surface, veins are conduit or live wiring, joints are load-bearing connections, musculature is hydraulic or mechanical actuation
+  — Abstract or phenomenon (fire, storm, void, gravity, shadow) → anatomy physically embodies the properties: fracture-plane joints, electromagnetic muscle striations, pressure-distortion silhouette, event-horizon skin depth
+
+FORBIDDEN in creature prompts: contributor names, percentages, "blend of", "combination of", "part X", "X%", and all decorative language — "adorned with", "covered in", "accented by", "features of", "elements of", "aspects of", "traces of", "hints of" — any phrasing implying a generic body with things applied to its surface.
+
+━━━ CHARACTER PORTRAIT DOMAIN ━━━
+Guide the user through relevant traits conversationally. Not all are required — follow the user's level of detail.
+
+Subject type options: Human, Human with fantasy features, Elf, Dwarf, Orc, Undead humanoid, Golem, Deity, Alien, Nature spirit, Demigod
+Age: Infant, Child, Teen, Young adult, Adult, Middle-aged, Elder, Ageless
+Gender: Male, Female, Nonbinary, Androgynous, Gender ambiguous
+Facial features: eye shape and color, nose, mouth and lips, jawline and chin, brows, facial hair
+Hair: length, texture, style, color
+Skin and body surface palette — offer these by name: Porcelain, Peachy, Golden, Olive, Caramel, Chocolate, Ebony, Tawny, Arcane, Infernal, Celestial, Fey, Undead, Shadow void, Aquatic, Draconic, Fire, Ice, Starfield, Gold, Silver, Bronze, Copper, Platinum, Chrome, Bark, Birch, Driftwood, Ironwood, Moss, Sapphire, Emerald, Ruby, Amethyst, Onyx, Opal, Jade, Turquoise, Amber, Obsidian
+Physical build and distinguishing marks
+Clothing and adornment
+Background environment, lighting and atmosphere
+Pose and expression
+Art style and image framing
+
+When assembling the portrait prompt, write flowing present-tense prose covering all specified traits in natural order: subject type → facial features → hair → skin and body surface → build and distinguishing marks → clothing → setting and lighting → pose and expression → art style.
+
+━━━ LANDSCAPE AND ENVIRONMENT DOMAIN ━━━
+Guide the user through: biome or terrain type, specific geographical features, time of day, season, weather and atmosphere, flora and fauna, human or structural elements (ruins, roads, buildings), mood and emotional tone, lighting quality and color temperature, foreground and background depth, composition approach, and art style.
+
+When assembling the landscape prompt, write flowing prose that moves spatially through the scene: overall terrain and scale → sky and atmosphere → mid-ground features → foreground details → lighting and mood → art style.`;
+
+
+/* ── API CONNECTION ── */
+function resetConnect() {
+  const btn = document.getElementById('connectBtn');
+  btn.textContent  = 'CONNECT';
+  btn.className    = 'btn';
+  btn.style.cssText = 'font-size:0.66rem;padding:6px 16px;';
+}
+
+function confirmConnect() {
+  const key = document.getElementById('apiKey').value.trim();
+  const btn = document.getElementById('connectBtn');
+  if (!key || key.length < 6) {
+    btn.textContent  = 'NEED KEY';
+    btn.style.cssText = 'font-size:0.66rem;padding:6px 16px;background:rgba(200,30,30,0.12);color:var(--red);border-color:rgba(200,30,30,0.35);';
+    return;
+  }
+  localStorage.setItem('wb_xai_key', key);
+  btn.textContent  = 'CONNECTED';
+  btn.style.cssText = 'font-size:0.66rem;padding:6px 16px;background:rgba(0,160,90,0.15);color:var(--green);border-color:rgba(0,160,90,0.35);';
+}
+
+function apiKey()   { return document.getElementById('apiKey').value.trim(); }
+function apiReady() { return document.getElementById('connectBtn').textContent === 'CONNECTED'; }
+
+
+/* ── MESSAGE RENDERING ── */
+function addMsg(role, text) {
+  const wrap = document.getElementById('chatWrap');
+  const row  = document.createElement('div');
+  row.className = `msg-row ${role}`;
+
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+  row.appendChild(bubble);
+
+  if (role === 'assistant' && text.includes('FINAL PROMPT:')) {
+    const btn = document.createElement('button');
+    btn.className = 'btn btn-accent copy-prompt-btn';
+    btn.textContent = '⧉ COPY FINAL PROMPT';
+    btn.onclick = () => {
+      const start = text.indexOf('FINAL PROMPT:') + 'FINAL PROMPT:'.length;
+      const prompt = text.slice(start).trim();
+      navigator.clipboard.writeText(prompt).then(() => {
+        btn.textContent = 'COPIED';
+        setTimeout(() => btn.textContent = '⧉ COPY FINAL PROMPT', 2000);
+      });
+    };
+    row.appendChild(btn);
+  }
+
+  wrap.appendChild(row);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function addSystemMsg(text) {
+  const wrap = document.getElementById('chatWrap');
+  const row  = document.createElement('div');
+  row.className = 'msg-row system';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.textContent = text;
+  row.appendChild(bubble);
+  wrap.appendChild(row);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function showTyping() {
+  const wrap = document.getElementById('chatWrap');
+  const row  = document.createElement('div');
+  row.className = 'msg-row assistant';
+  row.id = 'typingRow';
+  const bubble = document.createElement('div');
+  bubble.className = 'bubble';
+  bubble.style.color = 'var(--dim)';
+  bubble.style.fontStyle = 'italic';
+  bubble.innerHTML = '<span class="spinner"></span>thinking...';
+  row.appendChild(bubble);
+  wrap.appendChild(row);
+  wrap.scrollTop = wrap.scrollHeight;
+}
+
+function hideTyping() {
+  document.getElementById('typingRow')?.remove();
+}
+
+
+/* ── SEND MESSAGE ── */
+async function sendMsg() {
+  if (isWaiting) return;
+  if (!apiReady()) { addSystemMsg('Connect your API key first.'); return; }
+
+  const input = document.getElementById('msgInput');
+  const text  = input.value.trim();
+  if (!text) return;
+
+  input.value = '';
+  addMsg('user', text);
+  chatHistory.push({ role: 'user', content: text });
+
+  isWaiting = true;
+  document.getElementById('sendBtn').disabled = true;
+  showTyping();
+
+  try {
+    const res = await fetch(XAI_ENDPOINT, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + apiKey()
+      },
+      body: JSON.stringify({
+        model: XAI_MODEL,
+        max_tokens: 2000,
+        reasoning_effort: 'none',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          ...chatHistory
+        ]
+      })
+    });
+
+    const data  = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `API error ${res.status}`);
+    const reply = data.choices?.[0]?.message?.content || '';
+    if (!reply) throw new Error('Empty response.');
+
+    hideTyping();
+    addMsg('assistant', reply);
+    chatHistory.push({ role: 'assistant', content: reply });
+
+  } catch(e) {
+    hideTyping();
+    addSystemMsg('Error: ' + e.message);
+  } finally {
+    isWaiting = false;
+    document.getElementById('sendBtn').disabled = false;
+    document.getElementById('msgInput').focus();
+  }
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+}
+
+
+/* ── NEW SESSION ── */
+function newSession() {
+  if (chatHistory.length > 0 && !confirm('Clear this conversation and start fresh?')) return;
+  chatHistory = [];
+  document.getElementById('chatWrap').innerHTML = '';
+  greet();
+}
+
+
+/* ── GREETING ── */
+function greet() {
+  addMsg('assistant', `Welcome to World Builder.\n\nI help you design detailed image generation prompts across three areas:\n\n  • Creature Design — chimeras, hybrid beings, monsters, fantastical animals\n  • Character Portraits — people, humanoids, fantasy races, figures\n  • Landscapes — natural scenes, cityscapes, fantastical environments\n\nWhat would you like to create?`);
+}
+
+
+/* ── INIT ── */
+window.addEventListener('DOMContentLoaded', () => {
+  const saved = localStorage.getItem('wb_xai_key');
+  if (saved) {
+    document.getElementById('apiKey').value = saved;
+    confirmConnect();
+  }
+  greet();
+  document.getElementById('msgInput').focus();
+});
+
+</script>
+</body>
+</html>
