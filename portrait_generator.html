@@ -404,6 +404,134 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 .notice.ok  { display: block; background: rgba(0,160,90,0.12);  border: 1px solid rgba(0,160,90,0.35);  color: var(--green); }
 .notice.err { display: block; background: rgba(200,30,30,0.15); border: 1px solid rgba(200,30,30,0.4);  color: var(--red); }
 
+.xai-panel {
+  margin-top: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.xai-head {
+  padding: 8px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.20);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.xai-body { padding: 14px; }
+
+.xai-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+.xai-row label {
+  font-size: 0.74rem;
+  color: var(--soft-cyan);
+  white-space: nowrap;
+  min-width: 68px;
+  font-weight: 500;
+}
+
+.xai-key-wrap {
+  position: relative;
+  flex: 1;
+}
+.xai-key-wrap input { padding-right: 60px; }
+
+.xai-toggle {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--dim); font-size: 0.70rem; font-family: 'Exo 2', sans-serif;
+  font-weight: 600; letter-spacing: 0.05em; padding: 2px 4px;
+}
+.xai-toggle:hover { color: var(--soft-cyan); }
+
+.xai-status {
+  font-size: 0.74rem;
+  color: var(--dim);
+  margin-top: 8px;
+  min-height: 1.2em;
+}
+.xai-status.ok  { color: var(--green); }
+.xai-status.err { color: var(--red); }
+.xai-status.run { color: var(--soft-cyan); }
+
+.btn-xai {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
+  font-size: 0.80rem;
+  padding: 9px 20px;
+}
+.btn-xai:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: var(--glow);
+}
+.btn-xai:disabled { opacity: 0.4; }
+
+.narrative-output {
+  margin-top: 12px;
+  border: 1px solid var(--border);
+  border-radius: 5px;
+  overflow: hidden;
+  display: none;
+  background: rgba(0,0,0,0.25);
+}
+.narrative-output.visible { display: block; }
+
+.narrative-text {
+  padding: 12px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--pale-blue);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 260px;
+  overflow-y: auto;
+}
+
+.narrative-actions {
+  display: flex;
+  gap: 8px;
+  padding: 8px 10px;
+  border-top: 1px solid var(--border);
+  align-items: center;
+}
+
+.narrative-copy-confirm {
+  font-size: 0.72rem;
+  color: var(--green);
+  opacity: 0;
+  transition: opacity 0.3s;
+  white-space: nowrap;
+}
+.narrative-copy-confirm.show { opacity: 1; }
+
+.spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid rgba(144,224,239,0.20);
+  border-top-color: var(--soft-cyan);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 5px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
 @media (max-width: 860px) {
   .main-layout { grid-template-columns: 1fr; }
   .preview-col  { position: static; }
@@ -728,22 +856,22 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 
           <div class="q-block">
             <div class="q-title-row">
-              <span class="q-title">Pose (up to 2)</span>
+              <span class="q-title">Pose (up to 3)</span>
               <button class="btn btn-rand btn-small" onclick="randomizeField('Q9')">&#9861;</button>
             </div>
             <div class="options-grid" id="Q9-options"></div>
-            <p class="multi-note">Select up to 2</p>
+            <p class="multi-note">Select up to 3</p>
             <div class="custom-row"><input type="text" id="Q9-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q9')">Add</button></div>
             <div class="tags-wrap" id="Q9-tags"></div>
           </div>
 
           <div class="q-block">
             <div class="q-title-row">
-              <span class="q-title">Expression (up to 2)</span>
+              <span class="q-title">Expression (up to 3)</span>
               <button class="btn btn-rand btn-small" onclick="randomizeField('Q10')">&#9861;</button>
             </div>
             <div class="options-grid" id="Q10-options"></div>
-            <p class="multi-note">Select up to 2</p>
+            <p class="multi-note">Select up to 3</p>
             <div class="custom-row"><input type="text" id="Q10-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q10')">Add</button></div>
             <div class="tags-wrap" id="Q10-tags"></div>
           </div>
@@ -826,6 +954,50 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
         </div>
         <div class="notice" id="copyNotice" style="margin:0 14px 10px;"></div>
       </div>
+
+      <!-- xAI Narrative Prompt panel -->
+      <div class="xai-panel">
+        <div class="xai-head">
+          &#9889; AI Narrative Prompt
+        </div>
+        <div class="xai-body">
+
+          <div class="xai-row">
+            <label>API Key</label>
+            <div class="xai-key-wrap">
+              <input type="password" id="xaiApiKey" autocomplete="off" placeholder="Enter your xAI API key">
+              <button class="xai-toggle" onclick="toggleKeyVis()">SHOW</button>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+            <input type="checkbox" id="xaiSaveKey" style="width:auto;accent-color:var(--soft-cyan);">
+            <label for="xaiSaveKey" style="font-size:0.74rem;color:var(--dim);margin:0;cursor:pointer;">
+              Save key to browser
+            </label>
+          </div>
+
+          <div style="margin-top:12px;">
+            <button class="btn btn-xai" id="xaiGenBtn" onclick="generateNarrativePrompt()" disabled>
+              &#9889; Generate Narrative Prompt
+            </button>
+          </div>
+
+          <div class="xai-status" id="xaiStatus">Enter an API key above to enable generation.</div>
+
+          <div class="narrative-output" id="narrativeOutput">
+            <div class="narrative-text" id="narrativeText"></div>
+            <div class="narrative-actions">
+              <button class="btn btn-small" onclick="copyNarrative()">&#128203; Copy</button>
+              <span class="narrative-copy-confirm" id="narrativeCopyConfirm">&#10003; Copied!</span>
+            </div>
+          </div>
+
+          <div class="notice" id="xaiNotice"></div>
+
+        </div>
+      </div>
+
     </div>
 
   </div>
@@ -1242,7 +1414,7 @@ const QUESTIONS = {
     {id:'19', text:'None — no environmental detail'},
   ]},
 
-  Q9: { title:'Pose', type:'multi', max:2, allowCustom:true, options:[
+  Q9: { title:'Pose', type:'multi', max:3, allowCustom:true, options:[
     {id:'1',  text:'Standing — relaxed'},
     {id:'2',  text:'Standing — commanding or formal'},
     {id:'3',  text:'Walking'},
@@ -1265,7 +1437,7 @@ const QUESTIONS = {
     {id:'20', text:'Playing or interacting with something'},
   ]},
 
-  Q10: { title:'Expression', type:'multi', max:2, allowCustom:true, options:[
+  Q10: { title:'Expression', type:'multi', max:3, allowCustom:true, options:[
     {id:'1',  text:'Neutral'},
     {id:'2',  text:'Calm and composed'},
     {id:'3',  text:'Focused intensity'},
@@ -1441,6 +1613,15 @@ function init() {
     ST.answers.Q11 = document.getElementById('Q11-input').value;
     updatePreview();
   });
+
+  // Restore saved xAI key
+  const savedKey = localStorage.getItem('xaiKey_portrait');
+  if (savedKey) {
+    document.getElementById('xaiApiKey').value = savedKey;
+    document.getElementById('xaiSaveKey').checked = true;
+    updateGenBtn();
+  }
+  document.getElementById('xaiApiKey').addEventListener('input', updateGenBtn);
 }
 
 
@@ -1731,6 +1912,10 @@ function resetApp() {
   document.getElementById('Q11-input').value = '';
   Object.keys(QUESTIONS).forEach(qid => renderField(qid));
   updatePreview();
+  document.getElementById('narrativeOutput').classList.remove('visible');
+  document.getElementById('narrativeText').textContent = '';
+  setXaiStatus('Enter an API key above to enable generation.', '');
+  hideNotice('xaiNotice');
 }
 
 
@@ -1746,6 +1931,126 @@ function showNotice(msg, type, id) {
 function hideNotice(id) {
   const el = document.getElementById(id);
   if (el) el.className = 'notice';
+}
+
+
+/* ============================================================
+   JS: xAI — KEY TOGGLE AND BUTTON STATE
+   ============================================================ */
+function toggleKeyVis() {
+  const inp = document.getElementById('xaiApiKey');
+  const btn = document.querySelector('.xai-toggle');
+  if (inp.type === 'password') { inp.type = 'text';     btn.textContent = 'HIDE'; }
+  else                         { inp.type = 'password'; btn.textContent = 'SHOW'; }
+}
+
+function updateGenBtn() {
+  const key = document.getElementById('xaiApiKey').value.trim();
+  document.getElementById('xaiGenBtn').disabled = !key;
+  if (!key) setXaiStatus('Enter an API key above to enable generation.', '');
+  else      setXaiStatus('Ready — build your subject above, then click Generate.', 'ok');
+}
+
+function setXaiStatus(msg, type) {
+  const el = document.getElementById('xaiStatus');
+  el.textContent = msg;
+  el.className   = 'xai-status' + (type ? ' ' + type : '');
+}
+
+
+/* ============================================================
+   JS: xAI — NARRATIVE PROMPT GENERATION
+   ============================================================ */
+async function generateNarrativePrompt() {
+  const key  = document.getElementById('xaiApiKey').value.trim();
+  const save = document.getElementById('xaiSaveKey').checked;
+
+  if (!key) { showNotice('Enter your xAI API key.', 'err', 'xaiNotice'); return; }
+  if (!ST.answers.Q1) { showNotice('Select a Subject Type first.', 'err', 'xaiNotice'); return; }
+
+  if (save) localStorage.setItem('xaiKey_portrait', key);
+  else      localStorage.removeItem('xaiKey_portrait');
+
+  const fullPrompt = assemblePrompt();
+
+  const genBtn = document.getElementById('xaiGenBtn');
+  genBtn.disabled = true;
+  genBtn.innerHTML = '<span class="spinner"></span>Generating…';
+
+  document.getElementById('narrativeOutput').classList.remove('visible');
+  hideNotice('xaiNotice');
+  document.getElementById('xaiStatus').innerHTML =
+    '<span class="spinner"></span>Sending request to xAI…';
+  document.getElementById('xaiStatus').className = 'xai-status run';
+
+  try {
+    const res = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        model: 'grok-4.3',
+        max_tokens: 1100,
+        reasoning_effort: 'none',
+        messages: [
+          {
+            role: 'system',
+            content: `You are the prompt engine for Cosmic Cowboy's PORTRAIT AND FIGURE GENERATOR. Output a richly detailed descriptive paragraph written in present tense, describing one single figure based on the structured attributes provided.
+
+━━━ OUTPUT FORMAT ━━━
+Write one cohesive paragraph (or two at most) of flowing, vivid prose. Use spatial and relational language throughout — "framed by", "falling across", "where the light catches", "set against" — instead of a flat list of comma-separated traits. Weave the face, hair, build, skin, and distinguishing marks together into one coherent person, then describe what they wear, how they're posed, the expression they carry, and the environment and lighting around them. Close with a clear sense of art style, framing, and aspect ratio. Do not explain or comment — output only the descriptive paragraph itself.`,
+          },
+          {
+            role: 'user',
+            content: `Convert these portrait attributes into one rich, evocative image-generation prompt:\n\n${fullPrompt}`,
+          },
+        ],
+      }),
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      const msg = data?.error?.message || `HTTP ${res.status}`;
+      setXaiStatus('', '');
+      showNotice(`Error: ${msg}`, 'err', 'xaiNotice');
+      return;
+    }
+
+    const text = data?.choices?.[0]?.message?.content?.trim() || '';
+    if (!text) {
+      setXaiStatus('', '');
+      showNotice('No response returned.', 'err', 'xaiNotice');
+      return;
+    }
+
+    document.getElementById('narrativeText').textContent = text;
+    document.getElementById('narrativeOutput').classList.add('visible');
+    setXaiStatus('Narrative prompt generated.', 'ok');
+
+  } catch (err) {
+    setXaiStatus('', '');
+    showNotice(`Network error: ${err.message}`, 'err', 'xaiNotice');
+  } finally {
+    genBtn.disabled = false;
+    genBtn.innerHTML = '&#9889; Generate Narrative Prompt';
+  }
+}
+
+
+/* ============================================================
+   JS: COPY NARRATIVE
+   ============================================================ */
+function copyNarrative() {
+  const text = document.getElementById('narrativeText').textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    const el = document.getElementById('narrativeCopyConfirm');
+    el.classList.add('show');
+    setTimeout(() => el.classList.remove('show'), 2000);
+  });
 }
 
 
