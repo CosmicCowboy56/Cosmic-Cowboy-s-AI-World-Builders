@@ -2053,12 +2053,17 @@ async function generateNarrativePrompt() {
       },
       body: JSON.stringify({
         model: 'grok-4.3',
-        max_tokens: 700,
+        max_tokens: 1100,
         reasoning_effort: 'none',
         messages: [
           {
             role: 'system',
-            content: 'You are an expert AI image-prompt writer specializing in urban environments, cityscapes, and architectural scenes. You receive a structured list of cityscape attributes and transform them into a single, richly evocative image-generation prompt. Write in vivid, cinematic language that captures the city\'s scale, atmosphere, and character. Describe architecture, lighting, street life, and environmental mood with specificity and density. Output only the prompt itself — no preamble, no explanation, no quotation marks.',
+            content: `You are an expert AI image-prompt writer specializing in urban environments, cityscapes, and architectural scenes. You receive a structured list of cityscape attributes and transform them into a single, richly evocative image-generation prompt.
+
+━━━ OUTPUT FORMAT ━━━
+Write one cohesive paragraph (two short ones only for very complex or layered scenes) of flowing, cinematic prose — not a comma-separated list of terms. Use spatial and relational language throughout — "where the towers give way to", "framed by", "spilling down", "rising above", "set against" — so the image model understands how the city's elements physically relate to and inhabit the same space, not just that they coexist.
+
+Describe architecture, scale, lighting, street life, atmosphere, and environmental mood with specificity and density, weaving the selected attributes into a single coherent place rather than listing them. Output only the prompt itself — no preamble, no explanation, no quotation marks.`,
           },
           {
             role: 'user',
