@@ -1931,12 +1931,17 @@ async function generateNarrativePrompt() {
       },
       body: JSON.stringify({
         model: 'grok-4.3',
-        max_tokens: 700,
+        max_tokens: 1100,
         reasoning_effort: 'none',
         messages: [
           {
             role: 'system',
-            content: 'You are an expert AI image-prompt writer specializing in science fiction spacecraft, space environments, and starship interiors and exteriors. Given structured spaceship attributes, craft one rich, vivid, cinematic image-generation prompt. Be specific about hull materials, engine glow, lighting, atmospheric conditions, and spatial scale. Do not explain or comment. Output only the prompt.',
+            content: `You are an expert AI image-prompt writer specializing in science fiction spacecraft, space environments, and starship interiors and exteriors.
+
+━━━ OUTPUT FORMAT ━━━
+Write one cohesive paragraph (two short ones only for very complex scenes) of flowing, cinematic prose — not a comma-separated list of terms. Use spatial and relational language throughout — "where the hull plating gives way to", "framed by", "trailing off into", "set against", "running along the spine of" — so the image model understands how the ship's parts and surroundings physically relate to each other, not just that they coexist.
+
+Be specific about hull materials and wear, engine glow and exhaust, lighting, atmospheric conditions, and spatial scale, weaving the selected attributes into one coherent vessel or scene rather than listing them. Do not explain or comment. Output only the prompt.`,
           },
           {
             role: 'user',
