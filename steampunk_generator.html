@@ -92,6 +92,32 @@ textarea.txt { resize: vertical; min-height: 64px; }
 .pct-total.ok { color: var(--green); background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.20); }
 .pct-total.over { color: var(--red); background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.20); }
 
+.type-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+.type-tab {
+  flex: 1; padding: 3px;
+  font-size: 0.62rem; letter-spacing: 0.07em;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--dim);
+  cursor: pointer; border-radius: 3px;
+  font-family: 'Exo 2', sans-serif;
+  transition: all 0.15s;
+}
+.type-tab.active { border-color: var(--soft-cyan); color: var(--pale-blue); background: rgba(144,224,239,0.10); }
+
+.img-drop {
+  background: rgba(0,0,0,0.20);
+  border: 1px dashed var(--border);
+  border-radius: 4px; padding: 8px;
+  text-align: center; cursor: pointer;
+  font-size: 0.66rem; color: var(--dim);
+  transition: all 0.2s;
+  min-height: 42px; flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 3px;
+}
+.img-drop:hover { border-color: var(--soft-cyan); color: var(--pale-blue); }
+.img-drop img   { max-height: 48px; max-width: 100%; border-radius: 3px; }
+
 .preset-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .preset-btn { background: rgba(255,209,102,0.07); border: 1px solid rgba(255,209,102,0.28); color: var(--accent); font-family: 'Exo 2', sans-serif; font-size: 0.76rem; padding: 5px 11px; border-radius: 3px; cursor: pointer; transition: background 0.14s; }
 .preset-btn:hover { background: rgba(255,209,102,0.16); }
@@ -194,7 +220,7 @@ footer { text-align: center; padding: 16px; font-size: 0.70rem; color: var(--dim
       <div class="section-body">
         <div class="notice" style="margin-bottom:12px">
           <strong>1 to 4 contributors, percentages must total 100.</strong><br>
-          Steampunk sources fused into the subject. Examples: "brass automaton 60, human pilot 40" or "steam engine 50, leather 30, clockwork gears 20". Can be materials, objects, or character types.
+          Steampunk sources fused into the subject. Each contributor can be typed text (e.g. "brass automaton", "leather", "clockwork gears") or an uploaded reference image — switch using the TEXT / IMAGE tabs on each contributor.
         </div>
         <div id="contrib-list"></div>
         <div style="display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;">
@@ -440,7 +466,7 @@ const Q = {
     'Serpentine Elongated Body','Insectoid Chitinous Frame','Towering Colossus Form',
     'Compact Handheld Device','Modular Reconfigurable Platform','Abstract Geometric Construct'
   ]},
-  Q6: { type:'single', opts:[
+  Q6: { type:'multi', max:2, opts:[
     'Elegant and Refined','Heavy Industrial','Modular and Exposed','Layered and Complex',
     'Minimalist but Functional','Ornate and Ceremonial','Brutalist Raw Iron',
     'Baroque Over-Engineered','Compact and Utilitarian','Asymmetric Experimental',
@@ -457,7 +483,7 @@ const Q = {
     'Intimate or Personal','Human-Scale','Vehicle-Scale','Building-Scale','Colossal',
     'Pocket-Watch Micro','District or City-Scale','Handheld Tool-Scale','Naval Vessel-Scale'
   ]},
-  Q9: { type:'multi', max:2, opts:[
+  Q9: { type:'multi', max:3, opts:[
     'Brass Plates and Rivets','Leather Straps and Belts','Fabric Layers and Corsetry',
     'Exposed Gears and Pistons','Polished Aristocratic Finish','Soot-Stained Industrial Wear',
     'Copper Pipe Filigree','Engraved Clockwork Panels','Waxed Canvas Weatherproofing',
@@ -478,14 +504,14 @@ const Q = {
     'Chemical Reaction Chamber','Tidal or Water Wheel','Animal Locomotion Amplified',
     'Voltaic Cell Battery Array','Magneto-Dynamo Generator'
   ]},
-  Q12: { type:'multi', max:2, opts:[
+  Q12: { type:'multi', max:3, opts:[
     'Exploration','Transport','Industry or Labor','Combat or Enforcement',
     'Social Status or Ceremony','Espionage or Secrecy','Scientific Research',
     'Medical or Surgical','Mining and Excavation','Navigation and Cartography',
     'Diplomacy or Political Display','Entertainment or Spectacle',
     'Rescue and Emergency Response','Agricultural Mechanization'
   ]},
-  Q13: { type:'multi', max:2, opts:[
+  Q13: { type:'multi', max:3, opts:[
     'Foggy City Streets','Industrial Factory District','Airship Docks','Underground Workshops',
     'Aristocratic Interiors','Open Skies Above Cloud Layer','Harbor and Drydock',
     'Coal Mine Tunnel Network','Grand Exhibition Hall','Jungle or Colonial Outpost',
@@ -493,19 +519,19 @@ const Q = {
     'Sewer Infrastructure Below City','Desert Railway Station','Volcano Observatory Tower',
     'Ocean Trench Submersible Bay','Alchemist Laboratory Tower'
   ]},
-  Q14: { type:'multi', max:2, opts:[
+  Q14: { type:'multi', max:3, opts:[
     'Adventurous','Mysterious','Gritty and Oppressive','Elegant and Romantic',
     'Dangerous','Hopeful','Melancholic and Nostalgic','Tense and Paranoid',
     'Triumphant and Grand','Lonely and Desolate','Frantic and Chaotic',
     'Reverent and Solemn','Playful and Whimsical','Cold and Calculating'
   ]},
-  Q15: { type:'single', opts:[
+  Q15: { type:'multi', max:2, opts:[
     'Gaslight Glow','Backlit Steam Clouds','Low-Key Shadowed','Daylight Filtered Through Smog',
     'Warm Interior Lighting','Electrical Arc Flash','Forge Fire Orange',
     'Candlelight and Lantern Glow','Overcast Diffused Daylight','Bioluminescent Aether Glow',
     'Moonlight and Fog','Sunset Through Industrial Haze'
   ]},
-  Q16: { type:'multi', max:2, opts:[
+  Q16: { type:'multi', max:3, opts:[
     'Brass Copper and Sepia','Dark Iron and Soot','Muted Jewel Tones','Creams and Parchment Whites',
     'Verdigris Green Patina','Crimson and Gold Aristocratic','Slate Grey and Gunmetal',
     'Amber and Burnt Sienna','Ivory and Bone Yellow','Violet Aether Glow Accent',
@@ -517,7 +543,7 @@ const Q = {
     'Detail Close-Up','Aerial Overhead','Worm\'s Eye Ground Level',
     'Side Profile Silhouette','Rear Three-Quarter','Dutch Angle Tilt'
   ]},
-  Q18: { type:'single', opts:[
+  Q18: { type:'multi', max:2, opts:[
     'Photorealistic','Hyper-Realistic','Cinematic Realism','Gritty Concept Art',
     'Painterly Illustration','Vintage Lithograph','Ink Etching Engraving',
     'Watercolor Wash','Art Nouveau Decorative','Noir Monochrome Photography',
@@ -708,13 +734,30 @@ function renderContribs() {
   contribs.forEach((c, i) => {
     const div = document.createElement('div');
     div.className = 'contrib-item';
+
+    const body = c.type === 'image'
+      ? `<div class="contrib-row">
+           <div class="img-drop" onclick="pickFile(${c.id})" id="drop-${c.id}">
+             ${c.preview
+               ? `<img src="${c.preview}"><span style="font-size:0.62rem;color:var(--soft-cyan)">${esc(c.fname||'')}</span>`
+               : '&#128206; Click to upload image'}
+           </div>
+           <input type="number" class="contrib-pct" min="1" max="100" placeholder="%" value="${c.pct||''}" oninput="updateContrib(${c.id},'pct',this.value)">
+         </div>
+         <input type="file" id="file-${c.id}" accept="image/*" style="display:none" onchange="loadImg(${c.id},event)">`
+      : `<div class="contrib-row">
+           <input type="text" class="contrib-name" placeholder="e.g. brass automaton, human pilot, clockwork, leather..." value="${esc(c.name)}" oninput="updateContrib(${c.id},'name',this.value)">
+           <input type="number" class="contrib-pct" min="1" max="100" placeholder="%" value="${c.pct||''}" oninput="updateContrib(${c.id},'pct',this.value)">
+         </div>`;
+
     div.innerHTML = `
       <button class="rm-btn" onclick="removeContrib(${c.id})">x</button>
       <div class="contrib-lbl">CONTRIBUTOR ${i + 1}</div>
-      <div class="contrib-row">
-        <input type="text" class="contrib-name" placeholder="e.g. brass automaton, human pilot, clockwork, leather..." value="${esc(c.name)}" oninput="updateContrib(${c.id},'name',this.value)">
-        <input type="number" class="contrib-pct" min="1" max="100" placeholder="%" value="${c.pct||''}" oninput="updateContrib(${c.id},'pct',this.value)">
-      </div>`;
+      <div class="type-tabs">
+        <button class="type-tab ${c.type === 'text'  ? 'active' : ''}" onclick="setContribType(${c.id},'text')">TEXT</button>
+        <button class="type-tab ${c.type === 'image' ? 'active' : ''}" onclick="setContribType(${c.id},'image')">IMAGE</button>
+      </div>
+      ${body}`;
     list.appendChild(div);
   });
   document.getElementById('addBtn').style.display = contribs.length >= 4 ? 'none' : '';
@@ -723,7 +766,7 @@ function renderContribs() {
 
 function addContrib() {
   if (contribs.length >= 4) return;
-  contribs.push({ id: ++cid, name: '', pct: '' });
+  contribs.push({ id: ++cid, type: 'text', name: '', pct: '' });
   renderContribs();
 }
 
@@ -738,6 +781,27 @@ function updateContrib(id, field, val) {
   calcPct(); updatePreview();
 }
 
+function setContribType(id, type) {
+  const c = contribs.find(c => c.id === id); if (!c) return;
+  c.type = type;
+  renderContribs(); updatePreview();
+}
+
+function pickFile(id) { document.getElementById(`file-${id}`)?.click(); }
+
+function loadImg(id, e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const c = contribs.find(c => c.id === id); if (!c) return;
+    const data = ev.target.result;
+    c.b64 = data.split(',')[1]; c.mime = file.type || 'image/jpeg';
+    c.fname = file.name; c.preview = data;
+    renderContribs(); updatePreview();
+  };
+  reader.readAsDataURL(file);
+}
+
 function calcPct() {
   const total = contribs.reduce((s, c) => s + (parseInt(c.pct) || 0), 0);
   const el = document.getElementById('pctTotal');
@@ -747,7 +811,7 @@ function calcPct() {
 
 function validateContribs() {
   if (contribs.length === 0) return 'Add at least one contributor.';
-  if (contribs.some(c => !c.name.trim())) return 'All contributors must have a name.';
+  if (contribs.some(c => c.type === 'image' ? !c.b64 : !c.name.trim())) return 'Every contributor needs a name or an uploaded image.';
   const total = contribs.reduce((s, c) => s + (parseInt(c.pct) || 0), 0);
   if (total !== 100) return `Percentages must total 100. Currently ${total}%.`;
   return null;
@@ -769,7 +833,7 @@ function randomizeContribs() {
     const name = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
     const pct = i === count - 1 ? remaining : Math.round(Math.random() * (remaining - (count - i - 1) * 10) + 10);
     remaining -= pct;
-    contribs.push({ id: ++cid, name, pct });
+    contribs.push({ id: ++cid, type: 'text', name, pct });
   }
   renderContribs(); updatePreview();
 }
@@ -787,7 +851,7 @@ function stateToText() {
   const lines = [];
   const type = ans.Q2; if (type) lines.push(`Creation Type: ${type}`);
   if (!isLocation() && contribs.length) {
-    lines.push(`Contributors: ${contribs.map(c => `${c.name} (${c.pct}%)`).join(', ')}`);
+    lines.push(`Contributors: ${contribs.map(c => c.type === 'image' ? `[uploaded image] (${c.pct}%)` : `${c.name} (${c.pct}%)`).join(', ')}`);
   }
   const labels = (ans.Q2 && LABELS[ans.Q2]) || DEFAULT_LABELS;
   const f = (label, qid) => { const v = getAns(qid); if (v) lines.push(`${label}: ${v}`); };
@@ -812,7 +876,7 @@ function applyPreset(name) {
   const p = PRESETS[name]; if (!p) return;
   ans = {}; custom = {}; contribs = [];
   Object.entries(p).forEach(([k, v]) => {
-    if (k === 'contributors') { contribs = v.map(c => ({ id: ++cid, name: c.name, pct: c.pct })); }
+    if (k === 'contributors') { contribs = v.map(c => ({ id: ++cid, type: 'text', name: c.name, pct: c.pct })); }
     else { ans[k] = v; }
   });
   renderAll();
@@ -845,18 +909,23 @@ async function generatePrompt() {
   document.getElementById('contrib-err').style.display = 'none';
   hideErr();
 
-  const systemPrompt = `You are the prompt engine for Cosmic Cowboy's STEAMPUNK SATURDAY GENERATOR. Output ONLY a dense, comma-separated image generation prompt. No labels, no preamble, no explanation - start immediately with descriptive terms.
+  const systemPrompt = `You are the prompt engine for Cosmic Cowboy's STEAMPUNK SATURDAY GENERATOR. Output a richly detailed descriptive paragraph written in present tense — structured prose suitable for direct use as an image generation prompt. No labels, no preamble, no explanation. Begin immediately with the subject.
+
+━━━ OUTPUT FORMAT ━━━
+Write one cohesive paragraph (two short ones only for very complex subjects). Use spatial and relational language throughout — "where the brass meets the leather", "running along", "set into", "framed by", "rising from" — so the image model understands how parts physically relate to each other, not just that they coexist. Do not write a comma-separated list of terms; write connected, structured prose.
 
 CREATION TYPE: ${ans.Q2}
 ${!isLocation()
-  ? 'Contributors define the steampunk sources fused into this subject. Translate contributor dominance into visual weight - a 60% contributor dominates the form and material language, a 20% contributor is a present but secondary influence. Never name contributors explicitly in the output.'
-  : 'This is a pure environment or location prompt. The steampunk aesthetic emerges from the architecture, machinery, atmosphere, and implied activity of the space itself.'}
+  ? `━━━ THE INTEGRATION RULE — applies EXCLUSIVELY to the Contributors list ━━━
+Contributors define the steampunk sources fused into this subject — this is STRUCTURAL SUBSTITUTION, not decoration. Translate each contributor's dominance into how much of the subject's actual form, material, and structure it constitutes: a 60% contributor dominates the body/form and material language; a 20% contributor visibly shapes specific parts or surfaces. Describe the subject AS IF it is physically built from these sources — never as a generic subject wearing or holding them.
+  WRONG: "a gentleman wearing brass goggles and a leather coat"
+  RIGHT: "a figure whose ribcage is a riveted brass boiler casing, its joints articulated brass pistons sheathed in cracked leather where motion wears the surface raw"
+If a contributor is an uploaded image, study its actual forms, textures, materials, and proportions, and integrate those real visual qualities into the subject the same way — structurally, not as an add-on. Never name contributor sources explicitly in the output (no "brass automaton", no percentages, no "blend of" or "combination of").`
+  : 'This is a pure environment or location prompt. The steampunk aesthetic emerges from the architecture, machinery, atmosphere, and implied activity of the space itself — describe it as a place the viewer is standing within or looking across, not a list of features.'}
 
 STEAMPUNK COHERENCE RULE: Victorian-era aesthetics, mechanical logic, and brass/copper/iron material language must be consistent throughout. No modern digital technology, no plastic, no contemporary design elements unless explicitly overridden in clarifications.
 
-FORBIDDEN in output: contributor names, percentages, "blend of", "combination of", any reference to source materials by name.
-
-Always end with: Ultra-fine surface detail with metal wear, patina, brass fittings, copper piping, leather straps, exposed gears, clockwork mechanisms, steam vents, pressure gauges, rivets, and fabric weave where appropriate. Sharp focus. Cinematic physically plausible lighting. Professional production-grade rendering.`;
+Close the paragraph with: ultra-fine surface detail with metal wear, patina, brass fittings, copper piping, leather straps, exposed gears, clockwork mechanisms, steam vents, pressure gauges, rivets, and fabric weave where appropriate, sharp focus, cinematic physically plausible lighting, professional production-grade rendering.`;
 
   const btn = document.getElementById('genBtn');
   const out = document.getElementById('outPrompt');
@@ -864,17 +933,26 @@ Always end with: Ultra-fine surface detail with metal wear, patina, brass fittin
   btn.innerHTML = '<span class="spinner"></span>Generating...';
   out.textContent = ''; out.className = 'out-body';
 
+  const userBlocks = [];
+  if (!isLocation()) {
+    contribs.filter(c => c.type === 'image' && c.b64).forEach(c => {
+      userBlocks.push({ type: 'text', text: `Contributor (${c.pct}%) — uploaded reference image:` });
+      userBlocks.push({ type: 'image_url', image_url: { url: `data:${c.mime};base64,${c.b64}`, detail: 'high' } });
+    });
+  }
+  userBlocks.push({ type: 'text', text: `Generate a steampunk prompt for:\n\n${stateToText()}` });
+
   try {
     const res = await fetch(XAI_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey()}` },
       body: JSON.stringify({
         model: XAI_MODEL,
-        max_tokens: 900,
+        max_tokens: 1400,
         reasoning_effort: 'none',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user',   content: `Generate a steampunk prompt for:\n\n${stateToText()}` }
+          { role: 'user',   content: userBlocks }
         ]
       })
     });
