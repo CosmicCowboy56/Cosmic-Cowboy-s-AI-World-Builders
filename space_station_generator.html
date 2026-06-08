@@ -450,7 +450,7 @@ const QUESTIONS = {
     {id:'15',text:'Barnacled and encrusted ancient'},
     {id:'16',text:'Nested concentric shells'},
   ]},
-  Q6: { title:'Lighting State (Ext)', type:'multi', max:2, allowCustom:true, options:[
+  Q6: { title:'Lighting State (Ext)', type:'multi', max:3, allowCustom:true, options:[
     {id:'1',text:'Full star-facing illumination'},
     {id:'2',text:'Rim-lit terminator edge'},
     {id:'3',text:'Deep shadow eclipse'},
@@ -466,7 +466,7 @@ const QUESTIONS = {
     {id:'13',text:'Backlit silhouette'},
     {id:'14',text:'Rotating lighthouse beacon'},
   ]},
-  Q7: { title:'Environmental Conditions (Ext)', type:'multi', max:2, allowCustom:true, options:[
+  Q7: { title:'Environmental Conditions (Ext)', type:'multi', max:3, allowCustom:true, options:[
     {id:'1',text:'Clean vacuum'},
     {id:'2',text:'Orbital debris field'},
     {id:'3',text:'Gas vapor venting'},
@@ -967,11 +967,14 @@ async function generateNarrativePrompt() {
       headers: { 'Authorization': `Bearer ${key}`, 'Content-Type': 'application/json' },
       body: JSON.stringify({
         model: 'grok-4.3',
-        max_tokens: 700,
+        max_tokens: 1100,
         reasoning_effort: 'none',
         messages: [
-          { role: 'system', content: 'You are an expert AI image-prompt writer specializing in science fiction space stations, orbital megastructures, and starbase environments both exterior and interior. Given structured station attributes, craft one rich, vivid, cinematic image-generation prompt. Be specific about structural scale, lighting, atmosphere, and spatial grandeur. Do not explain or comment. Output only the prompt.' },
-          { role: 'user', content: `Convert these space station attributes into one rich, evocative image-generation prompt:\n\n${fullPrompt}` }
+          { role: 'system', content: `You are the prompt engine for Cosmic Cowboy's SPACE STATION GENERATOR. Output a richly detailed descriptive paragraph written in present tense, suitable for feeding directly into an AI image generator — not a list of tags or a dry attribute summary.
+
+━━━ OUTPUT FORMAT ━━━
+Write one cohesive paragraph (or two at most) of flowing, cinematic prose. Use spatial and relational language throughout — "rising above", "running along its spine", "where the docking arms meet the hull", "framed against", "set into the superstructure", "beyond the viewport" — so the structure, scale, lighting, and atmosphere feel like a single observed scene rather than a stitched-together checklist. Do not simply restring the input attributes with commas; weave them into a scene that builds from the station's overall form and role, through its structural details and surface textures, into the lighting, atmosphere, and surrounding space (or interior environment), and finally the framing, camera, and rendering qualities. Be concrete and visual — every phrase should describe something a camera could actually capture: hull plating, docking mechanisms, light falling across surfaces, drifting debris, crowds or solitude, color and contrast. Do not explain or comment on your output, and do not include meta-text like "Here is the prompt." Output only the descriptive paragraph.` },
+          { role: 'user', content: `Turn these space station attributes into one vivid, cinematic image-generation prompt, written as flowing descriptive prose (not a list):\n\n${fullPrompt}` }
         ]
       })
     });
