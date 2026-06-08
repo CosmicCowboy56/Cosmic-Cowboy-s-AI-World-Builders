@@ -1,0 +1,1005 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Scene Generator v1.0 - Cosmic Cowboy</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --deepest:    #010E1F;
+  --ocean-blue: #0077B6;
+  --soft-cyan:  #90E0EF;
+  --pale-blue:  #CAF0F8;
+  --accent:     #FFD166;
+  --surface:    rgba(0,119,182,0.09);
+  --surface2:   rgba(0,119,182,0.17);
+  --border:     rgba(144,224,239,0.22);
+  --border-hi:  rgba(144,224,239,0.50);
+  --dim:        rgba(202,240,248,0.45);
+  --green:      #4ade80;
+  --red:        #f87171;
+  --glow:       0 0 12px rgba(144,224,239,0.30);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { min-height: 100%; font-family: 'Exo 2', sans-serif; font-weight: 300; font-size: 15px; background: var(--deepest); color: var(--pale-blue); }
+::-webkit-scrollbar { width: 7px; height: 7px; }
+::-webkit-scrollbar-track { background: rgba(0,0,0,0.15); }
+::-webkit-scrollbar-thumb { background: rgba(144,224,239,0.28); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(144,224,239,0.55); }
+
+.header { height: 52px; background: rgba(0,0,0,0.50); border-bottom: 1px solid var(--border-hi); padding: 0 24px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; }
+.header::after { content: ''; position: absolute; bottom: -1px; left: 0; right: 0; height: 1px; background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent); opacity: 0.5; }
+.hdr-title { font-family: 'Cinzel', serif; font-size: 1.05rem; font-weight: 900; letter-spacing: 0.12em; color: var(--pale-blue); text-shadow: 0 0 18px rgba(144,224,239,0.4); }
+.hdr-sub { font-size: 0.62rem; color: var(--soft-cyan); letter-spacing: 0.2em; text-transform: uppercase; }
+
+.page-title { text-align: center; padding: 28px 24px 18px; border-bottom: 1px solid var(--border); }
+.page-title h1 { font-family: 'Cinzel', serif; font-size: 2rem; font-weight: 900; letter-spacing: 0.08em; color: var(--pale-blue); text-shadow: 0 0 24px rgba(144,224,239,0.35); margin-bottom: 4px; }
+.page-title .v-tag { font-size: 0.72rem; color: var(--soft-cyan); letter-spacing: 0.25em; text-transform: uppercase; }
+
+.api-bar { background: rgba(0,0,0,0.40); border-bottom: 1px solid var(--border); padding: 9px 24px; display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.api-lbl { font-size: 0.68rem; color: var(--soft-cyan); letter-spacing: 0.18em; text-transform: uppercase; white-space: nowrap; }
+.api-bar input[type="password"] { flex: 1; min-width: 240px; background: rgba(0,0,0,0.40); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.83rem; padding: 5px 10px; border-radius: 3px; outline: none; transition: border-color 0.2s; }
+.api-bar input:focus { border-color: var(--soft-cyan); }
+.connect-btn { background: rgba(0,119,182,0.15); border: 1px solid var(--border-hi); color: var(--soft-cyan); font-family: 'Exo 2', sans-serif; font-size: 0.66rem; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase; padding: 6px 16px; border-radius: 3px; cursor: pointer; transition: all 0.2s; white-space: nowrap; }
+.connect-btn:hover { background: rgba(0,119,182,0.30); }
+
+.page-body { display: grid; grid-template-columns: 1fr 400px; min-height: calc(100vh - 52px); align-items: start; }
+.form-col { padding: 22px 24px; border-right: 1px solid var(--border); }
+.out-col { padding: 22px 20px; position: sticky; top: 52px; max-height: calc(100vh - 52px); overflow-y: auto; }
+
+.section { background: var(--surface); border: 1px solid var(--border); border-radius: 5px; margin-bottom: 14px; overflow: hidden; }
+.section-title { font-family: 'Cinzel', serif; font-size: 0.74rem; font-weight: 700; letter-spacing: 0.18em; text-transform: uppercase; color: var(--soft-cyan); padding: 9px 14px; background: rgba(0,0,0,0.28); border-bottom: 1px solid var(--border); }
+.section-body { padding: 14px; }
+
+.field-wrap { margin-bottom: 13px; }
+.field-label { font-size: 0.70rem; letter-spacing: 0.15em; text-transform: uppercase; color: var(--soft-cyan); margin-bottom: 7px; display: flex; align-items: center; justify-content: space-between; }
+.field-label .multi-note { font-size: 0.62rem; color: var(--dim); text-transform: none; letter-spacing: 0.04em; }
+
+.opts { display: flex; flex-wrap: wrap; gap: 5px; }
+.opt { background: rgba(0,0,0,0.32); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.78rem; padding: 4px 10px; border-radius: 3px; cursor: pointer; transition: all 0.14s; }
+.opt:hover { background: var(--surface2); border-color: var(--soft-cyan); }
+.opt.on { background: rgba(0,119,182,0.38); border-color: var(--soft-cyan); box-shadow: 0 0 5px rgba(144,224,239,0.18); }
+
+.dice { background: none; border: 1px solid var(--border); color: var(--soft-cyan); font-size: 0.70rem; padding: 3px 7px; border-radius: 3px; cursor: pointer; transition: background 0.14s; }
+.dice:hover { background: var(--surface2); }
+.sec-btn { background: rgba(0,0,0,0.30); border: 1px solid var(--border); color: var(--dim); font-family: 'Exo 2', sans-serif; font-size: 0.72rem; padding: 4px 9px; border-radius: 3px; cursor: pointer; transition: all 0.14s; white-space: nowrap; }
+.sec-btn:hover { background: var(--surface2); color: var(--pale-blue); }
+
+.txt { width: 100%; background: rgba(0,0,0,0.35); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.83rem; padding: 6px 9px; border-radius: 3px; outline: none; transition: border-color 0.2s; }
+.txt:focus { border-color: var(--soft-cyan); }
+textarea.txt { resize: vertical; min-height: 64px; }
+
+.custom-row { display: flex; gap: 5px; margin-top: 6px; }
+.custom-row .txt { flex: 1; }
+.tags { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 5px; }
+.tag { display: inline-flex; align-items: center; gap: 4px; background: rgba(0,119,182,0.22); border: 1px solid rgba(144,224,239,0.32); color: var(--soft-cyan); font-size: 0.72rem; padding: 2px 7px; border-radius: 10px; }
+.tag button { background: none; border: none; color: var(--dim); cursor: pointer; font-size: 0.82rem; padding: 0; line-height: 1; }
+.tag button:hover { color: var(--red); }
+
+.asset-item { background: rgba(0,0,0,0.22); border: 1px solid var(--border); border-radius: 4px; padding: 10px 12px 10px 10px; margin-bottom: 8px; position: relative; }
+.asset-lbl { font-size: 0.60rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); margin-bottom: 6px; }
+.asset-row { display: flex; gap: 6px; align-items: center; }
+.asset-name { flex: 1; background: rgba(0,0,0,0.35); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.82rem; padding: 5px 8px; border-radius: 3px; outline: none; transition: border-color 0.2s; }
+.asset-name:focus { border-color: var(--soft-cyan); }
+.rm-btn { position: absolute; top: 6px; right: 7px; background: none; border: 1px solid rgba(248,113,113,0.28); color: rgba(248,113,113,0.50); font-size: 0.70rem; width: 18px; height: 18px; border-radius: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.14s; line-height: 1; }
+.rm-btn:hover { background: rgba(248,113,113,0.15); color: var(--red); border-color: var(--red); }
+
+.type-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+.type-tab {
+  flex: 1; padding: 3px;
+  font-size: 0.62rem; letter-spacing: 0.07em;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--dim);
+  cursor: pointer; border-radius: 3px;
+  font-family: 'Exo 2', sans-serif;
+  transition: all 0.15s;
+}
+.type-tab.active { border-color: var(--soft-cyan); color: var(--pale-blue); background: rgba(144,224,239,0.10); }
+
+.img-drop {
+  background: rgba(0,0,0,0.20);
+  border: 1px dashed var(--border);
+  border-radius: 4px; padding: 8px;
+  text-align: center; cursor: pointer;
+  font-size: 0.66rem; color: var(--dim);
+  transition: all 0.2s;
+  min-height: 42px; flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 3px;
+}
+.img-drop:hover { border-color: var(--soft-cyan); color: var(--pale-blue); }
+.img-drop img   { max-height: 48px; max-width: 100%; border-radius: 3px; }
+
+.preset-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
+.preset-btn { background: rgba(255,209,102,0.07); border: 1px solid rgba(255,209,102,0.28); color: var(--accent); font-family: 'Exo 2', sans-serif; font-size: 0.76rem; padding: 5px 11px; border-radius: 3px; cursor: pointer; transition: background 0.14s; }
+.preset-btn:hover { background: rgba(255,209,102,0.16); }
+.save-row { display: flex; gap: 6px; flex-wrap: wrap; }
+
+.notice { background: rgba(0,119,182,0.10); border-left: 2px solid var(--soft-cyan); padding: 7px 10px; border-radius: 0 3px 3px 0; font-size: 0.76rem; color: var(--dim); line-height: 1.5; }
+.notice strong { color: var(--soft-cyan); font-weight: 600; }
+
+.err { font-size: 0.74rem; color: var(--red); background: rgba(248,113,113,0.09); border: 1px solid rgba(248,113,113,0.22); border-radius: 3px; padding: 6px 9px; margin-top: 7px; display: none; }
+
+.out-lbl { font-family: 'Cinzel', serif; font-size: 0.68rem; letter-spacing: 0.20em; text-transform: uppercase; color: var(--soft-cyan); margin-bottom: 8px; }
+.out-body { background: rgba(0,0,0,0.42); border: 1px solid var(--border); border-radius: 3px; padding: 13px; font-size: 0.81rem; line-height: 1.68; white-space: pre-wrap; min-height: 120px; color: var(--pale-blue); margin-bottom: 12px; }
+.out-body.empty { color: var(--dim); font-style: italic; }
+
+.gen-btn { width: 100%; background: linear-gradient(135deg, var(--ocean-blue), rgba(0,119,182,0.65)); border: 1px solid var(--soft-cyan); color: var(--pale-blue); font-family: 'Cinzel', serif; font-size: 0.80rem; font-weight: 700; letter-spacing: 0.12em; padding: 11px; border-radius: 3px; cursor: pointer; transition: all 0.2s; text-transform: uppercase; box-shadow: var(--glow); display: flex; align-items: center; justify-content: center; gap: 8px; }
+.gen-btn:hover { box-shadow: 0 0 20px rgba(144,224,239,0.40); }
+.gen-btn:disabled { opacity: 0.40; cursor: not-allowed; }
+
+.action-row { display: flex; gap: 6px; margin-top: 7px; }
+.copy-btn, .reset-btn { flex: 1; background: rgba(0,0,0,0.28); border: 1px solid var(--border); color: var(--dim); font-family: 'Exo 2', sans-serif; font-size: 0.72rem; padding: 5px; border-radius: 3px; cursor: pointer; transition: all 0.14s; }
+.copy-btn:hover, .reset-btn:hover { background: var(--surface2); color: var(--pale-blue); }
+
+.preview-lbl { font-family: 'Cinzel', serif; font-size: 0.62rem; letter-spacing: 0.18em; text-transform: uppercase; color: var(--dim); margin: 16px 0 6px; }
+.preview-body { background: rgba(0,0,0,0.25); border: 1px solid rgba(144,224,239,0.12); border-radius: 3px; padding: 10px 12px; font-size: 0.75rem; line-height: 1.55; color: var(--dim); white-space: pre-wrap; }
+
+.spinner { display: inline-block; width: 13px; height: 13px; border: 2px solid rgba(144,224,239,0.18); border-top-color: var(--soft-cyan); border-radius: 50%; animation: spin 0.7s linear infinite; flex-shrink: 0; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+footer { text-align: center; padding: 16px; font-size: 0.70rem; color: var(--dim); border-top: 1px solid var(--border); letter-spacing: 0.08em; }
+
+@media (max-width: 960px) {
+  .page-body { grid-template-columns: 1fr; }
+  .form-col { border-right: none; border-bottom: 1px solid var(--border); }
+  .out-col { position: static; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <span class="hdr-title">COSMIC COWBOY'S AI WORLDBUILDERS</span>
+  <span class="hdr-sub">Scene Generator v1.0</span>
+</header>
+
+<div class="page-title">
+  <h1>SCENE GENERATOR</h1>
+  <div class="v-tag">v1.0 - xAI Powered - Cinematic Narrative Scenes</div>
+</div>
+
+<div class="api-bar">
+  <span class="api-lbl">xAI API Key</span>
+  <input type="password" id="apiKey" placeholder="xai-..." autocomplete="off">
+  <button class="connect-btn" id="connectBtn" onclick="confirmConnect()">CONNECT</button>
+</div>
+
+<div class="page-body">
+
+  <div class="form-col">
+
+    <div class="section">
+      <div class="section-title">Quick Start Presets</div>
+      <div class="section-body">
+        <p style="font-size:0.76rem;color:var(--dim);margin-bottom:10px">Click any preset to auto-fill. Modify freely, then generate.</p>
+        <div class="preset-row">
+          <button class="preset-btn" onclick="applyPreset('noirConfrontation')">Noir Confrontation</button>
+          <button class="preset-btn" onclick="applyPreset('fantasyRitual')">Fantasy Ritual</button>
+          <button class="preset-btn" onclick="applyPreset('cyberpunkChase')">Cyberpunk Chase</button>
+          <button class="preset-btn" onclick="applyPreset('westernStandoff')">Western Standoff</button>
+          <button class="preset-btn" onclick="applyPreset('quietApocalypse')">Quiet Apocalypse</button>
+          <button class="preset-btn" onclick="applyPreset('random')">Randomize All</button>
+        </div>
+        <div class="save-row">
+          <button class="sec-btn" onclick="saveCurrent()">Save</button>
+          <button class="sec-btn" onclick="loadSaved()">Load</button>
+          <button class="sec-btn" onclick="clearSaved()">Clear Saved</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Genre</div>
+      <div class="section-body">
+        <div class="field-wrap">
+          <div class="field-label">
+            Genre Family <span class="multi-note">up to 3</span>
+            <button class="dice" onclick="randField('Q1')">Randomize</button>
+          </div>
+          <div class="opts" id="Q1-opts"></div>
+          <div class="notice" style="margin-top:10px">
+            Mixing genres (e.g. Old West + Horror, or Noir + Fantasy) is fully supported — the write-up will blend them into one coherent world.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="section" id="asset-section">
+      <div class="section-title">Scene Assets (Optional Hard References)</div>
+      <div class="section-body">
+        <div class="notice" style="margin-bottom:12px">
+          <strong>Up to 3 character / creature / vehicle assets, plus one landscape and one cityscape asset.</strong><br>
+          These are treated as fixed elements to be placed into the scene exactly as described or shown — not blended or reinterpreted. Each can be typed text or an uploaded reference image.
+        </div>
+
+        <div class="asset-lbl" style="margin-top:4px">CHARACTERS / CREATURES / VEHICLES</div>
+        <div id="actor-list"></div>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:6px;margin-bottom:14px;flex-wrap:wrap;">
+          <button class="sec-btn" id="addActorBtn" onclick="addActor()">+ Add Asset</button>
+        </div>
+
+        <div class="asset-lbl">LANDSCAPE ASSET (single, optional)</div>
+        <div id="landscape-slot"></div>
+
+        <div class="asset-lbl" style="margin-top:14px">CITYSCAPE ASSET (single, optional)</div>
+        <div id="cityscape-slot"></div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Scene Elements</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Scene Location Type <span class="multi-note">up to 3</span>
+            <button class="dice" onclick="randField('Q3')">Randomize</button>
+          </div>
+          <div class="opts" id="Q3-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q3-custom" placeholder="Custom location..."><button class="sec-btn" onclick="addCustom('Q3')">Add</button></div>
+          <div class="tags" id="Q3-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Time and Lighting <span class="multi-note">up to 3</span>
+            <button class="dice" onclick="randField('Q4')">Randomize</button>
+          </div>
+          <div class="opts" id="Q4-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q4-custom" placeholder="Custom lighting..."><button class="sec-btn" onclick="addCustom('Q4')">Add</button></div>
+          <div class="tags" id="Q4-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Environmental Condition <span class="multi-note">up to 3</span>
+            <button class="dice" onclick="randField('Q5')">Randomize</button>
+          </div>
+          <div class="opts" id="Q5-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q5-custom" placeholder="Custom condition..."><button class="sec-btn" onclick="addCustom('Q5')">Add</button></div>
+          <div class="tags" id="Q5-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Set Dressing <span class="multi-note">up to 3</span>
+            <button class="dice" onclick="randField('Q6')">Randomize</button>
+          </div>
+          <div class="opts" id="Q6-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q6-custom" placeholder="Custom set dressing..."><button class="sec-btn" onclick="addCustom('Q6')">Add</button></div>
+          <div class="tags" id="Q6-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Technology or Magic Level <span class="multi-note">up to 3</span>
+            <button class="dice" onclick="randField('Q7')">Randomize</button>
+          </div>
+          <div class="opts" id="Q7-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q7-custom" placeholder="Custom tech or magic..."><button class="sec-btn" onclick="addCustom('Q7')">Add</button></div>
+          <div class="tags" id="Q7-tags"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Characters and Action</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Character Presence
+            <button class="dice" onclick="randField('Q8')">Randomize</button>
+          </div>
+          <div class="opts" id="Q8-opts"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Character Roles / Archetypes <span class="multi-note">up to 3</span>
+            <button class="dice" onclick="randField('Q9')">Randomize</button>
+          </div>
+          <div class="opts" id="Q9-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q9-custom" placeholder="Custom role..."><button class="sec-btn" onclick="addCustom('Q9')">Add</button></div>
+          <div class="tags" id="Q9-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Secondary Entities <span class="multi-note">up to 3</span>
+            <button class="dice" onclick="randField('Q10')">Randomize</button>
+          </div>
+          <div class="opts" id="Q10-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q10-custom" placeholder="Custom entity..."><button class="sec-btn" onclick="addCustom('Q10')">Add</button></div>
+          <div class="tags" id="Q10-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Primary Action or Activity <span class="multi-note">up to 3</span>
+            <button class="dice" onclick="randField('Q11')">Randomize</button>
+          </div>
+          <div class="opts" id="Q11-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q11-custom" placeholder="Custom action..."><button class="sec-btn" onclick="addCustom('Q11')">Add</button></div>
+          <div class="tags" id="Q11-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Emotional Tone <span class="multi-note">up to 3</span>
+            <button class="dice" onclick="randField('Q12')">Randomize</button>
+          </div>
+          <div class="opts" id="Q12-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q12-custom" placeholder="Custom tone..."><button class="sec-btn" onclick="addCustom('Q12')">Add</button></div>
+          <div class="tags" id="Q12-tags"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Cinematic Controls</div>
+      <div class="section-body">
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Shot Composition and Framing <span class="multi-note">up to 3</span>
+            <button class="dice" onclick="randField('Q13')">Randomize</button>
+          </div>
+          <div class="opts" id="Q13-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q13-custom" placeholder="Custom framing..."><button class="sec-btn" onclick="addCustom('Q13')">Add</button></div>
+          <div class="tags" id="Q13-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Focus Balance
+            <button class="dice" onclick="randField('Q14')">Randomize</button>
+          </div>
+          <div class="opts" id="Q14-opts"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Depth Structure <span class="multi-note">up to 3</span>
+            <button class="dice" onclick="randField('Q15')">Randomize</button>
+          </div>
+          <div class="opts" id="Q15-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q15-custom" placeholder="Custom depth..."><button class="sec-btn" onclick="addCustom('Q15')">Add</button></div>
+          <div class="tags" id="Q15-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Color Palette <span class="multi-note">up to 3</span>
+            <button class="dice" onclick="randField('Q16')">Randomize</button>
+          </div>
+          <div class="opts" id="Q16-opts"></div>
+          <div class="custom-row"><input type="text" class="txt" id="Q16-custom" placeholder="Custom palette..."><button class="sec-btn" onclick="addCustom('Q16')">Add</button></div>
+          <div class="tags" id="Q16-tags"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Contrast Level
+            <button class="dice" onclick="randField('Q17')">Randomize</button>
+          </div>
+          <div class="opts" id="Q17-opts"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Point of View
+            <button class="dice" onclick="randField('Q18')">Randomize</button>
+          </div>
+          <div class="opts" id="Q18-opts"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Style
+            <button class="dice" onclick="randField('Q19')">Randomize</button>
+          </div>
+          <div class="opts" id="Q19-opts"></div>
+        </div>
+
+        <div class="field-wrap">
+          <div class="field-label">
+            Image Size
+            <button class="dice" onclick="randField('Q20')">Randomize</button>
+          </div>
+          <div class="opts" id="Q20-opts"></div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Clarifications and Overrides</div>
+      <div class="section-body">
+        <div class="notice" style="margin-bottom:9px">
+          <strong>Authoritative — overrides everything else.</strong> Use this for spatial, positional, scale, orientation, motion, or layering instructions you need followed exactly (e.g. "the figure stands at the far left edge, facing away from camera"). Anything entered here is treated as an absolute constraint and implemented verbatim.
+        </div>
+        <textarea class="txt" id="Q21-input" rows="3" placeholder="Enter clarifications, additions, or overrides. Leave blank if none."></textarea>
+      </div>
+    </div>
+
+  </div>
+
+  <div class="out-col">
+    <div class="out-lbl">Generated Prompt</div>
+    <div class="out-body empty" id="outPrompt">Connect your API key, fill the form, and click Generate.</div>
+    <button class="gen-btn" id="genBtn" onclick="generatePrompt()">Generate Prompt</button>
+    <div class="err" id="gen-err"></div>
+    <div class="action-row">
+      <button class="copy-btn" onclick="copyPrompt()">Copy Prompt</button>
+      <button class="reset-btn" onclick="resetApp()">Reset All</button>
+    </div>
+    <div class="preview-lbl">Form Summary</div>
+    <div class="preview-body" id="livePreview">Select a genre to begin...</div>
+  </div>
+
+</div>
+
+<footer>r/CCsAIWorldBuilders - Cosmic Cowboy's AI Worldbuilders - Cinematic narrative scenes, any genre</footer>
+
+<script>
+const XAI_ENDPOINT = 'https://api.x.ai/v1/chat/completions';
+const XAI_MODEL    = 'grok-4.3';
+
+const Q = {
+  Q1: { type:'multi', max:3, opts:[
+    'Science Fiction','Fantasy','Urban Fantasy','Horror','Noir','Old West',
+    'Medieval Historical','Modern Day','Post-Apocalyptic','Cyberpunk'
+  ]},
+  Q3: { type:'multi', max:3, opts:[
+    'Private Residence Interior','Bar or Tavern Interior','Cafe or Shop Interior','City Street',
+    'Back Alley','Town Square','Wilderness Area','Ruined Structure','Industrial Floor',
+    'Laboratory or Research Room','Ocean Surface','Ocean Floor','Mid-Level Open Ocean'
+  ]},
+  Q4: { type:'multi', max:3, opts:[
+    'Dawn','Morning','Noon','Afternoon','Golden Hour','Sunset','Night',
+    'Neon Lighting','Firelight','Overcast Diffuse Light','Underwater Light Shafts'
+  ]},
+  Q5: { type:'multi', max:3, opts:[
+    'Clear Air','Light Haze','Heavy Haze','Falling Rain','Wet Ground Only','Falling Snow',
+    'Drifting Fog','Low Mist','Rising Sparks','Floating Embers'
+  ]},
+  Q6: { type:'multi', max:3, opts:[
+    'Minimal Clean Space','Light Clutter','Heavy Clutter','Ruined Debris','Plant Overgrowth',
+    'High-Tech Screens and Displays','Loose Tools and Equipment','Whale Fall Remains',
+    'Ritual Symbols and Markings','Hanging Cables and Wires'
+  ]},
+  Q7: { type:'multi', max:3, opts:[
+    'Low Tech','Industrial Tech','Modern Tech','Near-Future Tech','Advanced Sci-Fi Tech',
+    'Earth Magic','Fire Magic','Air Magic','Water Magic','Unrestricted Magic'
+  ]},
+  Q8: { type:'single', opts:[
+    'One Character','Two Characters','Group of Three to Six','Crowd','No Characters'
+  ]},
+  Q9: { type:'multi', max:3, opts:[
+    'Civilian','Hero','Villain','Soldier','Warrior','Mage','Detective','Scientist','Engineer','Rogue'
+  ]},
+  Q10: { type:'multi', max:3, opts:[
+    'Animals','Creatures','Monsters','Robots','Drones','Vehicles','Machines',
+    'Civilians','Soldiers','Guards','Spirits','Apparitions'
+  ]},
+  Q11: { type:'multi', max:3, opts:[
+    'Quiet Conversation','Confrontation','Chase','Combat','Investigation',
+    'Ritual','Discovery','Rescue','Arrival','Reflection'
+  ]},
+  Q12: { type:'multi', max:3, opts:[
+    'Calm','Hopeful','Tense','Fearful','Tragic','Angry','Triumphant','Mysterious','Playful','Detached'
+  ]},
+  Q13: { type:'multi', max:3, opts:[
+    'Extreme Close-Up','Close-Up','Medium Shot','Full-Body Shot','Over-the-Shoulder',
+    'Group Shot','Wide Establishing Shot','Low Angle','High Angle','Silhouette'
+  ]},
+  Q14: { type:'single', opts:[
+    'Character-Focused','Balanced','Environment-Focused'
+  ]},
+  Q15: { type:'multi', max:3, opts:[
+    'Foreground Emphasis','Midground Emphasis','Background Emphasis','Layered Depth','Flat Depth'
+  ]},
+  Q16: { type:'multi', max:3, opts:[
+    'Warm Tones','Cool Tones','Neutral Tones','High Saturation','Muted Tones','Monochrome',
+    'Stylized Color','Pastel Tones','Earth Tones','Metallic Accents'
+  ]},
+  Q17: { type:'single', opts:[
+    'Low Contrast','Neutral Contrast','High Contrast','Dramatic Contrast'
+  ]},
+  Q18: { type:'single', opts:[
+    'Wide Aerial','High Vantage','Eye Level','Low Ground-Up','Isometric','Foreground Framed'
+  ]},
+  Q19: { type:'single', descs:{
+    'Photorealism':'Extremely true-to-life lighting, textures, and materials.',
+    'Hyper Realism':'More detailed and intensified than real life; dramatic clarity and micro-textures.',
+    'Cinematic Realism':'Film-like composition, dramatic lighting, and high production value.',
+    'Surrealism':'Realistic execution applied to impossible or dreamlike imagery.',
+    'Fantasy Realism':'Realistic rendering with fantastical or surreal elements.',
+    'Digital Painting / Concept Art':'Painterly edges, atmospheric depth, high detail but not fully photographic.',
+    'Impressionistic Realism':'Looser strokes, softer detail, strong emphasis on mood and light.',
+    'Classical Oil Painting':'Traditional fine-art look with visible brushwork and soft forms.',
+    'Anime':'Stylized characters, clean linework, bold expressions, and controlled shading.',
+    'Low-Poly Stylized':'Simplified geometric shapes, minimal textures, and stylized shading.'
+  }, opts:[
+    'Photorealism','Hyper Realism','Cinematic Realism','Surrealism','Fantasy Realism',
+    'Digital Painting / Concept Art','Impressionistic Realism','Classical Oil Painting',
+    'Anime','Low-Poly Stylized'
+  ]},
+  Q20: { type:'single', opts:['Square','Portrait Tall','Landscape Wide'] },
+};
+
+let ans      = {};
+let custom   = {};
+let actors   = [];
+let aid      = 0;
+let landscapeAsset = null;
+let cityscapeAsset = null;
+
+const PRESETS = {
+  noirConfrontation: {
+    Q1:['Noir','Horror'],
+    Q3:['Back Alley','Bar or Tavern Interior'], Q4:['Night','Neon Lighting'],
+    Q5:['Drifting Fog','Light Haze'], Q6:['Heavy Clutter','Hanging Cables and Wires'],
+    Q7:['Modern Tech'], Q8:'Two Characters', Q9:['Detective','Villain'],
+    Q10:['Civilians'], Q11:['Confrontation'], Q12:['Tense','Mysterious'],
+    Q13:['Low Angle','Close-Up'], Q14:'Character-Focused', Q15:['Foreground Emphasis','Layered Depth'],
+    Q16:['Monochrome','Cool Tones'], Q17:'Dramatic Contrast', Q18:'Eye Level',
+    Q19:'Cinematic Realism', Q20:'Landscape Wide'
+  },
+  fantasyRitual: {
+    Q1:['Fantasy'],
+    Q3:['Ruined Structure','Wilderness Area'], Q4:['Night','Firelight'],
+    Q5:['Drifting Fog','Low Mist'], Q6:['Ritual Symbols and Markings','Plant Overgrowth'],
+    Q7:['Earth Magic','Unrestricted Magic'], Q8:'Group of Three to Six', Q9:['Mage','Warrior'],
+    Q10:['Spirits','Creatures'], Q11:['Ritual'], Q12:['Mysterious','Tense'],
+    Q13:['Wide Establishing Shot','Group Shot'], Q14:'Balanced', Q15:['Layered Depth','Background Emphasis'],
+    Q16:['Earth Tones','Muted Tones'], Q17:'High Contrast', Q18:'Low Ground-Up',
+    Q19:'Fantasy Realism', Q20:'Landscape Wide'
+  },
+  cyberpunkChase: {
+    Q1:['Cyberpunk','Science Fiction'],
+    Q3:['City Street','Back Alley'], Q4:['Night','Neon Lighting'],
+    Q5:['Falling Rain','Heavy Haze'], Q6:['High-Tech Screens and Displays','Hanging Cables and Wires'],
+    Q7:['Advanced Sci-Fi Tech','Near-Future Tech'], Q8:'Two Characters', Q9:['Rogue','Soldier'],
+    Q10:['Drones','Vehicles'], Q11:['Chase'], Q12:['Tense','Fearful'],
+    Q13:['Wide Establishing Shot','Low Angle'], Q14:'Balanced', Q15:['Layered Depth','Foreground Emphasis'],
+    Q16:['High Saturation','Cool Tones'], Q17:'Dramatic Contrast', Q18:'High Vantage',
+    Q19:'Cinematic Realism', Q20:'Portrait Tall'
+  },
+  westernStandoff: {
+    Q1:['Old West'],
+    Q3:['Town Square','City Street'], Q4:['Noon','Golden Hour'],
+    Q5:['Light Haze','Clear Air'], Q6:['Light Clutter','Loose Tools and Equipment'],
+    Q7:['Low Tech'], Q8:'Two Characters', Q9:['Hero','Villain'],
+    Q10:['Civilians'], Q11:['Confrontation'], Q12:['Tense','Triumphant'],
+    Q13:['Wide Establishing Shot','Low Angle'], Q14:'Character-Focused', Q15:['Foreground Emphasis','Background Emphasis'],
+    Q16:['Warm Tones','Earth Tones'], Q17:'High Contrast', Q18:'Eye Level',
+    Q19:'Cinematic Realism', Q20:'Landscape Wide'
+  },
+  quietApocalypse: {
+    Q1:['Post-Apocalyptic'],
+    Q3:['Ruined Structure','Wilderness Area'], Q4:['Overcast Diffuse Light','Afternoon'],
+    Q5:['Heavy Haze','Light Haze'], Q6:['Ruined Debris','Plant Overgrowth'],
+    Q7:['Low Tech','Industrial Tech'], Q8:'One Character', Q9:['Civilian'],
+    Q10:['Animals'], Q11:['Reflection'], Q12:['Tragic','Detached'],
+    Q13:['Wide Establishing Shot','Silhouette'], Q14:'Environment-Focused', Q15:['Layered Depth','Background Emphasis'],
+    Q16:['Muted Tones','Earth Tones'], Q17:'Low Contrast', Q18:'Wide Aerial',
+    Q19:'Digital Painting / Concept Art', Q20:'Landscape Wide'
+  },
+};
+
+/* API */
+function confirmConnect() {
+  const key = document.getElementById('apiKey').value.trim();
+  const btn = document.getElementById('connectBtn');
+  if (!key || key.length < 6) {
+    btn.textContent = 'NEED KEY';
+    btn.style.cssText = 'font-size:0.66rem;padding:6px 16px;background:rgba(200,30,30,0.12);color:var(--red);border-color:rgba(200,30,30,0.35);';
+    return;
+  }
+  localStorage.setItem('xaiKey_scene', key);
+  btn.textContent = 'CONNECTED';
+  btn.style.cssText = 'font-size:0.66rem;padding:6px 16px;background:rgba(0,160,90,0.15);color:var(--green);border-color:rgba(0,160,90,0.35);';
+}
+function apiKey()   { return document.getElementById('apiKey').value.trim(); }
+function apiReady() { return document.getElementById('connectBtn').textContent === 'CONNECTED'; }
+
+/* RENDER */
+function renderAll() {
+  Object.keys(Q).forEach(qid => renderField(qid));
+  renderActors();
+  renderSingleAsset('landscape-slot', landscapeAsset, 'landscape');
+  renderSingleAsset('cityscape-slot', cityscapeAsset, 'cityscape');
+  updatePreview();
+}
+
+function renderField(qid) {
+  const q = Q[qid];
+  const cont = document.getElementById(`${qid}-opts`);
+  if (!cont) return;
+  cont.innerHTML = '';
+  q.opts.forEach(opt => {
+    const b = document.createElement('button');
+    b.className = 'opt';
+    b.textContent = opt;
+    if (q.descs && q.descs[opt]) b.title = q.descs[opt];
+    const sel = ans[qid];
+    if (sel && (Array.isArray(sel) ? sel.includes(opt) : sel === opt)) b.classList.add('on');
+    b.onclick = () => handleClick(qid, opt);
+    cont.appendChild(b);
+  });
+  renderTags(qid);
+}
+
+function handleClick(qid, opt) {
+  const q = Q[qid];
+  if (q.type === 'single') {
+    ans[qid] = (ans[qid] === opt) ? null : opt;
+  } else {
+    let cur = ans[qid] || [];
+    if (cur.includes(opt)) { ans[qid] = cur.filter(v => v !== opt); }
+    else if (cur.length < q.max) { ans[qid] = [...cur, opt]; }
+    else return;
+  }
+  renderField(qid);
+  updatePreview();
+}
+
+function addCustom(qid) {
+  const inp = document.getElementById(`${qid}-custom`);
+  const val = inp.value.trim(); if (!val) return;
+  if (!custom[qid]) custom[qid] = [];
+  custom[qid].push(val); inp.value = '';
+  renderTags(qid); updatePreview();
+}
+
+function removeCustom(qid, idx) {
+  custom[qid].splice(idx, 1);
+  renderTags(qid); updatePreview();
+}
+
+function renderTags(qid) {
+  const wrap = document.getElementById(`${qid}-tags`); if (!wrap) return;
+  wrap.innerHTML = (custom[qid] || []).map((t, i) =>
+    `<span class="tag">${t}<button onclick="removeCustom('${qid}',${i})">x</button></span>`
+  ).join('');
+}
+
+function randField(qid) {
+  const q = Q[qid];
+  if (q.type === 'single') { ans[qid] = q.opts[Math.floor(Math.random() * q.opts.length)]; }
+  else { const n = Math.floor(Math.random() * q.max) + 1; ans[qid] = [...q.opts].sort(() => 0.5 - Math.random()).slice(0, n); }
+  renderField(qid);
+  updatePreview();
+}
+
+/* ASSETS — fixed references, not blended; each is text or an uploaded image */
+function esc(s) { return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;'); }
+
+function blankAsset() { return { type: 'text', name: '', b64: null, mime: '', fname: '', preview: '' }; }
+
+function actorBody(a, idPrefix) {
+  return a.type === 'image'
+    ? `<div class="asset-row">
+         <div class="img-drop" onclick="pickFile('${idPrefix}')" id="drop-${idPrefix}">
+           ${a.preview
+             ? `<img src="${a.preview}"><span style="font-size:0.62rem;color:var(--soft-cyan)">${esc(a.fname||'')}</span>`
+             : '&#128206; Click to upload image'}
+         </div>
+       </div>
+       <input type="file" id="file-${idPrefix}" accept="image/*" style="display:none" onchange="loadImg('${idPrefix}',event)">`
+    : `<div class="asset-row">
+         <input type="text" class="asset-name" placeholder="e.g. a grizzled bounty hunter, a chrome wolf-creature, a rust-streaked hover-truck..." value="${esc(a.name)}" oninput="updateAssetField('${idPrefix}','name',this.value)">
+       </div>`;
+}
+
+function renderActors() {
+  const list = document.getElementById('actor-list');
+  list.innerHTML = '';
+  actors.forEach((a, i) => {
+    const idPrefix = `actor-${a.id}`;
+    const div = document.createElement('div');
+    div.className = 'asset-item';
+    div.innerHTML = `
+      <button class="rm-btn" onclick="removeActor(${a.id})">x</button>
+      <div class="asset-lbl">ASSET ${i + 1}</div>
+      <div class="type-tabs">
+        <button class="type-tab ${a.type === 'text'  ? 'active' : ''}" onclick="setAssetType('actor',${a.id},'text')">TEXT</button>
+        <button class="type-tab ${a.type === 'image' ? 'active' : ''}" onclick="setAssetType('actor',${a.id},'image')">IMAGE</button>
+      </div>
+      ${actorBody(a, idPrefix)}`;
+    list.appendChild(div);
+  });
+  document.getElementById('addActorBtn').style.display = actors.length >= 3 ? 'none' : '';
+}
+
+function addActor() {
+  if (actors.length >= 3) return;
+  actors.push({ id: ++aid, ...blankAsset() });
+  renderActors();
+}
+
+function removeActor(id) {
+  actors = actors.filter(a => a.id !== id);
+  renderActors(); updatePreview();
+}
+
+function renderSingleAsset(containerId, asset, kind) {
+  const el = document.getElementById(containerId);
+  if (!asset) {
+    el.innerHTML = `<button class="sec-btn" onclick="addSingleAsset('${kind}')">+ Add ${kind === 'landscape' ? 'Landscape' : 'Cityscape'} Asset</button>`;
+    return;
+  }
+  const idPrefix = `${kind}-asset`;
+  const div = document.createElement('div');
+  div.className = 'asset-item';
+  div.innerHTML = `
+    <button class="rm-btn" onclick="removeSingleAsset('${kind}')">x</button>
+    <div class="asset-lbl">${kind.toUpperCase()} ASSET</div>
+    <div class="type-tabs">
+      <button class="type-tab ${asset.type === 'text'  ? 'active' : ''}" onclick="setAssetType('${kind}',null,'text')">TEXT</button>
+      <button class="type-tab ${asset.type === 'image' ? 'active' : ''}" onclick="setAssetType('${kind}',null,'image')">IMAGE</button>
+    </div>
+    ${asset.type === 'image'
+      ? `<div class="asset-row">
+           <div class="img-drop" onclick="pickFile('${idPrefix}')" id="drop-${idPrefix}">
+             ${asset.preview
+               ? `<img src="${asset.preview}"><span style="font-size:0.62rem;color:var(--soft-cyan)">${esc(asset.fname||'')}</span>`
+               : '&#128206; Click to upload image'}
+           </div>
+         </div>
+         <input type="file" id="file-${idPrefix}" accept="image/*" style="display:none" onchange="loadImg('${idPrefix}',event)">`
+      : `<div class="asset-row">
+           <input type="text" class="asset-name" placeholder="e.g. a fog-choked pine valley with a single dirt road, a rain-slick downtown skyline at night..." value="${esc(asset.name)}" oninput="updateAssetField('${idPrefix}','name',this.value)">
+         </div>`}`;
+  el.innerHTML = '';
+  el.appendChild(div);
+}
+
+function addSingleAsset(kind) {
+  if (kind === 'landscape') landscapeAsset = blankAsset();
+  else cityscapeAsset = blankAsset();
+  renderSingleAsset(kind === 'landscape' ? 'landscape-slot' : 'cityscape-slot', kind === 'landscape' ? landscapeAsset : cityscapeAsset, kind);
+  updatePreview();
+}
+
+function removeSingleAsset(kind) {
+  if (kind === 'landscape') landscapeAsset = null;
+  else cityscapeAsset = null;
+  renderSingleAsset(kind === 'landscape' ? 'landscape-slot' : 'cityscape-slot', null, kind);
+  updatePreview();
+}
+
+/* idPrefix forms: "actor-<id>", "landscape-asset", "cityscape-asset" */
+function findAsset(idPrefix) {
+  if (idPrefix.startsWith('actor-')) {
+    const id = parseInt(idPrefix.slice(6));
+    return actors.find(a => a.id === id);
+  }
+  if (idPrefix === 'landscape-asset') return landscapeAsset;
+  if (idPrefix === 'cityscape-asset') return cityscapeAsset;
+  return null;
+}
+
+function updateAssetField(idPrefix, field, val) {
+  const a = findAsset(idPrefix); if (!a) return;
+  a[field] = val;
+  updatePreview();
+}
+
+function setAssetType(kind, id, type) {
+  let a;
+  if (kind === 'actor') a = actors.find(x => x.id === id);
+  else if (kind === 'landscape') a = landscapeAsset;
+  else a = cityscapeAsset;
+  if (!a) return;
+  a.type = type;
+  if (kind === 'actor') renderActors();
+  else renderSingleAsset(kind === 'landscape' ? 'landscape-slot' : 'cityscape-slot', a, kind);
+  updatePreview();
+}
+
+function pickFile(idPrefix) { document.getElementById(`file-${idPrefix}`)?.click(); }
+
+function loadImg(idPrefix, e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const a = findAsset(idPrefix); if (!a) return;
+    const data = ev.target.result;
+    a.b64 = data.split(',')[1]; a.mime = file.type || 'image/jpeg';
+    a.fname = file.name; a.preview = data;
+    if (idPrefix.startsWith('actor-')) renderActors();
+    else if (idPrefix === 'landscape-asset') renderSingleAsset('landscape-slot', landscapeAsset, 'landscape');
+    else renderSingleAsset('cityscape-slot', cityscapeAsset, 'cityscape');
+    updatePreview();
+  };
+  reader.readAsDataURL(file);
+}
+
+function describeAsset(a, label) {
+  if (!a) return null;
+  if (a.type === 'image') return a.b64 ? `${label}: [uploaded reference image]` : null;
+  return a.name.trim() ? `${label}: ${a.name.trim()}` : null;
+}
+
+/* HELPERS */
+function getAns(qid) {
+  const a = ans[qid]; const c = custom[qid] || [];
+  const base = Array.isArray(a) ? a.join(', ') : (a || '');
+  return [base, ...c].filter(Boolean).join(', ');
+}
+
+function stateToText() {
+  const lines = [];
+  const genre = getAns('Q1'); if (genre) lines.push(`Genre Family: ${genre}`);
+
+  const assetLines = [];
+  actors.forEach((a, i) => { const d = describeAsset(a, `Asset ${i + 1}`); if (d) assetLines.push(d); });
+  const ld = describeAsset(landscapeAsset, 'Landscape Asset'); if (ld) assetLines.push(ld);
+  const cd = describeAsset(cityscapeAsset, 'Cityscape Asset'); if (cd) assetLines.push(cd);
+  if (assetLines.length) lines.push(`Hard Assets (use exactly as given, do not reinterpret):\n  ${assetLines.join('\n  ')}`);
+
+  const f = (label, qid) => { const v = getAns(qid); if (v) lines.push(`${label}: ${v}`); };
+  f('Scene Location', 'Q3'); f('Time and Lighting', 'Q4'); f('Environmental Condition', 'Q5');
+  f('Set Dressing', 'Q6'); f('Technology or Magic Level', 'Q7'); f('Character Presence', 'Q8');
+  f('Character Roles', 'Q9'); f('Secondary Entities', 'Q10'); f('Primary Action', 'Q11');
+  f('Emotional Tone', 'Q12'); f('Shot Composition and Framing', 'Q13'); f('Focus Balance', 'Q14');
+  f('Depth Structure', 'Q15'); f('Color Palette', 'Q16'); f('Contrast Level', 'Q17');
+  f('Point of View', 'Q18'); f('Style', 'Q19'); f('Image Size', 'Q20');
+
+  const q21 = document.getElementById('Q21-input')?.value.trim();
+  if (q21) lines.push(`Absolute Constraints (override everything above, follow verbatim): ${q21}`);
+  return lines.join('\n');
+}
+
+function updatePreview() {
+  const text = stateToText();
+  document.getElementById('livePreview').textContent = text || 'Select a genre to begin...';
+}
+
+/* PRESETS */
+function applyPreset(name) {
+  if (name === 'random') { randomizeAll(); return; }
+  const p = PRESETS[name]; if (!p) return;
+  ans = {}; custom = {}; actors = []; landscapeAsset = null; cityscapeAsset = null;
+  Object.entries(p).forEach(([k, v]) => { ans[k] = v; });
+  renderAll();
+}
+
+function randomizeAll() {
+  ans = {}; custom = {}; actors = []; landscapeAsset = null; cityscapeAsset = null;
+  Object.keys(Q).forEach(qid => {
+    const q = Q[qid];
+    if (q.type === 'single') { ans[qid] = q.opts[Math.floor(Math.random() * q.opts.length)]; }
+    else { const n = Math.floor(Math.random() * q.max) + 1; ans[qid] = [...q.opts].sort(() => 0.5 - Math.random()).slice(0, n); }
+  });
+  renderAll();
+}
+
+/* GENERATE */
+async function generatePrompt() {
+  if (!apiReady()) { showErr('Connect your API key first.'); return; }
+  if (!ans.Q1 || !ans.Q1.length) { showErr('Select at least one genre first.'); return; }
+  hideErr();
+
+  const hasAssets = actors.some(a => a.type === 'image' ? a.b64 : a.name.trim())
+    || (landscapeAsset && (landscapeAsset.type === 'image' ? landscapeAsset.b64 : landscapeAsset.name.trim()))
+    || (cityscapeAsset && (cityscapeAsset.type === 'image' ? cityscapeAsset.b64 : cityscapeAsset.name.trim()));
+
+  const systemPrompt = `You are the prompt engine for Cosmic Cowboy's SCENE GENERATOR. Output a richly detailed descriptive paragraph written in present tense — structured cinematic prose suitable for direct use as an image generation prompt. No labels, no preamble, no explanation. Begin immediately with the scene.
+
+━━━ OUTPUT FORMAT ━━━
+Write one cohesive paragraph (two short ones only for very complex scenes). Use spatial and relational language throughout — "in the foreground", "beyond the doorway", "where the light falls across", "just behind", "framed by", "moving toward" — so the image model understands how every element physically relates to the others in one continuous moment, not a list of things that merely coexist. Do not write a comma-separated list of terms; write connected, structured prose that moves naturally from setting, into the figures and action within it, into mood, then camera and rendering.
+
+GENRE COHERENCE RULE: Blend the selected genre families into one consistent visual world — every prop, character, technology, and architectural detail must feel like it belongs together in that blended setting (e.g. "Old West + Horror" means a frontier town rendered with dread and decay, not modern elements bleeding in).
+${hasAssets ? `
+━━━ THE HARD ASSET RULE — applies EXCLUSIVELY to items listed as Hard Assets ━━━
+Hard Assets are fixed elements supplied by the user — specific characters, creatures, vehicles, landscapes, or cityscapes — and must be placed into the scene exactly as described or shown, integrated naturally into the composition. Do NOT alter their core identity, species, design, or form, and do NOT treat them as style references to loosely inspire the scene. If an asset is an uploaded image, study its actual appearance — shapes, colors, materials, proportions, distinguishing features — and depict that same subject within the scene. Weave each asset into the scene's spatial layout (where it stands, what surrounds it, how light falls on it) rather than simply naming it.` : ''}
+
+ABSOLUTE CONSTRAINTS RULE: If the user has supplied Absolute Constraints (spatial, positional, scale, orientation, motion, or layering instructions), those override every other instruction in this prompt — cinematic, compositional, stylistic, or otherwise — and must be implemented exactly as written, with no reinterpretation or "improvement."
+
+Close the paragraph with concrete rendering qualities appropriate to the chosen style and mood — sharp focus or selective blur as appropriate, physically plausible lighting, fine surface and material detail, professional production-grade rendering.`;
+
+  const btn = document.getElementById('genBtn');
+  const out = document.getElementById('outPrompt');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Generating...';
+  out.textContent = ''; out.className = 'out-body';
+
+  const userBlocks = [];
+  actors.forEach((a, i) => {
+    if (a.type === 'image' && a.b64) {
+      userBlocks.push({ type: 'text', text: `Hard Asset ${i + 1} — uploaded reference image (use exactly as shown):` });
+      userBlocks.push({ type: 'image_url', image_url: { url: `data:${a.mime};base64,${a.b64}`, detail: 'high' } });
+    }
+  });
+  if (landscapeAsset && landscapeAsset.type === 'image' && landscapeAsset.b64) {
+    userBlocks.push({ type: 'text', text: `Landscape Hard Asset — uploaded reference image (use exactly as shown):` });
+    userBlocks.push({ type: 'image_url', image_url: { url: `data:${landscapeAsset.mime};base64,${landscapeAsset.b64}`, detail: 'high' } });
+  }
+  if (cityscapeAsset && cityscapeAsset.type === 'image' && cityscapeAsset.b64) {
+    userBlocks.push({ type: 'text', text: `Cityscape Hard Asset — uploaded reference image (use exactly as shown):` });
+    userBlocks.push({ type: 'image_url', image_url: { url: `data:${cityscapeAsset.mime};base64,${cityscapeAsset.b64}`, detail: 'high' } });
+  }
+  userBlocks.push({ type: 'text', text: `Generate a scene prompt for:\n\n${stateToText()}` });
+
+  try {
+    const res = await fetch(XAI_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey()}` },
+      body: JSON.stringify({
+        model: XAI_MODEL,
+        max_tokens: 1400,
+        reasoning_effort: 'none',
+        messages: [
+          { role: 'system', content: systemPrompt },
+          { role: 'user',   content: userBlocks }
+        ]
+      })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error?.message || `API error ${res.status}`);
+    const reply = (data.choices?.[0]?.message?.content || '').trim();
+    if (!reply) throw new Error('Empty response from API.');
+    out.textContent = reply; out.className = 'out-body';
+  } catch(e) {
+    showErr(e.message);
+    out.textContent = ''; out.className = 'out-body empty';
+  } finally {
+    btn.disabled = false; btn.textContent = 'Generate Prompt';
+  }
+}
+
+function showErr(msg) { const el = document.getElementById('gen-err'); el.textContent = msg; el.style.display = 'block'; }
+function hideErr()    { document.getElementById('gen-err').style.display = 'none'; }
+
+function copyPrompt() {
+  const out = document.getElementById('outPrompt');
+  if (out.classList.contains('empty') || !out.textContent.trim()) return;
+  navigator.clipboard.writeText(out.textContent).catch(() => {});
+}
+
+/* SAVE / LOAD / RESET */
+function saveCurrent() {
+  localStorage.setItem('cc_scene_v1', JSON.stringify({
+    ans, custom, actors, landscapeAsset, cityscapeAsset,
+    Q21: document.getElementById('Q21-input').value
+  }));
+  alert('Saved.');
+}
+function loadSaved() {
+  const raw = localStorage.getItem('cc_scene_v1'); if (!raw) { alert('No saved data.'); return; }
+  const d = JSON.parse(raw);
+  ans = d.ans || {}; custom = d.custom || {}; actors = d.actors || [];
+  landscapeAsset = d.landscapeAsset || null; cityscapeAsset = d.cityscapeAsset || null;
+  aid = actors.reduce((m, a) => Math.max(m, a.id || 0), 0);
+  if (d.Q21) document.getElementById('Q21-input').value = d.Q21;
+  renderAll(); alert('Loaded.');
+}
+function clearSaved() { localStorage.removeItem('cc_scene_v1'); alert('Cleared.'); }
+
+function resetApp() {
+  ans = {}; custom = {}; actors = []; aid = 0; landscapeAsset = null; cityscapeAsset = null;
+  document.getElementById('Q21-input').value = '';
+  document.getElementById('outPrompt').textContent = 'Connect your API key, fill the form, and click Generate.';
+  document.getElementById('outPrompt').className = 'out-body empty';
+  hideErr(); renderAll();
+}
+
+/* INIT */
+const savedKey = localStorage.getItem('xaiKey_scene');
+if (savedKey) {
+  document.getElementById('apiKey').value = savedKey;
+  confirmConnect();
+}
+document.getElementById('Q21-input').addEventListener('input', updatePreview);
+renderAll();
+</script>
+</body>
+</html>
