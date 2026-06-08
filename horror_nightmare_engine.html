@@ -92,6 +92,32 @@ textarea.txt { resize: vertical; min-height: 64px; }
 .pct-total.ok { color: var(--green); background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.20); }
 .pct-total.over { color: var(--red); background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.20); }
 
+.type-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+.type-tab {
+  flex: 1; padding: 3px;
+  font-size: 0.62rem; letter-spacing: 0.07em;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--dim);
+  cursor: pointer; border-radius: 3px;
+  font-family: 'Exo 2', sans-serif;
+  transition: all 0.15s;
+}
+.type-tab.active { border-color: var(--soft-cyan); color: var(--pale-blue); background: rgba(144,224,239,0.10); }
+
+.img-drop {
+  background: rgba(0,0,0,0.20);
+  border: 1px dashed var(--border);
+  border-radius: 4px; padding: 8px;
+  text-align: center; cursor: pointer;
+  font-size: 0.66rem; color: var(--dim);
+  transition: all 0.2s;
+  min-height: 42px; flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 3px;
+}
+.img-drop:hover { border-color: var(--soft-cyan); color: var(--pale-blue); }
+.img-drop img   { max-height: 48px; max-width: 100%; border-radius: 3px; }
+
 .preset-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; }
 .preset-btn { background: rgba(255,209,102,0.07); border: 1px solid rgba(255,209,102,0.28); color: var(--accent); font-family: 'Exo 2', sans-serif; font-size: 0.76rem; padding: 5px 11px; border-radius: 3px; cursor: pointer; transition: background 0.14s; }
 .preset-btn:hover { background: rgba(255,209,102,0.16); }
@@ -915,13 +941,30 @@ function renderContribs() {
   contribs.forEach((c, i) => {
     const div = document.createElement('div');
     div.className = 'contrib-item';
+
+    const body = c.type === 'image'
+      ? `<div class="contrib-row">
+           <div class="img-drop" onclick="pickFile(${c.id})" id="drop-${c.id}">
+             ${c.preview
+               ? `<img src="${c.preview}"><span style="font-size:0.62rem;color:var(--soft-cyan)">${esc(c.fname||'')}</span>`
+               : '&#128206; Click to upload image'}
+           </div>
+           <input type="number" class="contrib-pct" min="1" max="100" placeholder="%" value="${c.pct||''}" oninput="updateContrib(${c.id},'pct',this.value)">
+         </div>
+         <input type="file" id="file-${c.id}" accept="image/*" style="display:none" onchange="loadImg(${c.id},event)">`
+      : `<div class="contrib-row">
+           <input type="text" class="contrib-name" placeholder="e.g. Nosferatu, The Thing, H.R. Giger, Silent Hill nurse..." value="${esc(c.name)}" oninput="updateContrib(${c.id},'name',this.value)">
+           <input type="number" class="contrib-pct" min="1" max="100" placeholder="%" value="${c.pct||''}" oninput="updateContrib(${c.id},'pct',this.value)">
+         </div>`;
+
     div.innerHTML = `
       <button class="rm-btn" onclick="removeContrib(${c.id})">×</button>
       <div class="contrib-lbl">INSPIRATION ${i + 1}</div>
-      <div class="contrib-row">
-        <input type="text" class="contrib-name" placeholder="e.g. Nosferatu, The Thing, H.R. Giger, Silent Hill nurse..." value="${esc(c.name)}" oninput="updateContrib(${c.id},'name',this.value)">
-        <input type="number" class="contrib-pct" min="1" max="100" placeholder="%" value="${c.pct||''}" oninput="updateContrib(${c.id},'pct',this.value)">
-      </div>`;
+      <div class="type-tabs">
+        <button class="type-tab ${c.type === 'text'  ? 'active' : ''}" onclick="setContribType(${c.id},'text')">TEXT</button>
+        <button class="type-tab ${c.type === 'image' ? 'active' : ''}" onclick="setContribType(${c.id},'image')">IMAGE</button>
+      </div>
+      ${body}`;
     list.appendChild(div);
   });
   document.getElementById('addBtn').style.display = contribs.length >= 4 ? 'none' : '';
@@ -930,8 +973,29 @@ function renderContribs() {
 
 function addContrib() {
   if (contribs.length >= 4) return;
-  contribs.push({ id: ++cid, name: '', pct: '' });
+  contribs.push({ id: ++cid, type: 'text', name: '', pct: '' });
   renderContribs();
+}
+
+function setContribType(id, type) {
+  const c = contribs.find(c => c.id === id); if (!c) return;
+  c.type = type;
+  renderContribs(); updatePreview();
+}
+
+function pickFile(id) { document.getElementById(`file-${id}`)?.click(); }
+
+function loadImg(id, e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const c = contribs.find(c => c.id === id); if (!c) return;
+    const data = ev.target.result;
+    c.b64 = data.split(',')[1]; c.mime = file.type || 'image/jpeg';
+    c.fname = file.name; c.preview = data;
+    renderContribs(); updatePreview();
+  };
+  reader.readAsDataURL(file);
 }
 
 function removeContrib(id) {
@@ -954,7 +1018,7 @@ function calcPct() {
 
 function validateContribs() {
   if (contribs.length === 0) return 'Add at least one horror inspiration.';
-  if (contribs.some(c => !c.name.trim())) return 'All inspirations must have a name.';
+  if (contribs.some(c => c.type === 'image' ? !c.b64 : !c.name.trim())) return 'Every inspiration needs a name or an uploaded image.';
   const total = contribs.reduce((s, c) => s + (parseInt(c.pct) || 0), 0);
   if (total !== 100) return `Percentages must total 100. Currently ${total}%.`;
   return null;
@@ -979,7 +1043,7 @@ function randomizeContribs() {
     const pct = i === count - 1 ? remaining
       : Math.round(Math.random() * (remaining - (count - i - 1) * 10) + 10);
     remaining -= pct;
-    contribs.push({ id: ++cid, name, pct });
+    contribs.push({ id: ++cid, type: 'text', name, pct });
   }
   renderContribs(); updatePreview();
 }
@@ -1026,16 +1090,21 @@ async function generatePrompt() {
   const typeIdx = getTypeIdx();
   const isLocation = typeIdx === 4;
 
-  const systemPrompt = `You are the prompt engine for Cosmic Cowboy's HORROR NIGHTMARE ENGINE. Output ONLY a dense, vivid, comma-separated image generation prompt. No labels, no preamble, no explanation — start immediately with descriptive terms.
+  const systemPrompt = `You are the prompt engine for Cosmic Cowboy's HORROR NIGHTMARE ENGINE. Output a richly detailed descriptive paragraph written in present tense — structured prose suitable for direct use as an image generation prompt. No labels, no preamble, no explanation. Begin immediately with the subject or scene.
+
+━━━ OUTPUT FORMAT ━━━
+Write one cohesive paragraph (two short ones only for very complex subjects or scenes). Use spatial and relational language throughout — "where the flesh gives way to", "pooling beneath", "framed by", "rising from the dark behind", "pressed against" — so the image model understands how elements physically relate to each other, not just that they coexist. Do not write a comma-separated list of terms; write connected, structured prose dense with dread.
 
 CREATION TYPE: ${ans.Q2}
-INSPIRATIONS: ${contribs.map(c => `${c.name} (${c.pct}%)`).join(', ')}
+${contribs.length
+  ? `━━━ THE INSPIRATION RULE — applies EXCLUSIVELY to the Inspirations list ━━━
+Inspirations are the horror sources fused into this subject or scene — this is STRUCTURAL SUBSTITUTION, not reference-dropping. Translate each inspiration's dominance percentage into how much of the actual form, atmosphere, and material language it constitutes: a 60% inspiration dominates the form, surface, and mood; a 20% inspiration visibly shapes specific details or undertones. Describe the result AS IF it is physically built from these influences, fused into one coherent entity or scene — never as a checklist of references sitting side by side.
+If an inspiration is an uploaded reference image, study its actual forms, textures, lighting, and proportions, and weave those real visual qualities into the subject the same way — structurally, not as an add-on. Never name the inspirations explicitly in the output (no source titles, no creature names, no percentages, no "blend of" or "combination of").`
+  : ''}
 
-INSPIRATION RULE: Translate inspiration dominance percentages into visual weight and material language. A 60% inspiration dominates the form, surface, and atmosphere. A 20% inspiration is a present but secondary influence. Never name the inspirations explicitly in the output. Fuse them organically.
+HORROR COHERENCE RULE: Every visual element must serve psychological impact, physical dread, or supernatural menace. Maintain tonal consistency throughout — no whimsical, comedic, or heroic elements unless explicitly overridden in clarifications.
 
-HORROR COHERENCE RULE: Every visual element must serve psychological impact, physical dread, or supernatural menace. Maintain tonal consistency. No whimsical, comedic, or heroic elements unless explicitly overridden.
-
-QUALITY RULE: All output is ultra-fine, production-grade, hyper-detailed. Include: precise surface textures (decay, biological imperfection, corruption, grime), sharp focus and clean edges where appropriate, cinematic physically plausible lighting, dense organic or environmental detail. Low-detail or abstract output only if explicitly requested in overrides.
+Close the paragraph with: ultra-fine, production-grade, hyper-detailed surface textures — decay, biological imperfection, corruption, grime, wet sheen, or rot where appropriate — sharp focus and clean edges where called for, cinematic physically plausible lighting, dense atmospheric detail.
 
 FORBIDDEN in output: inspiration names, percentages, "blend of", "combination of", any reference to source materials by name, preamble text, explanation.`;
 
@@ -1045,17 +1114,24 @@ FORBIDDEN in output: inspiration names, percentages, "blend of", "combination of
   btn.innerHTML = '<span class="spinner"></span>Generating...';
   out.textContent = ''; out.className = 'out-body';
 
+  const userBlocks = [];
+  contribs.filter(c => c.type === 'image' && c.b64).forEach(c => {
+    userBlocks.push({ type: 'text', text: `Inspiration (${c.pct}%) — uploaded reference image:` });
+    userBlocks.push({ type: 'image_url', image_url: { url: `data:${c.mime};base64,${c.b64}`, detail: 'high' } });
+  });
+  userBlocks.push({ type: 'text', text: `Generate a horror image prompt for:\n\n${stateToText()}` });
+
   try {
     const res = await fetch(XAI_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey()}` },
       body: JSON.stringify({
         model: XAI_MODEL,
-        max_tokens: 700,
+        max_tokens: 1100,
         reasoning_effort: 'none',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user',   content: `Generate a horror image prompt for:\n\n${stateToText()}` }
+          { role: 'user',   content: userBlocks }
         ]
       })
     });
@@ -1086,7 +1162,7 @@ function stateToText() {
   const lines = [];
   const push = (label, qid) => { const v = getVal(qid); if (v) lines.push(`${label}: ${v}`); };
   const type = ans.Q2; if (type) lines.push(`Creation Type: ${type}`);
-  lines.push(`Inspirations: ${contribs.map(c => `${c.name} (${c.pct}%)`).join(', ')}`);
+  lines.push(`Inspirations: ${contribs.map(c => c.type === 'image' ? `[uploaded image] (${c.pct}%)` : `${c.name} (${c.pct}%)`).join(', ')}`);
   push('Horror Subgenre', 'Q3');
   push('Era', 'Q5');
   if (getTypeIdx() !== 4) push('Setting', 'Q6');
@@ -1120,7 +1196,7 @@ function applyPreset(name) {
   ans = {}; custom = {}; contribs = [];
   Object.entries(p).forEach(([k, v]) => {
     if (k === 'contributors') {
-      contribs = v.map(c => ({ id: ++cid, name: c.name, pct: c.pct }));
+      contribs = v.map(c => ({ id: ++cid, type: 'text', name: c.name, pct: c.pct }));
     } else {
       ans[k] = v;
     }
