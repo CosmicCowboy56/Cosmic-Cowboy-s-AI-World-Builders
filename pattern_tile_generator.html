@@ -1056,6 +1056,78 @@ const PATTERNS = {
     },
   },
 
+  mapTile: {
+    name: 'Map / Road Tile',
+    questions: [
+      { id: 'Q1', title: 'Road Connections', type: 'single', options: [
+        { id: '1', text: '1 side — dead end or cap' },
+        { id: '2', text: '2 sides — straight through-path' },
+        { id: '3', text: '2 sides — corner or turn' },
+        { id: '4', text: '3 sides — T-junction or fork' },
+        { id: '5', text: '4 sides — crossroads or intersection' },
+      ]},
+      { id: 'Q2', title: 'Path Surface', type: 'single', options: [
+        { id: '1', text: 'Dirt or packed-earth trail' },
+        { id: '2', text: 'Cobblestone road' },
+        { id: '3', text: 'Paved stone road' },
+        { id: '4', text: 'Wooden boardwalk or planks' },
+        { id: '5', text: 'River or waterway' },
+        { id: '6', text: 'Railway track' },
+        { id: '7', text: 'Sand or desert track' },
+        { id: '8', text: 'Snow-packed trail' },
+      ]},
+      { id: 'Q3', title: 'Surrounding Terrain', type: 'single', options: [
+        { id: '1', text: 'Grassland or plains' },
+        { id: '2', text: 'Forest or woodland' },
+        { id: '3', text: 'Desert or badlands' },
+        { id: '4', text: 'Snow or tundra' },
+        { id: '5', text: 'Swamp or wetland' },
+        { id: '6', text: 'Mountain or rocky highland' },
+        { id: '7', text: 'Urban or village ground' },
+        { id: '8', text: 'Farmland or cultivated fields' },
+      ]},
+      { id: 'Q4', title: 'Roadside Detail', type: 'multi', max: 2, options: [
+        { id: '1', text: 'Fences or low walls' },
+        { id: '2', text: 'Lamp posts or signposts' },
+        { id: '3', text: 'Scattered rocks or rubble' },
+        { id: '4', text: 'Trees, bushes, or hedges' },
+        { id: '5', text: 'Wagon ruts or footprints' },
+        { id: '6', text: 'Puddles or wet patches' },
+        { id: '7', text: 'Cracks, potholes, or wear' },
+        { id: '8', text: 'No roadside detail — clean and minimal' },
+      ]},
+      { id: 'Q5', title: 'Tile Grid Style', type: 'single', options: [
+        { id: '1', text: 'Square grid, top-down view' },
+        { id: '2', text: 'Isometric grid, angled view' },
+        { id: '3', text: 'Hexagonal grid, top-down view' },
+      ]},
+      { id: 'Q6', title: 'Art Style', type: 'single', options: [
+        { id: '1', text: 'Painterly fantasy game art' },
+        { id: '2', text: 'Pixel art, retro game tileset' },
+        { id: '3', text: 'Stylized low-poly 3D render' },
+        { id: '4', text: 'Clean vector / flat-design map style' },
+        { id: '5', text: 'Hand-drawn cartographic illustration' },
+        { id: '6', text: 'Photorealistic top-down render' },
+      ]},
+      { id: 'Q7', title: 'Lighting / Time of Day', type: 'single', options: [
+        { id: '1', text: 'Bright midday sun, neutral shadows' },
+        { id: '2', text: 'Warm golden-hour light' },
+        { id: '3', text: 'Overcast, soft diffuse light' },
+        { id: '4', text: 'Cool dusk or twilight tones' },
+        { id: '5', text: 'Moody night lighting' },
+      ]},
+      { id: 'Q8', title: 'Detail Density', type: 'single', options: [
+        { id: '1', text: 'Clean and minimal, game-UI friendly' },
+        { id: '2', text: 'Balanced detail' },
+        { id: '3', text: 'Richly detailed and textured' },
+      ]},
+    ],
+    assemblePrompt: (a) => {
+      const q4 = multiVal('mapTile','Q4',a);
+      return `Seamless, tileable top-down game-map tile depicting a ${opt('mapTile','Q2',a.Q2)} with road connections on ${opt('mapTile','Q1',a.Q1)}, set within ${opt('mapTile','Q3',a.Q3)}. The path enters and exits cleanly at the tile edges on exactly the connected sides described, aligning precisely with where matching tiles in a tileset would meet, so the road continues seamlessly when placed edge-to-edge with adjacent tiles. Roadside features include ${q4}. Rendered as a ${opt('mapTile','Q5',a.Q5)} in a ${opt('mapTile','Q6',a.Q6)}, under ${opt('mapTile','Q7',a.Q7)}. Detail level: ${opt('mapTile','Q8',a.Q8)}. Designed as a modular game asset — flat orthographic framing, consistent scale and lighting suitable for a tileset, no vignetting or border darkening, square seamless tile, infinite tiling continuity at the connection edges.`;
+    },
+  },
+
 };
 
 
