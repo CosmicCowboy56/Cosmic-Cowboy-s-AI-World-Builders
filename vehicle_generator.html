@@ -751,11 +751,11 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 
           <div class="q-block">
             <div class="q-title-row">
-              <span class="q-title">Q2 — Primary Function (up to 2)</span>
+              <span class="q-title">Q2 — Primary Function (up to 3)</span>
               <button class="btn btn-rand btn-small" onclick="randomizeField('Q2')">&#9861;</button>
             </div>
             <div class="options-grid" id="Q2-options"></div>
-            <p class="multi-note">Select up to 2</p>
+            <p class="multi-note">Select up to 3</p>
             <div class="custom-row"><input type="text" id="Q2-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q2')">Add</button></div>
             <div class="tags-wrap" id="Q2-tags"></div>
           </div>
@@ -772,11 +772,11 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 
           <div class="q-block">
             <div class="q-title-row">
-              <span class="q-title">Q4 — Technology Level (up to 2)</span>
+              <span class="q-title">Q4 — Technology Level (up to 3)</span>
               <button class="btn btn-rand btn-small" onclick="randomizeField('Q4')">&#9861;</button>
             </div>
             <div class="options-grid" id="Q4-options"></div>
-            <p class="multi-note">Select up to 2</p>
+            <p class="multi-note">Select up to 3</p>
             <div class="custom-row"><input type="text" id="Q4-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q4')">Add</button></div>
             <div class="tags-wrap" id="Q4-tags"></div>
           </div>
@@ -856,22 +856,22 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 
           <div class="q-block">
             <div class="q-title-row">
-              <span class="q-title">Q9 — Design Language (up to 2)</span>
+              <span class="q-title">Q9 — Design Language (up to 3)</span>
               <button class="btn btn-rand btn-small" onclick="randomizeField('Q9')">&#9861;</button>
             </div>
             <div class="options-grid" id="Q9-options"></div>
-            <p class="multi-note">Select up to 2</p>
+            <p class="multi-note">Select up to 3</p>
             <div class="custom-row"><input type="text" id="Q9-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q9')">Add</button></div>
             <div class="tags-wrap" id="Q9-tags"></div>
           </div>
 
           <div class="q-block">
             <div class="q-title-row">
-              <span class="q-title">Q10 — Materials (up to 2)</span>
+              <span class="q-title">Q10 — Materials (up to 3)</span>
               <button class="btn btn-rand btn-small" onclick="randomizeField('Q10')">&#9861;</button>
             </div>
             <div class="options-grid" id="Q10-options"></div>
-            <p class="multi-note">Select up to 2</p>
+            <p class="multi-note">Select up to 3</p>
             <div class="custom-row"><input type="text" id="Q10-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q10')">Add</button></div>
             <div class="tags-wrap" id="Q10-tags"></div>
           </div>
@@ -899,11 +899,11 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 
           <div class="q-block">
             <div class="q-title-row">
-              <span class="q-title">Q12 — Background (up to 2)</span>
+              <span class="q-title">Q12 — Background (up to 3)</span>
               <button class="btn btn-rand btn-small" onclick="randomizeField('Q12')">&#9861;</button>
             </div>
             <div class="options-grid" id="Q12-options"></div>
-            <p class="multi-note">Select up to 2</p>
+            <p class="multi-note">Select up to 3</p>
             <div class="custom-row"><input type="text" id="Q12-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q12')">Add</button></div>
             <div class="tags-wrap" id="Q12-tags"></div>
           </div>
@@ -1078,7 +1078,7 @@ const QUESTIONS = {
     {id:'5', text:'Hybrid or multi-domain'},
   ]},
 
-  Q2: { title:'Primary Function', type:'multi', max:2, allowCustom:true, options:[
+  Q2: { title:'Primary Function', type:'multi', max:3, allowCustom:true, options:[
     {id:'1',  text:'Civilian transport'},
     {id:'2',  text:'Military or combat'},
     {id:'3',  text:'Industrial or utility'},
@@ -1113,7 +1113,7 @@ const QUESTIONS = {
     {id:'16', text:'Solarpunk'},
   ]},
 
-  Q4: { title:'Technology Level', type:'multi', max:2, allowCustom:true, options:[
+  Q4: { title:'Technology Level', type:'multi', max:3, allowCustom:true, options:[
     {id:'1',  text:'Mechanical'},
     {id:'2',  text:'Electrical'},
     {id:'3',  text:'Digital'},
@@ -1185,7 +1185,7 @@ const QUESTIONS = {
     {id:'6', text:'City-scale or larger'},
   ]},
 
-  Q9: { title:'Design Language', type:'multi', max:2, allowCustom:true, options:[
+  Q9: { title:'Design Language', type:'multi', max:3, allowCustom:true, options:[
     {id:'1',  text:'Realistic engineering'},
     {id:'4',  text:'Retro futurism'},
     {id:'5',  text:'Cyberpunk'},
@@ -1203,7 +1203,7 @@ const QUESTIONS = {
     {id:'20', text:'Prehistoric or primitive'},
   ]},
 
-  Q10: { title:'Materials', type:'multi', max:2, allowCustom:true, options:[
+  Q10: { title:'Materials', type:'multi', max:3, allowCustom:true, options:[
     {id:'1',  text:'Metallic'},
     {id:'2',  text:'Composite or carbon'},
     {id:'3',  text:'Organic or grown'},
@@ -1230,7 +1230,7 @@ const QUESTIONS = {
     {id:'13', text:'War trophy with enemy markings'},
   ]},
 
-  Q12: { title:'Background', type:'multi', max:2, allowCustom:true, options:[
+  Q12: { title:'Background', type:'multi', max:3, allowCustom:true, options:[
     {id:'1',  text:'Urban'},
     {id:'2',  text:'Wilderness'},
     {id:'3',  text:'Industrial'},
@@ -1959,12 +1959,15 @@ async function generateNarrativePrompt() {
       },
       body: JSON.stringify({
         model: 'grok-4.3',
-        max_tokens: 700,
+        max_tokens: 1100,
         reasoning_effort: 'none',
         messages: [
           {
             role: 'system',
-            content: 'You are an expert AI image-prompt writer specializing in vehicles, machines, and transportation of all eras and genres — from prehistoric sledges to starships. Given structured vehicle attributes, craft one rich, vivid, cinematic image-generation prompt. Be specific about materials, surfaces, motion, lighting, and environment. Do not explain or comment. Output only the prompt.',
+            content: `You are the prompt engine for Cosmic Cowboy's VEHICLE GENERATOR. Output a richly detailed descriptive paragraph written in present tense, describing one single vehicle (or hybrid craft) and the scene it occupies, based on the structured attributes provided.
+
+━━━ OUTPUT FORMAT ━━━
+Write one cohesive paragraph (or two at most) of flowing, cinematic prose. Use spatial and relational language throughout — "riding low on", "trailing from", "where the hull meets", "framed against", "cutting through" — instead of a flat list of comma-separated traits. Weave propulsion, chassis, materials, condition, and design language together into a single coherent machine, then place that machine within its environment, lighting, and the action it's performing. Close with a clear sense of camera perspective, color palette, art style, and aspect ratio. Do not explain or comment — output only the descriptive paragraph itself.`,
           },
           {
             role: 'user',
