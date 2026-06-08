@@ -1130,6 +1130,35 @@ ${ruleSet === 'System Neutral'
     : 'OSR conventions: simple numeric bonuses, rugged descriptions, old-school flavor. Use turn-based language. Keep mechanics sparse and referee-friendly. Avoid complex condition tracking.'
 }
 
+Your primary obligation is mechanical accuracy and item viability. Every item you generate must be internally consistent and game-ready — no rarity/power mismatches, no bonuses that exceed what the rule system allows at that rarity, no contradictory mechanics.
+
+ITEM VIABILITY RULES — read before assigning any numbers or mechanics:
+
+RARITY ↔ BONUS MAGNITUDE (D&D 5e / 2024 conventions — apply when RULE SYSTEM is DnD or OSR; skip numeric values entirely for System Neutral):
+- Common: no magical bonus, or purely cosmetic/utility effect. Never assign a numeric combat bonus.
+- Uncommon: +1 weapons/armor/items, minor fixed effects, low-impact utility.
+- Rare: +1 to +2, moderate situational effects, limited charges (commonly 3).
+- Very Rare: +2 to +3, stronger recurring effects, attunement is typical.
+- Legendary: +3, powerful and frequently active effects, attunement expected.
+- Artifact: unique, scaling, or story-defining effects rather than a flat numeric bonus — these transcend the normal +1 to +3 ladder.
+If the selected POWER LEVEL and RARITY pull in different directions (e.g. "Mundane" power paired with "Legendary" rarity, or "Artifact-Level Relic" power paired with "Common" rarity), do not silently average them — pick the interpretation that keeps the item internally consistent, and flag the mismatch plus your resolution in a NOTES line at the end of the stats block.
+
+ATTUNEMENT AND REQUIREMENTS:
+- Common and Uncommon items rarely require attunement; only assign it if a selected ability or requirement genuinely calls for an ongoing bond (sentience, curses, scaling-with-user effects).
+- Rare and above items commonly require attunement when they grant passive bonuses, spellcasting enhancement, or scaling effects — assign it in those cases even if the player didn't explicitly select a User Requirement.
+- If "Cursed Drawback" or "Sentient or Semi-Aware" is selected as a Special Ability, the item's User Requirement and Special Condition must reflect that (attunement, alignment restriction, or similar) — don't describe a sentient or cursed item as having no binding to its wielder.
+
+CHARGES AND ACTIVATED ABILITIES:
+- "Activated Ability (Charges)" should specify a concrete charge count and recharge condition appropriate to rarity (Uncommon/Rare: 1-3 charges, daily or dawn recharge; Very Rare/Legendary: 3-7 charges, with a chance of destruction on overuse for the most powerful items, per 5e convention).
+- Never describe an item as having "unlimited" charges alongside a charge-based mechanic — that is a contradiction. Either it recharges on a fixed schedule, or it is a passive/at-will effect with no charge tracking at all.
+
+INTERNAL CONSISTENCY CHECKS:
+- Don't assign "None (Narrative Only)" or "None Beyond Bonuses" for Bonus Type / Special Abilities while also describing significant mechanical effects elsewhere in the stats block — keep the stats block's content matched to what was actually selected.
+- Don't describe a "Mundane" power-level item as magical, glowing, or possessing supernatural properties in the lore or visual prompt — keep mundane items grounded, with their distinction coming from craftsmanship, history, or materials rather than magic.
+- Saving throw DCs and attack/spell bonuses (where applicable) must be plausible for the rarity tier — don't assign Legendary-tier numbers to a Rare item or vice versa.
+
+If any selection conflicts with the chosen rule system's conventions or with item viability, add a line beginning "NOTES:" at the end of the stats string explaining what was adjusted and why.
+
 Return ONLY a JSON object with exactly these three keys. No preamble, no markdown, no backticks:
 {
   "stats": "...",
