@@ -84,6 +84,30 @@ textarea.txt { resize: vertical; min-height: 64px; }
 .contrib-name:focus { border-color: var(--soft-cyan); }
 .contrib-pct { width: 56px; background: rgba(0,0,0,0.35); border: 1px solid var(--border); color: var(--pale-blue); font-family: 'Exo 2', sans-serif; font-size: 0.82rem; padding: 5px 6px; border-radius: 3px; outline: none; text-align: center; transition: border-color 0.2s; }
 .contrib-pct:focus { border-color: var(--soft-cyan); }
+.type-tabs { display: flex; gap: 4px; margin-bottom: 8px; }
+.type-tab {
+  flex: 1; padding: 3px;
+  font-size: 0.62rem; letter-spacing: 0.07em;
+  border: 1px solid var(--border);
+  background: transparent; color: var(--dim);
+  cursor: pointer; border-radius: 3px;
+  font-family: 'Exo 2', sans-serif;
+  transition: all 0.15s;
+}
+.type-tab.active { border-color: var(--soft-cyan); color: var(--pale-blue); background: rgba(144,224,239,0.10); }
+.img-drop {
+  background: rgba(0,0,0,0.20);
+  border: 1px dashed var(--border);
+  border-radius: 4px; padding: 8px;
+  text-align: center; cursor: pointer;
+  font-size: 0.66rem; color: var(--dim);
+  transition: all 0.2s;
+  min-height: 42px; flex: 1;
+  display: flex; align-items: center; justify-content: center;
+  flex-direction: column; gap: 3px;
+}
+.img-drop:hover { border-color: var(--soft-cyan); color: var(--pale-blue); }
+.img-drop img   { max-height: 48px; max-width: 100%; border-radius: 3px; }
 .rm-btn { position: absolute; top: 6px; right: 7px; background: none; border: 1px solid rgba(248,113,113,0.28); color: rgba(248,113,113,0.50); font-size: 0.70rem; width: 18px; height: 18px; border-radius: 2px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: all 0.14s; line-height: 1; }
 .rm-btn:hover { background: rgba(248,113,113,0.15); color: var(--red); border-color: var(--red); }
 .pct-total { font-size: 0.72rem; letter-spacing: 0.08em; color: var(--dim); margin-top: 6px; padding: 3px 8px; border-radius: 3px; background: rgba(0,0,0,0.20); display: inline-block; transition: all 0.2s; }
@@ -192,7 +216,7 @@ footer { text-align: center; padding: 16px; font-size: 0.70rem; color: var(--dim
       <div class="section-body">
         <div class="notice" style="margin-bottom:12px">
           <strong>1 to 4 contributors, percentages must total 100.</strong><br>
-          Any real-world machine, vehicle, creature, structure, or concept. Dominance % controls how strongly each source shapes the final entity. Integration level is governed by your Category and Surface Integration choices.
+          Any real-world machine, vehicle, creature, structure, or concept — typed as text or supplied as an uploaded reference image (switch using the TEXT / IMAGE tabs on each contributor). Dominance % controls how strongly each source shapes the final entity. Integration level is governed by your Category and Surface Integration choices.
         </div>
         <div id="contrib-list"></div>
         <div style="display:flex;align-items:center;gap:8px;margin-top:6px;flex-wrap:wrap;">
@@ -227,7 +251,7 @@ footer { text-align: center; padding: 16px; font-size: 0.70rem; color: var(--dim
         </div>
 
         <div class="field-wrap">
-          <div class="field-label">Primary Locomotion <span class="multi-note">up to 2</span>
+          <div class="field-label">Primary Locomotion <span class="multi-note">up to 3</span>
             <button class="dice" onclick="randField('Q6')">Randomize</button>
           </div>
           <div class="opts" id="Q6-opts"></div>
@@ -259,7 +283,7 @@ footer { text-align: center; padding: 16px; font-size: 0.70rem; color: var(--dim
       <div class="section-body">
 
         <div class="field-wrap">
-          <div class="field-label">Surface Integration Style <span class="multi-note">up to 2</span>
+          <div class="field-label">Surface Integration Style <span class="multi-note">up to 3</span>
             <button class="dice" onclick="randField('Q9')">Randomize</button>
           </div>
           <div class="opts" id="Q9-opts"></div>
@@ -286,7 +310,7 @@ footer { text-align: center; padding: 16px; font-size: 0.70rem; color: var(--dim
         </div>
 
         <div class="field-wrap">
-          <div class="field-label">Power Source <span class="multi-note">up to 2</span>
+          <div class="field-label">Power Source <span class="multi-note">up to 3</span>
             <button class="dice" onclick="randField('Q12')">Randomize</button>
           </div>
           <div class="opts" id="Q12-opts"></div>
@@ -302,7 +326,7 @@ footer { text-align: center; padding: 16px; font-size: 0.70rem; color: var(--dim
       <div class="section-body">
 
         <div class="field-wrap">
-          <div class="field-label">Primary Role <span class="multi-note">up to 2</span>
+          <div class="field-label">Primary Role <span class="multi-note">up to 3</span>
             <button class="dice" onclick="randField('Q13')">Randomize</button>
           </div>
           <div class="opts" id="Q13-opts"></div>
@@ -311,7 +335,7 @@ footer { text-align: center; padding: 16px; font-size: 0.70rem; color: var(--dim
         </div>
 
         <div class="field-wrap">
-          <div class="field-label">Operating Environment <span class="multi-note">up to 2</span>
+          <div class="field-label">Operating Environment <span class="multi-note">up to 3</span>
             <button class="dice" onclick="randField('Q14')">Randomize</button>
           </div>
           <div class="opts" id="Q14-opts"></div>
@@ -352,7 +376,7 @@ footer { text-align: center; padding: 16px; font-size: 0.70rem; color: var(--dim
         </div>
 
         <div class="field-wrap">
-          <div class="field-label">Material and Color Palette <span class="multi-note">up to 2</span>
+          <div class="field-label">Material and Color Palette <span class="multi-note">up to 3</span>
             <button class="dice" onclick="randField('Q18')">Randomize</button>
           </div>
           <div class="opts" id="Q18-opts"></div>
@@ -418,7 +442,7 @@ const Q = {
     'Dense Compact Core','Sparse Exoskeletal Frame','Redundant Parallel Systems','Asymmetric Imbalanced',
     'Collapsible Folding','Crystal Lattice Growth'
   ]},
-  Q6: { type:'multi', max:2, opts:[
+  Q6: { type:'multi', max:3, opts:[
     'Wheels or Rolling Mass','Tracks','Legs or Articulated Walkers','Hover or Levitation',
     'Winged Flight','Hybrid Unconventional','Stationary','Jet or Thruster Propulsion',
     'Slithering Undulation','Magnetic Rail Glide','Tentacle Propulsion','Aquatic Swimming',
@@ -434,7 +458,7 @@ const Q = {
     'Hand-Held Micro','Human-Scale','Vehicle-Scale','Building-Scale','Colossal',
     'Titan City-Scale','Nano Swarm Unit','Insect-Scale','Horse-Scale','Tank-Scale'
   ]},
-  Q9: { type:'multi', max:2, opts:[
+  Q9: { type:'multi', max:3, opts:[
     'Clean Mechanical Seams','Riveted Layered Industrial Plating','Organic Skin Over Structure',
     'Blended Biomechanical Surface','Architectural Infrastructural Surface',
     'Exposed Cable and Conduit Weave','Cracked Chitin Plating','Corroded Rust Patina',
@@ -456,20 +480,20 @@ const Q = {
     'Electro-Magnetic Field Detection','Lidar Rotating Emitter','Acoustic Resonance Membranes',
     'Pressure-Sensitive Skin','Echolocation Vents','Single Cyclopean Lens'
   ]},
-  Q12: { type:'multi', max:2, opts:[
+  Q12: { type:'multi', max:3, opts:[
     'Steam Pressure-Based','Diesel Combustion','Electrical Battery','Bio-Organic Metabolic',
     'Hybrid Multi-Source','Speculative Exotic','Nuclear Fission Core','Fusion Plasma Reactor',
     'Solar Collector Array','Geothermal Tap','Atmospheric Energy Harvesting','Dark Matter Containment',
     'Crystalline Energy Store','Kinetic Flywheel','Hydraulic Pressure Accumulator','Alchemical Combustion'
   ]},
-  Q13: { type:'multi', max:2, opts:[
+  Q13: { type:'multi', max:3, opts:[
     'Transport and Logistics','Combat or Siege or Demolition','Exploration or Patrol',
     'Industrial Utility','Ceremonial or Symbolic','Search and Rescue','Mining and Extraction',
     'Construction and Assembly','Surveillance and Intelligence','Scientific Research',
     'Agricultural Harvesting','Crowd Control','Diplomatic Escort','Terraforming',
     'Waste Processing','Medical Support'
   ]},
-  Q14: { type:'multi', max:2, opts:[
+  Q14: { type:'multi', max:3, opts:[
     'Urban Infrastructure','Industrial Zone','Battlefield','Wilderness','Interior Facility',
     'Arctic Tundra','Desert Wasteland','Dense Jungle','Oceanic Depths','High Altitude Peaks',
     'Subterranean Caverns','Space Void','Volcanic Active Zone','Toxic Chemical Swamp',
@@ -493,7 +517,7 @@ const Q = {
     'Dieselpunk Illustrated','Military Technical Blueprint','Noir Monochrome Photography',
     'Oil Painting Classical','Anime Mecha Style','Glitch Aesthetic Digital Art'
   ]},
-  Q18: { type:'multi', max:2, opts:[
+  Q18: { type:'multi', max:3, opts:[
     'Dark Industrial Metals','Oxidized Brass Copper Iron','Hazard Colors Yellow Black',
     'Muted Battlefield Tones','Bioluminescent Organic Tones','Polished Chrome Silver',
     'Matte Olive Military Drab','Bone and Ivory Pale','Toxic Acid Green','Deep Space Black',
@@ -632,13 +656,30 @@ function renderContribs() {
   contribs.forEach((c, i) => {
     const div = document.createElement('div');
     div.className = 'contrib-item';
+
+    const body = c.type === 'image'
+      ? `<div class="contrib-row">
+           <div class="img-drop" onclick="pickFile(${c.id})" id="drop-${c.id}">
+             ${c.preview
+               ? `<img src="${c.preview}"><span style="font-size:0.62rem;color:var(--soft-cyan)">${esc(c.fname||'')}</span>`
+               : '&#128206; Click to upload image'}
+           </div>
+           <input type="number" class="contrib-pct" min="1" max="100" placeholder="%" value="${c.pct||''}" oninput="updateContrib(${c.id},'pct',this.value)">
+         </div>
+         <input type="file" id="file-${c.id}" accept="image/*" style="display:none" onchange="loadImg(${c.id},event)">`
+      : `<div class="contrib-row">
+           <input type="text" class="contrib-name" placeholder="e.g. Battle tank, Spider, Locomotive, Crystal..." value="${esc(c.name)}" oninput="updateContrib(${c.id},'name',this.value)">
+           <input type="number" class="contrib-pct" min="1" max="100" placeholder="%" value="${c.pct || ''}" oninput="updateContrib(${c.id},'pct',this.value)">
+         </div>`;
+
     div.innerHTML = `
       <button class="rm-btn" onclick="removeContrib(${c.id})">x</button>
       <div class="contrib-lbl">CONTRIBUTOR ${i + 1}</div>
-      <div class="contrib-row">
-        <input type="text" class="contrib-name" placeholder="e.g. Battle tank, Spider, Locomotive, Crystal..." value="${esc(c.name)}" oninput="updateContrib(${c.id},'name',this.value)">
-        <input type="number" class="contrib-pct" min="1" max="100" placeholder="%" value="${c.pct || ''}" oninput="updateContrib(${c.id},'pct',this.value)">
-      </div>`;
+      <div class="type-tabs">
+        <button class="type-tab ${c.type === 'text'  ? 'active' : ''}" onclick="setContribType(${c.id},'text')">TEXT</button>
+        <button class="type-tab ${c.type === 'image' ? 'active' : ''}" onclick="setContribType(${c.id},'image')">IMAGE</button>
+      </div>
+      ${body}`;
     list.appendChild(div);
   });
   document.getElementById('addBtn').style.display = contribs.length >= 4 ? 'none' : '';
@@ -647,7 +688,7 @@ function renderContribs() {
 
 function addContrib() {
   if (contribs.length >= 4) return;
-  contribs.push({ id: ++cid, name: '', pct: '' });
+  contribs.push({ id: ++cid, type: 'text', name: '', pct: '' });
   renderContribs();
 }
 
@@ -662,6 +703,27 @@ function updateContrib(id, field, val) {
   calcPct(); updatePreview();
 }
 
+function setContribType(id, type) {
+  const c = contribs.find(c => c.id === id); if (!c) return;
+  c.type = type;
+  renderContribs(); updatePreview();
+}
+
+function pickFile(id) { document.getElementById(`file-${id}`)?.click(); }
+
+function loadImg(id, e) {
+  const file = e.target.files[0]; if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    const c = contribs.find(c => c.id === id); if (!c) return;
+    const data = ev.target.result;
+    c.b64 = data.split(',')[1]; c.mime = file.type || 'image/jpeg';
+    c.fname = file.name; c.preview = data;
+    renderContribs(); updatePreview();
+  };
+  reader.readAsDataURL(file);
+}
+
 function calcPct() {
   const total = contribs.reduce((s, c) => s + (parseInt(c.pct) || 0), 0);
   const el = document.getElementById('pctTotal');
@@ -671,7 +733,7 @@ function calcPct() {
 
 function validateContribs() {
   if (contribs.length === 0) return 'Add at least one contributor.';
-  if (contribs.some(c => !c.name.trim())) return 'All contributors must have a name.';
+  if (contribs.some(c => c.type === 'image' ? !c.b64 : !c.name.trim())) return 'Every contributor needs a name or an uploaded image.';
   const total = contribs.reduce((s, c) => s + (parseInt(c.pct) || 0), 0);
   if (total !== 100) return `Percentages must total 100. Currently ${total}%.`;
   return null;
@@ -693,7 +755,7 @@ function randomizeContribs() {
     const name = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
     const pct = i === count - 1 ? remaining : Math.round(Math.random() * (remaining - (count - i - 1) * 10) + 10);
     remaining -= pct;
-    contribs.push({ id: ++cid, name, pct });
+    contribs.push({ id: ++cid, type: 'text', name, pct });
   }
   renderContribs(); updatePreview();
 }
@@ -710,7 +772,7 @@ function getAns(qid) {
 function stateToText() {
   const lines = [];
   const cat = getAns('Q2'); if (cat) lines.push(`Category: ${cat}`);
-  if (contribs.length) lines.push(`Contributors: ${contribs.map(c => `${c.name} (${c.pct}%)`).join(', ')}`);
+  if (contribs.length) lines.push(`Contributors: ${contribs.map(c => c.type === 'image' ? `[uploaded image] (${c.pct}%)` : `${c.name} (${c.pct}%)`).join(', ')}`);
   const f = (label, qid) => { const v = getAns(qid); if (v) lines.push(`${label}: ${v}`); };
   f('Body Plan', 'Q4'); f('Structural Complexity', 'Q5'); f('Locomotion', 'Q6');
   f('Appendages', 'Q7'); f('Scale', 'Q8'); f('Surface Integration', 'Q9');
@@ -733,7 +795,7 @@ function applyPreset(name) {
   const p = PRESETS[name]; if (!p) return;
   ans = {}; custom = {}; contribs = [];
   Object.entries(p).forEach(([k, v]) => {
-    if (k === 'contributors') { contribs = v.map(c => ({ id: ++cid, name: c.name, pct: c.pct })); }
+    if (k === 'contributors') { contribs = v.map(c => ({ id: ++cid, type: 'text', name: c.name, pct: c.pct })); }
     else { ans[k] = v; }
   });
   renderAll();
@@ -775,17 +837,24 @@ async function generatePrompt() {
     integrationRule = 'Honor the surface integration style and category choices, which define how elements interact.';
   }
 
-  const systemPrompt = `You are the prompt engine for Cosmic Cowboy's ROBOTICS GENERATOR. Output ONLY a dense, comma-separated image generation prompt. No labels, no preamble, no explanation - start immediately with descriptive terms.
+  const systemPrompt = `You are the prompt engine for Cosmic Cowboy's ROBOTICS GENERATOR. Output a richly detailed descriptive paragraph written in present tense — structured prose suitable for direct use as an image generation prompt. No labels, no preamble, no explanation. Begin immediately with the entity.
 
-INTEGRATION RULE: ${integrationRule}
+━━━ OUTPUT FORMAT ━━━
+Write one cohesive paragraph (two short ones only for very complex entities). Use spatial and relational language throughout — "where the plating meets the joint", "running along its spine", "set into the chassis", "rising from its core", "fused at the shoulder housing" — so the image model understands how parts physically relate to each other, not just that they coexist. Do not write a comma-separated list of terms; write connected, structured prose.
+
+CATEGORY: ${cat}
+━━━ THE INTEGRATION RULE — applies EXCLUSIVELY to the Contributors list ━━━
+${integrationRule}
+Contributors define the real-world sources fused into this entity — this is STRUCTURAL SUBSTITUTION, not decoration. Translate each contributor's dominance into how much of the entity's actual form, material, and structure it constitutes: a 60% contributor dominates the body/frame and material language; a 20% contributor visibly shapes specific limbs or surfaces. Describe the entity AS IF it is physically built from these sources — never as a generic robot merely resembling or wearing them.
+  WRONG: "a robot that looks like a tank with spider legs"
+  RIGHT: "a hull-bodied construct whose torso is a riveted tank chassis, eight articulated legs splayed from its underside like an iron spider's, each joint a hydraulic piston sheathed in plated armor"
+If a contributor is an uploaded image, study its actual forms, textures, materials, and proportions, and integrate those real visual qualities into the entity the same way — structurally, not as an add-on. Never name contributor sources explicitly in the output (no "tank", no percentages, no "blend of" or "combination of").
 
 HARD RULE: Single construct only. One entity, one body. No duplicate robots, no pairs, no swarms unless explicitly requested in clarifications.
 
 The surface integration style and category are the user's authority on how mechanical and organic elements interact. Do not override them with your own assumptions.
 
-FORBIDDEN in output: contributor names, percentages, "blend of", "combination of", "part X", "X%", any reference to source materials by name.
-
-Always end with: Ultra-fine surface detail with panel seams, mechanical joints, material texture, and weathering where appropriate. Sharp focus. Cinematic physically plausible lighting. Professional production-grade rendering.`;
+Close the paragraph with: ultra-fine surface detail with panel seams, mechanical joints, material texture, and weathering where appropriate, sharp focus, cinematic physically plausible lighting, professional production-grade rendering.`;
 
   const btn = document.getElementById('genBtn');
   const out = document.getElementById('outPrompt');
@@ -793,17 +862,24 @@ Always end with: Ultra-fine surface detail with panel seams, mechanical joints, 
   btn.innerHTML = '<span class="spinner"></span>Generating...';
   out.textContent = ''; out.className = 'out-body';
 
+  const userBlocks = [];
+  contribs.filter(c => c.type === 'image' && c.b64).forEach(c => {
+    userBlocks.push({ type: 'text', text: `Contributor (${c.pct}%) — uploaded reference image:` });
+    userBlocks.push({ type: 'image_url', image_url: { url: `data:${c.mime};base64,${c.b64}`, detail: 'high' } });
+  });
+  userBlocks.push({ type: 'text', text: `Generate a prompt for this robotic entity:\n\n${stateToText()}` });
+
   try {
     const res = await fetch(XAI_ENDPOINT, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${apiKey()}` },
       body: JSON.stringify({
         model: XAI_MODEL,
-        max_tokens: 900,
+        max_tokens: 1400,
         reasoning_effort: 'none',
         messages: [
           { role: 'system', content: systemPrompt },
-          { role: 'user',   content: `Generate a prompt for this robotic entity:\n\n${stateToText()}` }
+          { role: 'user',   content: userBlocks }
         ]
       })
     });
