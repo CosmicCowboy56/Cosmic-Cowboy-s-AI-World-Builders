@@ -892,19 +892,22 @@ async function generatePrompt() {
     || (landscapeAsset && (landscapeAsset.type === 'image' ? landscapeAsset.b64 : landscapeAsset.name.trim()))
     || (cityscapeAsset && (cityscapeAsset.type === 'image' ? cityscapeAsset.b64 : cityscapeAsset.name.trim()));
 
-  const systemPrompt = `You are the prompt engine for Cosmic Cowboy's SCENE GENERATOR. Output a richly detailed descriptive paragraph written in present tense — structured cinematic prose suitable for direct use as an image generation prompt. No labels, no preamble, no explanation. Begin immediately with the scene.
+  const systemPrompt = `You are the compositing instruction engine for Cosmic Cowboy's SCENE GENERATOR. Output a set of image placement and compositing instructions — not a prose scene description. These instructions tell an AI compositing or image-generation tool exactly how to arrange, position, scale, and blend the supplied images together into a finished scene.
 
 ━━━ OUTPUT FORMAT ━━━
-Write one cohesive paragraph (two short ones only for very complex scenes). Use spatial and relational language throughout — "in the foreground", "beyond the doorway", "where the light falls across", "just behind", "framed by", "moving toward" — so the image model understands how every element physically relates to the others in one continuous moment, not a list of things that merely coexist. Do not write a comma-separated list of terms; write connected, structured prose that moves naturally from setting, into the figures and action within it, into mood, then camera and rendering.
+Write one clear directive per image, in plain instructional language, like:
+  "Use [filename] as the background / setting."
+  "Place [filename] on the right side of the frame, mid-ground, at approximately full figure height."
+  "Place [filename] in the foreground left, slightly overlapping the background."
+  "Place [filename] centered in the upper third, behind the foreground figures."
+Follow the placement directives with 1–2 sentences of compositing/atmosphere instructions: how lighting across the composite should be unified, any color-grading or atmosphere that binds the layers together, and any blending or shadow-casting notes between elements.
 
-GENRE COHERENCE RULE: Blend the selected genre families into one consistent visual world — every prop, character, technology, and architectural detail must feel like it belongs together in that blended setting (e.g. "Old West + Horror" means a frontier town rendered with dread and decay, not modern elements bleeding in).
-${hasAssets ? `
-━━━ THE HARD ASSET RULE — applies EXCLUSIVELY to items listed as Hard Assets ━━━
-Hard Assets are fixed elements supplied by the user — specific characters, creatures, vehicles, landscapes, or cityscapes — and must be placed into the scene exactly as described or shown, integrated naturally into the composition. Do NOT alter their core identity, species, design, or form, and do NOT treat them as style references to loosely inspire the scene. If an asset is an uploaded image, study its actual appearance — shapes, colors, materials, proportions, distinguishing features — and depict that same subject within the scene. Weave each asset into the scene's spatial layout (where it stands, what surrounds it, how light falls on it) rather than simply naming it.` : ''}
+Use the actual filename when an asset was uploaded as an image. For text-described assets, reference them in brackets, e.g. [the grizzled bounty hunter].
 
-ABSOLUTE CONSTRAINTS RULE: If the user has supplied Absolute Constraints (spatial, positional, scale, orientation, motion, or layering instructions), those override every other instruction in this prompt — cinematic, compositional, stylistic, or otherwise — and must be implemented exactly as written, with no reinterpretation or "improvement."
+━━━ APPLYING THE SCENE SETTINGS ━━━
+The selected genre, time of day, weather, camera angle, shot composition, and mood define the compositional intent of the placement instructions — they determine WHERE each element sits in the frame (foreground/mid/background, left/center/right, scale relative to frame), what the lighting and atmosphere directives say, and how elements are layered against each other. Use them to make the placement instructions specific and purposeful, not generic.
 
-Close the paragraph with concrete rendering qualities appropriate to the chosen style and mood — sharp focus or selective blur as appropriate, physically plausible lighting, fine surface and material detail, professional production-grade rendering.`;
+ABSOLUTE CONSTRAINTS RULE: If the user has supplied Absolute Constraints, those override every other instruction and must appear verbatim in the placement directives with no reinterpretation.`;
 
   const btn = document.getElementById('genBtn');
   const out = document.getElementById('outPrompt');
@@ -915,19 +918,22 @@ Close the paragraph with concrete rendering qualities appropriate to the chosen 
   const userBlocks = [];
   actors.forEach((a, i) => {
     if (a.type === 'image' && a.b64) {
-      userBlocks.push({ type: 'text', text: `Hard Asset ${i + 1} — uploaded reference image (use exactly as shown):` });
+      const label = a.fname ? `"${a.fname}"` : `Asset ${i + 1}`;
+      userBlocks.push({ type: 'text', text: `Hard Asset ${i + 1} — filename: ${label}` });
       userBlocks.push({ type: 'image_url', image_url: { url: `data:${a.mime};base64,${a.b64}`, detail: 'high' } });
     }
   });
   if (landscapeAsset && landscapeAsset.type === 'image' && landscapeAsset.b64) {
-    userBlocks.push({ type: 'text', text: `Landscape Hard Asset — uploaded reference image (use exactly as shown):` });
+    const label = landscapeAsset.fname ? `"${landscapeAsset.fname}"` : 'the landscape image';
+    userBlocks.push({ type: 'text', text: `Landscape Asset — filename: ${label}` });
     userBlocks.push({ type: 'image_url', image_url: { url: `data:${landscapeAsset.mime};base64,${landscapeAsset.b64}`, detail: 'high' } });
   }
   if (cityscapeAsset && cityscapeAsset.type === 'image' && cityscapeAsset.b64) {
-    userBlocks.push({ type: 'text', text: `Cityscape Hard Asset — uploaded reference image (use exactly as shown):` });
+    const label = cityscapeAsset.fname ? `"${cityscapeAsset.fname}"` : 'the cityscape image';
+    userBlocks.push({ type: 'text', text: `Cityscape Asset — filename: ${label}` });
     userBlocks.push({ type: 'image_url', image_url: { url: `data:${cityscapeAsset.mime};base64,${cityscapeAsset.b64}`, detail: 'high' } });
   }
-  userBlocks.push({ type: 'text', text: `Generate a scene prompt for:\n\n${stateToText()}` });
+  userBlocks.push({ type: 'text', text: `Generate compositing placement instructions for:\n\n${stateToText()}` });
 
   try {
     const res = await fetch(XAI_ENDPOINT, {
