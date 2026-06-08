@@ -1407,7 +1407,7 @@ const QUESTIONS = {
     {id:'20',text:'Buried archaeological site'},
   ]},
 
-  QAL: { title:'Atmospheric Lighting', type:'single', options:[
+  QAL: { title:'Atmospheric Lighting', type:'multi', max:2, options:[
     {id:'1', text:'Volumetric god rays'},
     {id:'2', text:'Diffuse overcast'},
     {id:'3', text:'Rim lighting'},
@@ -1485,7 +1485,7 @@ const QUESTIONS = {
     {id:'22',text:'None — pure landscape'},
   ]},
 
-  Q14: { title:'Palette', type:'single', allowCustom:true, options:[
+  Q14: { title:'Palette', type:'multi', max:2, allowCustom:true, options:[
     {id:'1', text:'Warm golden'},
     {id:'2', text:'Cool blue-grey'},
     {id:'3', text:'Neutral / natural'},
@@ -1525,7 +1525,7 @@ const QUESTIONS = {
     {id:'6', text:'Tilt-shift miniature'},
   ]},
 
-  QM: { title:'Mood / Atmosphere', type:'single', allowCustom:true, options:[
+  QM: { title:'Mood / Atmosphere', type:'multi', max:2, allowCustom:true, options:[
     {id:'1', text:'Serene / peaceful'},
     {id:'2', text:'Dramatic / powerful'},
     {id:'3', text:'Eerie / uncanny'},
@@ -1766,7 +1766,7 @@ const QUESTIONS = {
     {id:'12',text:'First-person immersive'},
   ]},
 
-  Q23: { title:'Style', type:'single', allowCustom:true, options:[
+  Q23: { title:'Style', type:'multi', max:2, allowCustom:true, options:[
     {id:'1', text:'Photorealism'},
     {id:'2', text:'Hyper-realism'},
     {id:'3', text:'Cinematic realism'},
@@ -1807,14 +1807,14 @@ const QUESTIONS = {
    JS: PRESETS — expanded
    ============================================================ */
 const PRESETS = {
-  mistyMountains:   { Q1:'1', Q3:['2','11'], Q4:'6', Q5:'2', Q6:['3','7'], Q7:['2','3','6'], Q8:['5','8'], Q9:['3'], QAL:'2', Q10:'4', Q11:'5', Q12:'2', Q13:'3', Q14:'2', Q15:'4', QD:'2', QM:'8', Q22:'3', Q23:'3', Q24:'3' },
-  alienCrystal:     { Q1:'2', Q16:['3','12'], Q17:['8','4'], Q18:['3','8'], Q19:['5','3'], Q20:['3','8','16'], Q21:['8','15'], QAF:['3'], QAFa:['2'], Q10:'4', Q11:'5', Q12:'1', Q13:'3', Q14:'8', Q15:'5', QD:'2', QM:'5', Q22:'1', Q23:'5', Q24:'4' },
-  mixedWorld:       { Q1:'3', Q3:['1'], Q4:'3', Q5:'9', Q6:['2'], Q7:['10'], Q8:['3'], Q9:['2'], QF1:['1'], QF2:['1'], QAL:'1', Q16:['2'], Q17:['4','3'], Q18:['5'], Q19:['9'], Q20:['4'], Q21:['10'], QAF:['2'], Q10:'3', Q11:'5', Q12:'2', Q13:'2', Q14:'4', Q15:'3', QD:'2', QM:'14', Q22:'3', Q23:'5', Q24:'4' },
-  tropicalCoast:    { Q1:'1', Q3:['6','10'], Q4:'3', Q5:'9', Q6:['1'], Q7:['4'], Q8:['2','11','21'], Q9:['2'], QF1:['12','5'], QF2:['10'], QAL:'10', Q10:'3', Q11:'7', Q12:'2', Q13:'1', Q14:'4', Q15:'3', QD:'2', QM:'1', Q22:'3', Q23:'3', Q24:'4' },
-  arcticTundra:     { Q1:'1', Q3:['8','23'], Q4:'10', Q5:'4', Q6:['2','9','22'], Q7:['14','13'], Q8:['23'], Q9:['1'], QF1:['16'], QF2:['16'], QAL:'11', Q10:'5', Q11:'7', Q12:'2', Q13:'21', Q14:'13', Q15:'2', QD:'1', QM:'4', Q22:'2', Q23:'1', Q24:'4' },
-  volcanicWasteland:{ Q1:'1', Q3:['19','15'], Q4:'11', Q5:'7', Q6:['1','20'], Q7:['5','15','16'], Q8:['12','13'], Q9:['1'], QF1:['9'], QF2:['8'], QAL:'5', Q10:'3', Q11:'3', Q12:'1', Q13:'21', Q14:'14', Q15:'6', QD:'2', QM:'6', Q22:'2', Q23:'2', Q24:'4' },
-  biolumForest:     { Q1:'2', Q16:['2','9'], Q17:['4'], Q18:['1','7'], Q19:['9','5'], Q20:['4','9'], Q21:['10','6'], QAF:['2','1','15'], QAFa:['11','6'], Q10:'6', Q11:'8', Q12:'3', Q13:'2', Q14:'2', Q15:'2', QD:'3', QM:'8', Q22:'4', Q23:'6', Q24:'2' },
-  stormFrontPlains: { Q1:'1', Q3:['4','20'], Q4:'4', Q5:'10', Q6:['13','14','12'], Q7:['10','1'], Q8:['5'], Q9:['7'], QF1:['4','3'], QF2:['2','8'], QAL:'4', Q10:'5', Q11:'4', Q12:'2', Q13:'20', Q14:'12', Q15:'5', QD:'2', QM:'2', Q22:'2', Q23:'3', Q24:'4' },
+  mistyMountains:   { Q1:'1', Q3:['2','11'], Q4:'6', Q5:'2', Q6:['3','7'], Q7:['2','3','6'], Q8:['5','8'], Q9:['3'], QAL:['2'], Q10:'4', Q11:'5', Q12:'2', Q13:'3', Q14:['2'], Q15:'4', QD:'2', QM:['8'], Q22:'3', Q23:['3'], Q24:'3' },
+  alienCrystal:     { Q1:'2', Q16:['3','12'], Q17:['8','4'], Q18:['3','8'], Q19:['5','3'], Q20:['3','8','16'], Q21:['8','15'], QAF:['3'], QAFa:['2'], Q10:'4', Q11:'5', Q12:'1', Q13:'3', Q14:['8'], Q15:'5', QD:'2', QM:['5'], Q22:'1', Q23:['5'], Q24:'4' },
+  mixedWorld:       { Q1:'3', Q3:['1'], Q4:'3', Q5:'9', Q6:['2'], Q7:['10'], Q8:['3'], Q9:['2'], QF1:['1'], QF2:['1'], QAL:['1'], Q16:['2'], Q17:['4','3'], Q18:['5'], Q19:['9'], Q20:['4'], Q21:['10'], QAF:['2'], Q10:'3', Q11:'5', Q12:'2', Q13:'2', Q14:['4'], Q15:'3', QD:'2', QM:['14'], Q22:'3', Q23:['5'], Q24:'4' },
+  tropicalCoast:    { Q1:'1', Q3:['6','10'], Q4:'3', Q5:'9', Q6:['1'], Q7:['4'], Q8:['2','11','21'], Q9:['2'], QF1:['12','5'], QF2:['10'], QAL:['10'], Q10:'3', Q11:'7', Q12:'2', Q13:'1', Q14:['4'], Q15:'3', QD:'2', QM:['1'], Q22:'3', Q23:['3'], Q24:'4' },
+  arcticTundra:     { Q1:'1', Q3:['8','23'], Q4:'10', Q5:'4', Q6:['2','9','22'], Q7:['14','13'], Q8:['23'], Q9:['1'], QF1:['16'], QF2:['16'], QAL:['11'], Q10:'5', Q11:'7', Q12:'2', Q13:'21', Q14:['13'], Q15:'2', QD:'1', QM:['4'], Q22:'2', Q23:['1'], Q24:'4' },
+  volcanicWasteland:{ Q1:'1', Q3:['19','15'], Q4:'11', Q5:'7', Q6:['1','20'], Q7:['5','15','16'], Q8:['12','13'], Q9:['1'], QF1:['9'], QF2:['8'], QAL:['5'], Q10:'3', Q11:'3', Q12:'1', Q13:'21', Q14:['14'], Q15:'6', QD:'2', QM:['6'], Q22:'2', Q23:['2'], Q24:'4' },
+  biolumForest:     { Q1:'2', Q16:['2','9'], Q17:['4'], Q18:['1','7'], Q19:['9','5'], Q20:['4','9'], Q21:['10','6'], QAF:['2','1','15'], QAFa:['11','6'], Q10:'6', Q11:'8', Q12:'3', Q13:'2', Q14:['2'], Q15:'2', QD:'3', QM:['8'], Q22:'4', Q23:['6'], Q24:'2' },
+  stormFrontPlains: { Q1:'1', Q3:['4','20'], Q4:'4', Q5:'10', Q6:['13','14','12'], Q7:['10','1'], Q8:['5'], Q9:['7'], QF1:['4','3'], QF2:['2','8'], QAL:['4'], Q10:'5', Q11:'4', Q12:'2', Q13:'20', Q14:['12'], Q15:'5', QD:'2', QM:['2'], Q22:'2', Q23:['3'], Q24:'4' },
 };
 
 
@@ -2270,16 +2270,19 @@ async function generateNarrativePrompt() {
       },
       body: JSON.stringify({
         model: 'grok-4.3',
-        max_completion_tokens: 600,
+        max_completion_tokens: 1100,
         reasoning_effort: 'none',
         messages: [
           {
             role: 'system',
-            content: 'You are an expert AI image-prompt writer. You receive a structured list of landscape attributes and transform them into a single, richly evocative image-generation prompt. Write in vivid, painterly language. Output only the prompt itself — no preamble, no explanation, no quotation marks.',
+            content: `You are the prompt engine for Cosmic Cowboy's LANDSCAPE GENERATOR. Output a richly detailed descriptive paragraph written in present tense, suitable for feeding directly into an AI image generator — not a list of tags or a dry attribute summary.
+
+━━━ OUTPUT FORMAT ━━━
+Write one cohesive paragraph (or two at most) of flowing, painterly prose. Use spatial and relational language throughout — "stretching toward", "where the light meets", "beneath a sky streaked with", "rising in the distance", "threading through", "scattered across the foreground" — so the scene reads as one observed moment rather than a stitched-together checklist. Do not simply restring the input attributes with commas; weave them into a scene that moves naturally from the land itself (terrain, biome, water, plant and animal life) through the sky and light, into the mood, framing, and rendering qualities. Be concrete and visual — every phrase should describe something a camera could actually capture: the texture of rock or foliage, the way light falls or fog gathers, the placement of a focal element in the frame. Do not explain or comment on your output, and do not include meta-text like "Here is the prompt." Output only the descriptive paragraph.`,
           },
           {
             role: 'user',
-            content: `Convert these landscape attributes into one rich, evocative image-generation prompt:\n\n${rawPrompt}`,
+            content: `Turn these landscape attributes into one vivid, painterly image-generation prompt, written as flowing descriptive prose (not a list):\n\n${rawPrompt}`,
           },
         ],
       }),
