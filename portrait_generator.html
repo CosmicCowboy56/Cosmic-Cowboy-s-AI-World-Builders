@@ -637,10 +637,11 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 
           <div class="q-block">
             <div class="q-title-row">
-              <span class="q-title">Eye Color</span>
+              <span class="q-title">Eye Color (up to 2)</span>
               <button class="btn btn-rand btn-small" onclick="randomizeField('Q3B')">&#9861;</button>
             </div>
             <div class="options-grid" id="Q3B-options"></div>
+            <p class="multi-note">Select up to 2</p>
             <div class="custom-row"><input type="text" id="Q3B-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q3B')">Add</button></div>
             <div class="tags-wrap" id="Q3B-tags"></div>
           </div>
@@ -691,10 +692,11 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 
           <div class="q-block">
             <div class="q-title-row">
-              <span class="q-title">Facial Hair</span>
+              <span class="q-title">Facial Hair (up to 2)</span>
               <button class="btn btn-rand btn-small" onclick="randomizeField('Q3H')">&#9861;</button>
             </div>
             <div class="options-grid" id="Q3H-options"></div>
+            <p class="multi-note">Select up to 2</p>
             <div class="custom-row"><input type="text" id="Q3H-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q3H')">Add</button></div>
             <div class="tags-wrap" id="Q3H-tags"></div>
           </div>
@@ -889,10 +891,11 @@ input::placeholder, textarea::placeholder { color: var(--dim); }
 
           <div class="q-block">
             <div class="q-title-row">
-              <span class="q-title">Art Style</span>
+              <span class="q-title">Art Style (up to 2)</span>
               <button class="btn btn-rand btn-small" onclick="randomizeField('Q12')">&#9861;</button>
             </div>
             <div class="options-grid" id="Q12-options"></div>
+            <p class="multi-note">Select up to 2</p>
             <div class="custom-row"><input type="text" id="Q12-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('Q12')">Add</button></div>
             <div class="tags-wrap" id="Q12-tags"></div>
           </div>
@@ -1065,7 +1068,7 @@ const QUESTIONS = {
     {id:'17', text:'Drooping lids'},
   ]},
 
-  Q3B: { title:'Eye Color', type:'single', allowCustom:true, options:[
+  Q3B: { title:'Eye Color', type:'multi', max:2, allowCustom:true, options:[
     {id:'1',  text:'Brown'},
     {id:'2',  text:'Hazel'},
     {id:'3',  text:'Blue'},
@@ -1150,7 +1153,7 @@ const QUESTIONS = {
     {id:'12', text:'Feathered or wispy'},
   ]},
 
-  Q3H: { title:'Facial Hair', type:'single', allowCustom:true, options:[
+  Q3H: { title:'Facial Hair', type:'multi', max:2, allowCustom:true, options:[
     {id:'1',  text:'None — clean-shaven'},
     {id:'2',  text:'Light stubble'},
     {id:'3',  text:'Heavy stubble'},
@@ -1230,55 +1233,18 @@ const QUESTIONS = {
   ]},
 
   Q4: { title:'Skin / Body Surface Palette', type:'single', allowCustom:true, options:[
-    /* Natural human */
-    {id:'1n', text:'Natural'},
-    {id:'1e', text:'European'},
-    {id:'1a', text:'East Asian'},
-    {id:'1f', text:'African'},
-    {id:'1',  text:'Porcelain'},
-    {id:'2',  text:'Peachy'},
-    {id:'3',  text:'Golden'},
-    {id:'4',  text:'Olive'},
-    {id:'5',  text:'Caramel'},
-    {id:'6',  text:'Chocolate'},
-    {id:'7',  text:'Ebony'},
-    {id:'8',  text:'Tawny'},
-    /* Fantasy */
-    {id:'9',  text:'Arcane'},
-    {id:'10', text:'Infernal'},
-    {id:'11', text:'Celestial'},
-    {id:'12', text:'Fey'},
-    {id:'13', text:'Undead'},
-    {id:'14', text:'Shadow void'},
-    {id:'15', text:'Aquatic'},
-    {id:'16', text:'Draconic'},
-    {id:'17', text:'Fire'},
-    {id:'18', text:'Ice'},
-    {id:'19', text:'Starfield'},
-    /* Metallic */
-    {id:'20', text:'Gold'},
-    {id:'21', text:'Silver'},
-    {id:'22', text:'Bronze'},
-    {id:'23', text:'Copper'},
-    {id:'24', text:'Platinum'},
-    {id:'25', text:'Chrome'},
-    /* Wood and organic */
-    {id:'26', text:'Bark'},
-    {id:'27', text:'Birch'},
-    {id:'28', text:'Driftwood'},
-    {id:'29', text:'Ironwood'},
-    {id:'30', text:'Moss'},
-    /* Gemstone */
-    {id:'31', text:'Sapphire'},
-    {id:'32', text:'Emerald'},
-    {id:'33', text:'Ruby'},
-    {id:'34', text:'Amethyst'},
-    {id:'35', text:'Onyx'},
-    {id:'36', text:'Opal'},
-    {id:'37', text:'Jade'},
-    {id:'38', text:'Turquoise'},
-    {id:'39', text:'Amber'},
-    {id:'40', text:'Obsidian'},
+    {id:'1',  text:'Natural Palette'},
+    {id:'2',  text:'European'},
+    {id:'3',  text:'East Asian'},
+    {id:'4',  text:'African'},
+    {id:'5',  text:'Fantasy Arcane Palette'},
+    {id:'6',  text:'Jewel Palette'},
+    {id:'7',  text:'Fire Palette'},
+    {id:'8',  text:'Chromatic Shift Palette'},
+    {id:'9',  text:'Obsidian Palette'},
+    {id:'10', text:'Verdantflame Palette'},
+    {id:'11', text:'Crystalfire Palette'},
+    {id:'12', text:'Mirage Palette'},
   ]},
 
   Q4A: { title:'Physical Build', type:'single', allowCustom:true, options:[
@@ -1458,7 +1424,7 @@ const QUESTIONS = {
     {id:'18', text:'Sardonic or wry'},
   ]},
 
-  Q12: { title:'Art Style', type:'single', allowCustom:true, options:[
+  Q12: { title:'Art Style', type:'multi', max:2, allowCustom:true, options:[
     {id:'1',  text:'Photorealism'},
     {id:'2',  text:'Hyper realism'},
     {id:'3',  text:'Cinematic realism'},
@@ -1503,93 +1469,93 @@ const QUESTIONS = {
 const PRESETS = {
   modernPro: {
     Q1:'1', Q2:'5', Q3:'1',
-    Q3A:['1','7'], Q3B:'3', Q3C:['1','11'], Q3D:['3','7'], Q3E:['1','7'], Q3F:['2','5'], Q3H:'1',
+    Q3A:['1','7'], Q3B:['3'], Q3C:['1','11'], Q3D:['3','7'], Q3E:['1','7'], Q3F:['2','5'], Q3H:['1'],
     'Q3G-length':'3', 'Q3G-texture':'1', 'Q3G-style':'1', 'Q3G-color':'2',
-    Q4:'3', Q4A:'4', Q4B:[],
+    Q4:'1', Q4A:'4', Q4B:[],
     Q5:['2'], Q6:['10'], Q7:['9'], Q8:['19'],
     Q9:['1'], Q10:['3'],
-    Q12:'3', Q13:'1', Q14:'2',
+    Q12:['3'], Q13:'1', Q14:'2',
   },
   fantasyWarrior: {
     Q1:'2', Q2:'5', Q3:'2',
-    Q3A:['1','9'], Q3B:'4', Q3C:['2'], Q3D:['4'], Q3E:['1','8'], Q3F:['4','7'], Q3H:'13',
+    Q3A:['1','9'], Q3B:['4'], Q3C:['2'], Q3D:['4'], Q3E:['1','8'], Q3F:['4','7'], Q3H:['13'],
     'Q3G-length':'5', 'Q3G-texture':'4', 'Q3G-style':'6', 'Q3G-color':'7',
-    Q4:'5', Q4A:'6', Q4B:['1','4'],
+    Q4:'1', Q4A:'6', Q4B:['1','4'],
     Q5:['7','5'], Q6:['4'], Q7:['1'], Q8:['3'],
     Q9:['2','6'], Q10:['5'],
-    Q12:'4', Q13:'3', Q14:'2',
+    Q12:['4'], Q13:'3', Q14:'2',
   },
   royalPortrait: {
     Q1:'1', Q2:'5', Q3:'2',
-    Q3A:['1','13'], Q3B:'3', Q3C:['3'], Q3D:['3','6'], Q3E:['4','11'], Q3F:['2','5'], Q3H:'13',
+    Q3A:['1','13'], Q3B:['3'], Q3C:['3'], Q3D:['3','6'], Q3E:['4','11'], Q3F:['2','5'], Q3H:['13'],
     'Q3G-length':'5', 'Q3G-texture':'3', 'Q3G-style':'4', 'Q3G-color':'5',
-    Q4:'3', Q4A:'11', Q4B:[],
+    Q4:'1', Q4A:'11', Q4B:[],
     Q5:['2','10'], Q6:['11'], Q7:['9'], Q8:['19'],
     Q9:['2'], Q10:['2'],
-    Q12:'8', Q13:'2', Q14:'2',
+    Q12:['8'], Q13:'2', Q14:'2',
   },
   cyberpunk: {
     Q1:'1', Q2:'4', Q3:'3',
-    Q3A:['8','12'], Q3B:'7', Q3C:['5'], Q3D:['9'], Q3E:['4'], Q3F:['4'], Q3H:'1',
+    Q3A:['8','12'], Q3B:['7'], Q3C:['5'], Q3D:['9'], Q3E:['4'], Q3F:['4'], Q3H:['1'],
     'Q3G-length':'3', 'Q3G-texture':'1', 'Q3G-style':'9', 'Q3G-color':'12',
     Q4:'1', Q4A:'5', Q4B:['10'],
     Q5:['16','1'], Q6:['10'], Q7:['14'], Q8:['14'],
     Q9:['3'], Q10:['3'],
-    Q12:'3', Q13:'4', Q14:'2',
+    Q12:['3'], Q13:'4', Q14:'2',
   },
   fantasyMage: {
     Q1:'2', Q2:'7', Q3:'1',
-    Q3A:['7','13'], Q3B:'6', Q3C:['2'], Q3D:['5'], Q3E:['3'], Q3F:['3','8'], Q3H:'7',
+    Q3A:['7','13'], Q3B:['6'], Q3C:['2'], Q3D:['5'], Q3E:['3'], Q3F:['3','8'], Q3H:['7'],
     'Q3G-length':'6', 'Q3G-texture':'6', 'Q3G-style':'1', 'Q3G-color':'10',
-    Q4:'9', Q4A:'2', Q4B:['11'],
+    Q4:'5', Q4A:'2', Q4B:['11'],
     Q5:['6'], Q6:['19'], Q7:['3'], Q8:['13'],
     Q9:['8'], Q10:['17'],
-    Q12:'4', Q13:'4', Q14:'2',
+    Q12:['4'], Q13:'4', Q14:'2',
   },
   medievalKnight: {
     Q1:'1', Q2:'5', Q3:'1',
-    Q3A:['1','7'], Q3B:'2', Q3C:['1'], Q3D:['1'], Q3E:['1','7'], Q3F:['1','5'], Q3H:'4',
+    Q3A:['1','7'], Q3B:['2'], Q3C:['1'], Q3D:['1'], Q3E:['1','7'], Q3F:['1','5'], Q3H:['4'],
     'Q3G-length':'3', 'Q3G-texture':'3', 'Q3G-style':'1', 'Q3G-color':'2',
-    Q4:'3', Q4A:'6', Q4B:['1'],
+    Q4:'1', Q4A:'6', Q4B:['1'],
     Q5:['7'], Q6:['4'], Q7:['1'], Q8:['3'],
     Q9:['2'], Q10:['5'],
-    Q12:'3', Q13:'3', Q14:'2',
+    Q12:['3'], Q13:'3', Q14:'2',
   },
   livingGold: {
     Q1:'10', Q2:'8', Q3:'5',
-    Q3A:['1','6'], Q3B:'11', Q3C:['3'], Q3D:['6'], Q3E:['4'], Q3F:['2'],  Q3H:'13',
+    Q3A:['1','6'], Q3B:['11'], Q3C:['3'], Q3D:['6'], Q3E:['4'], Q3F:['2'],  Q3H:['13'],
     'Q3G-length':'6', 'Q3G-texture':'1', 'Q3G-style':'1', 'Q3G-color':'18',
-    Q4:'20', Q4A:'5', Q4B:['10'],
+    Q4:'11', Q4A:'5', Q4B:['10'],
     Q5:['10'], Q6:['14'], Q7:['17'], Q8:['17'],
     Q9:['2'], Q10:['14'],
-    Q12:'2', Q13:'3', Q14:'2',
+    Q12:['2'], Q13:'3', Q14:'2',
   },
   natureSpirit: {
     Q1:'13', Q2:'8', Q3:'2',
-    Q3A:['3','9'], Q3B:'4', Q3C:['7'], Q3D:['3','7'], Q3E:['3'], Q3F:['3','7'], Q3H:'13',
+    Q3A:['3','9'], Q3B:['4'], Q3C:['7'], Q3D:['3','7'], Q3E:['3'], Q3F:['3','7'], Q3H:['13'],
     'Q3G-length':'7', 'Q3G-texture':'4', 'Q3G-style':'6', 'Q3G-color':'17',
-    Q4:'29', Q4A:'3', Q4B:['15','13','18'],
+    Q4:'10', Q4A:'3', Q4B:['15','13','18'],
     Q5:['11'], Q6:['1'], Q7:['3'], Q8:['3','18'],
     Q9:['8'], Q10:['13'],
-    Q12:'4', Q13:'4', Q14:'2',
+    Q12:['4'], Q13:'4', Q14:'2',
   },
   celestialBeing: {
     Q1:'11', Q2:'8', Q3:'2',
-    Q3A:['1','5'], Q3B:'12', Q3C:['1'], Q3D:['6','3'], Q3E:['4'], Q3F:['2','5'], Q3H:'13',
+    Q3A:['1','5'], Q3B:['12'], Q3C:['1'], Q3D:['6','3'], Q3E:['4'], Q3F:['2','5'], Q3H:['13'],
     'Q3G-length':'6', 'Q3G-texture':'3', 'Q3G-style':'1', 'Q3G-color':'6',
-    Q4:'11', Q4A:'3', Q4B:['13','10'],
+    Q4:'12', Q4A:'3', Q4B:['13','10'],
     Q5:['14','10'], Q6:['23'], Q7:['15'], Q8:['13'],
     Q9:['18'], Q10:['13'],
-    Q12:'4', Q13:'4', Q14:'2',
+    Q12:['4'], Q13:'4', Q14:'2',
   },
   voidWalker: {
     Q1:'12', Q2:'8', Q3:'5',
-    Q3A:['8','11'], Q3B:'13', Q3C:['5'], Q3D:['10'], Q3E:['4'], Q3F:['4'], Q3H:'13',
+    Q3A:['8','11'], Q3B:['13'], Q3C:['5'], Q3D:['10'], Q3E:['4'], Q3F:['4'], Q3H:['13'],
     'Q3G-length':'1', 'Q3G-texture':'1', 'Q3G-style':'1', 'Q3G-color':'1',
-    Q4:'14', Q4A:'2', Q4B:['16','10'],
+    Q4:'9', Q4A:'2', Q4B:['16','10'],
     Q5:['6'], Q6:['23'], Q7:['18'], Q8:['13'],
     Q9:['19'], Q10:['10'],
-    Q12:'5', Q13:'4', Q14:'1',
+    Q12:['5'], Q13:'4', Q14:'1',
   },
 };
 
