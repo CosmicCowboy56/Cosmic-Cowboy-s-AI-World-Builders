@@ -548,9 +548,8 @@ const QUESTIONS = [
     options: [
       'Human','Variant Human','Elf','High Elf','Wood Elf','Drow (Dark Elf)','Half-Elf',
       'Dwarf','Mountain Dwarf','Hill Dwarf','Halfling','Lightfoot Halfling','Stout Halfling',
-      'Gnome','Forest Gnome','Rock Gnome','Orc','Half-Orc','Tiefling','Asmodeus Tiefling',
-      'Dragonborn','Chromatic Dragonborn','Metallic Dragonborn',
-      'Genasi — Air','Genasi — Earth','Genasi — Fire','Genasi — Water',
+      'Gnome','Forest Gnome','Rock Gnome','Orc','Half-Orc','Tiefling',
+      'Dragonborn','Genasi — Air','Genasi — Earth','Genasi — Fire','Genasi — Water',
       'Goliath','Aasimar','Fallen Aasimar','Protector Aasimar','Scourge Aasimar',
       'Tabaxi','Centaur','Firbolg','Kenku','Triton','Warforged','Changeling','Shifter',
       'Kalashtar','Lizardfolk','Tortle','Bugbear','Goblin','Hobgoblin','Kobold',
@@ -620,10 +619,10 @@ const QUESTIONS = [
     hint: 'Background determines starting skill proficiencies, languages, and equipment. Use the field below to describe a custom background.',
     type: 'select', allowRandom: true, allowCustom: true,
     options: [
-      'Acolyte','Charlatan','Criminal','Spy','Entertainer','Gladiator','Folk Hero',
-      'Guild Artisan','Guild Merchant','Hermit','Noble','Knight','Outlander','Sage',
-      'Sailor','Pirate','Soldier','Urchin','Haunted One','Far Traveler','Investigator',
-      'Witchlight Hand','City Watch','Clan Crafter','Cloistered Scholar','Courtier',
+      'Acolyte','Charlatan','Criminal','Criminal (Spy Variant)','Entertainer','Gladiator','Folk Hero',
+      'Guild Artisan','Hermit','Noble','Knight','Outlander','Sage',
+      'Sailor','Sailor (Pirate Variant)','Soldier','Urchin','Haunted One','Far Traveler',
+      'Witchlight Hand','Clan Crafter','Cloistered Scholar','Courtier',
       'Faction Agent','Inheritor','Mercenary Veteran','Urban Bounty Hunter','Feylost',
     ],
   },
@@ -660,36 +659,36 @@ const QUESTIONS = [
     options: [
       'Fighter / Soldier: Athletics, Intimidation, Perception, Survival',
       'Fighter / Noble: Athletics, History, Intimidation, Persuasion',
-      'Fighter / Criminal: Athletics, Acrobatics, Intimidation, Stealth',
+      'Fighter / Criminal: Athletics, Deception, Perception, Stealth',
       'Barbarian / Outlander: Athletics, Intimidation, Nature, Survival',
       'Barbarian / Folk Hero: Animal Handling, Athletics, Intimidation, Survival',
-      'Barbarian / Berserker: Athletics, Intimidation, Perception, Survival',
-      'Paladin / Noble: Athletics, Intimidation, Persuasion, Religion',
+      'Barbarian / Soldier: Athletics, Intimidation, Perception, Survival',
+      'Paladin / Noble: Athletics, History, Persuasion, Religion',
       'Paladin / Soldier: Athletics, Insight, Intimidation, Medicine',
       'Paladin / Acolyte: Athletics, Insight, Medicine, Religion',
       'Ranger / Outlander: Athletics, Nature, Stealth, Survival',
-      'Ranger / Scout: Athletics, Nature, Perception, Stealth, Survival',
-      'Ranger / Hunter: Animal Handling, Investigation, Perception, Stealth, Survival',
+      'Ranger / Folk Hero: Animal Handling, Nature, Perception, Stealth, Survival',
+      'Ranger / Soldier: Animal Handling, Athletics, Intimidation, Investigation, Perception',
       'Monk / Hermit: Acrobatics, Insight, Medicine, Religion',
       'Monk / Urchin: Acrobatics, Insight, Sleight of Hand, Stealth',
-      'Monk / Outlander: Acrobatics, Athletics, Nature, Stealth',
+      'Monk / Outlander: Acrobatics, Athletics, Stealth, Survival',
       'Rogue / Criminal: Acrobatics, Deception, Investigation, Sleight of Hand, Stealth',
       'Rogue / Urchin: Acrobatics, Investigation, Sleight of Hand, Stealth',
       'Rogue / Charlatan: Deception, Insight, Perception, Sleight of Hand, Stealth',
-      'Rogue / Spy: Deception, Intimidation, Investigation, Perception, Stealth',
+      'Rogue / Criminal (Spy Variant): Deception, Intimidation, Investigation, Perception, Stealth',
       'Bard / Entertainer: Acrobatics, Deception, Performance, Persuasion, Stealth',
       'Bard / Charlatan: Deception, Insight, Performance, Persuasion, Sleight of Hand',
       'Bard / Noble: History, Insight, Performance, Persuasion',
       'Wizard / Sage: Arcana, History, Insight, Investigation',
       'Wizard / Acolyte: Arcana, History, Insight, Religion',
-      'Wizard / Scholar: Arcana, History, Investigation, Medicine',
-      'Sorcerer / Noble: Arcana, Intimidation, Insight, Persuasion',
+      'Wizard / Cloistered Scholar: Arcana, History, Investigation, Medicine',
+      'Sorcerer / Noble: Arcana, History, Intimidation, Persuasion',
       'Sorcerer / Hermit: Arcana, Insight, Medicine, Religion',
-      'Warlock / Charlatan: Arcana, Deception, Intimidation, Persuasion',
-      'Warlock / Acolyte: Arcana, Deception, History, Religion',
-      'Artificer / Guild Artisan: Arcana, History, Investigation, Perception',
+      'Warlock / Charlatan: Arcana, Deception, Intimidation, Sleight of Hand',
+      'Warlock / Acolyte: Arcana, History, Insight, Religion',
+      'Artificer / Guild Artisan: Arcana, History, Insight, Persuasion',
       'Cleric / Acolyte: History, Insight, Medicine, Persuasion, Religion',
-      'Cleric / Sage: History, Insight, Medicine, Religion',
+      'Cleric / Sage: Arcana, History, Insight, Religion',
       'Druid / Hermit: Animal Handling, Medicine, Nature, Religion, Survival',
       'Druid / Outlander: Animal Handling, Athletics, Nature, Survival',
       'Blood Hunter / Soldier: Athletics, Intimidation, Investigation, Survival',
@@ -706,7 +705,7 @@ const QUESTIONS = [
       'Common, Draconic, Giant',
       'Common, Infernal, Abyssal',
       'Common, Celestial, Draconic',
-      'Common, Primordial, Terran',
+      'Common, Primordial, Giant',
       'Common, Undercommon, Deep Speech',
       'Common, Goblin, Orcish, Giant',
       'Common, Elvish, Draconic, Sylvan',
@@ -1516,7 +1515,7 @@ Place 15 in slot 1 (primary), 14 in slot 2 (secondary), 13 in slot 3 (tertiary),
 TRAP BUILD PREVENTION:
 - Do not assign a dump stat (8 or below before racial bonus) to a class primary stat.
 - Do not select feats that have no synergy with the class (e.g. Great Weapon Master on a Wizard).
-- Paladin/Sorcerer multiclass (Sorcadin) requires CHA 13 minimum for both. State this explicitly.
+- Paladin/Sorcerer multiclass (Sorcadin) requires STR 13 AND CHA 13 to multiclass into Paladin, and CHA 13 to multiclass into or out of Sorcerer. State this explicitly.
 - Monk requires both DEX 13 AND WIS 13 to multiclass into.
 - If the player's alignment conflicts with a class requirement (Paladin Oath of Devotion requires non-evil; Oathbreaker requires evil), flag the conflict and note it in the stats section.
 
@@ -1590,8 +1589,8 @@ The ancestry must be visually unmistakable, not just named. State the race's def
 - Gnome, Forest Gnome, Rock Gnome: small, about 3 feet tall, slender energetic build with exaggerated features — a large nose, big bright eyes, and pointed ears — a fantasy adventurer, never a garden/lawn ornament.
 - Orc: tall, broad, heavily muscled, with a sloped forehead, heavy brow, broad flat nose, sharply pointed ears, and prominent lower canine tusks.
 - Half-Orc: tall and powerfully built, with a heavy brow, slightly pointed ears, and visible protruding lower canine tusks — a more human-proportioned version of the orc look.
-- Tiefling, Asmodeus Tiefling: large horns (curling like a ram, straight like a gazelle, or spiraling like an antelope), a long thick tail 4–5 feet long, sharp canine teeth, and solid-colored eyes with no visible sclera or pupil (black, red, white, silver, or gold).
-- Dragonborn, Chromatic Dragonborn, Metallic Dragonborn: tall, heavily muscled, wingless, with a draconic head (blunt snout, strong brow, swept-back horn-like scale frills), a body covered in fine scales with larger plate-like scales on the forearms, shoulders, and legs, and a long tail; chromatic ancestry scales are black, blue, green, red, or white, metallic ancestry scales are brass, bronze, copper, gold, or silver.
+- Tiefling: large horns (curling like a ram, straight like a gazelle, or spiraling like an antelope), a long thick tail 4–5 feet long, sharp canine teeth, and solid-colored eyes with no visible sclera or pupil (black, red, white, silver, or gold).
+- Dragonborn: tall, heavily muscled, wingless, with a draconic head (blunt snout, strong brow, swept-back horn-like scale frills), a body covered in fine scales with larger plate-like scales on the forearms, shoulders, and legs, and a long tail; scale color reflects the character's draconic ancestry (e.g. black, blue, green, red, white, brass, bronze, copper, gold, or silver).
 - Genasi — Air: lighter, leaner build than other genasi, with pale blue-grey or ashen skin and hair that appears to drift as if stirred by a constant unseen breeze.
 - Genasi — Earth: stocky, heavy build with deep brown, grey, or stone-toned skin, sometimes with visible mineral veining, pebbled texture, or embedded crystal flecks.
 - Genasi — Fire: lean build with flame-red, orange, or ember-toned skin and fiery red hair that appears to flicker or smoke like flame.
