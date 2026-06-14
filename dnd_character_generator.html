@@ -1565,7 +1565,12 @@ Output exactly three sections using these headers on their own lines:
 
 SECTION: CHARACTER STATS
 Mechanical data only — no prose. Include in this order:
-Character Name | Level | Ancestry / Race with edition-appropriate racial features listed | Class and Subclass | Background | Alignment | All six ability scores (show base score then final score after racial bonuses then modifier, e.g. STR 14 > 16 +3) | Proficiency Bonus (calculated from level) | Saving Throw Proficiencies | Skill Proficiencies | Languages Known | Feats | Hit Points (show calculation) | Armor Class (show components) | Initiative | Speed | Starting Equipment (list specific named items) | Spellcasting (if applicable: Spellcasting Ability, Spell Save DC, Spell Attack Bonus, Cantrips known by name, Spells known/prepared by level with slot count)
+Character Name | Level | Ancestry / Race with edition-appropriate racial features listed | Class and Subclass | Background | Alignment | All six ability scores | Proficiency Bonus (calculated from level) | Saving Throw Proficiencies | Skill Proficiencies | Languages Known | Feats | Hit Points (show calculation) | Armor Class (show components) | Initiative | Speed | Starting Equipment (list specific named items) | Spellcasting (if applicable: Spellcasting Ability, Spell Save DC, Spell Attack Bonus, Cantrips known by name, Spells known/prepared by level with slot count)
+
+For each of the six ability scores, show the full build-up on one line in this exact form, with every applicable term included (omit only terms that are zero):
+STAT: [array/point-buy base] base, +[N] racial ([race name]), +[N] ASI = [final score] ([+/-modifier])
+Example: STR: 15 base, +2 racial (Mountain Dwarf), +2 ASI = 19 (+4)
+If a term does not apply (e.g. no racial bonus to that stat, no ASI applied to that stat), omit it from the chain rather than writing "+0". The final score and modifier must equal the sum of every term actually shown. Double-check the arithmetic on every line before output — these numbers must be internally consistent and must match the modifiers used later for saves, skills, attacks, AC, and spell DCs.
 If any selection conflicts with edition rules or viability, add a NOTES section at the end of this block flagging the issue and what was substituted or adjusted.
 
 SECTION: CHARACTER LORE
@@ -1620,7 +1625,7 @@ Follow these absolute rules:
   const body = {
     model:            XAI_MODEL,
     max_tokens:       4096,
-    reasoning_effort: 'none',
+    reasoning_effort: 'high',
     messages: [
       { role: 'system', content: sysPrompt },
       { role: 'user',   content: userPrompt }
