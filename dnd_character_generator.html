@@ -243,12 +243,36 @@ select[multiple] option:checked { background: rgba(144,224,239,0.2); }
 }
 .acc-section.open .acc-body { display: block; }
 
+/* ── OUTPUT OPTIONS ── */
+.out-opts {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.out-opt-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--fg);
+  user-select: none;
+}
+.out-opt-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--soft-cyan);
+  cursor: pointer;
+}
+
 /* ── QUESTION BLOCKS ── */
 .q-block {
   margin-bottom: 16px;
 }
 .q-block:last-child { margin-bottom: 0; }
 .q-block.hidden { display: none; }
+.acc-section.hidden { display: none; }
 
 .q-label {
   font-family: 'Cinzel', serif;
@@ -460,7 +484,7 @@ select[multiple] option:checked { background: rgba(144,224,239,0.2); }
 
 <div class="output-row">
 
-  <div class="out-panel">
+  <div class="out-panel" id="panel-stats">
     <div class="out-head">
       <span class="out-title">Character Stats</span>
       <button class="btn" style="font-size:0.60rem;padding:3px 10px;" onclick="copyOut('outStats',this)">COPY</button>
@@ -468,7 +492,7 @@ select[multiple] option:checked { background: rgba(144,224,239,0.2); }
     <div class="out-body empty" id="outStats">Awaiting generation...</div>
   </div>
 
-  <div class="out-panel">
+  <div class="out-panel" id="panel-lore">
     <div class="out-head">
       <span class="out-title">Character Lore</span>
       <span class="out-note">Lore may need editing to match your vision.</span>
@@ -477,7 +501,7 @@ select[multiple] option:checked { background: rgba(144,224,239,0.2); }
     <div class="out-body empty" id="outLore">Awaiting generation...</div>
   </div>
 
-  <div class="out-panel">
+  <div class="out-panel" id="panel-image">
     <div class="out-head">
       <span class="out-title">Portrait Prompt</span>
       <button class="btn" style="font-size:0.60rem;padding:3px 10px;" onclick="copyOut('outPrompt',this)">COPY</button>
@@ -1087,8 +1111,9 @@ QUESTIONS.forEach(q => QMAP[q.id] = q);
    STATE
    ============================================================ */
 const STATE = {
-  answers:    {},
-  generating: false,
+  answers:       {},
+  generating:    false,
+  outputOptions: { stats: true, lore: true, image: true },
 };
 
 
@@ -1189,12 +1214,17 @@ function renderAll() {
       body.appendChild(buildQBlock(q));
     });
 
+    if (sec.title === 'Core Setup') {
+      body.appendChild(buildOutputBlock());
+    }
+
     section.appendChild(header);
     section.appendChild(body);
     col.appendChild(section);
   });
 
   updateConditionals();
+  updateOutputConditionals();
 }
 
 function buildQBlock(q) {
@@ -1329,6 +1359,57 @@ function updateConditionals() {
   });
 }
 
+function buildOutputBlock() {
+  const wrap = document.createElement('div');
+  wrap.className = 'q-block';
+  wrap.id = 'q-outputOptions';
+  const oo = STATE.outputOptions;
+  wrap.innerHTML = `
+    <div class="q-label">Output Sections</div>
+    <div class="q-hint">Choose which sections to generate. At least one must be selected.</div>
+    <div class="out-opts">
+      <label class="out-opt-item"><input type="checkbox" id="oo-stats" ${oo.stats ? 'checked' : ''} onchange="onOutputChange()"> Stats Sheet</label>
+      <label class="out-opt-item"><input type="checkbox" id="oo-lore"  ${oo.lore  ? 'checked' : ''} onchange="onOutputChange()"> Character Lore</label>
+      <label class="out-opt-item"><input type="checkbox" id="oo-image" ${oo.image ? 'checked' : ''} onchange="onOutputChange()"> Portrait Prompt</label>
+    </div>`;
+  return wrap;
+}
+
+function onOutputChange() {
+  STATE.outputOptions.stats = document.getElementById('oo-stats').checked;
+  STATE.outputOptions.lore  = document.getElementById('oo-lore').checked;
+  STATE.outputOptions.image = document.getElementById('oo-image').checked;
+  updateOutputConditionals();
+  updateGenBtn();
+}
+
+function updateOutputConditionals() {
+  const oo = STATE.outputOptions;
+  ['artStyle','composition','imageSize'].forEach(id => {
+    const el = document.getElementById('q-' + id);
+    if (el) el.classList.toggle('hidden', !oo.image);
+  });
+  ['equipMethod','spells'].forEach(id => {
+    const el = document.getElementById('q-' + id);
+    if (el) el.classList.toggle('hidden', !oo.stats);
+  });
+  const col = document.getElementById('accCol');
+  if (col) {
+    col.querySelectorAll('.acc-section').forEach(sec => {
+      const title = sec.querySelector('.acc-title');
+      if (title && title.textContent.trim() === 'Portrait Settings') {
+        sec.classList.toggle('hidden', !oo.image);
+      }
+    });
+  }
+  const pStats = document.getElementById('panel-stats');
+  const pLore  = document.getElementById('panel-lore');
+  const pImage = document.getElementById('panel-image');
+  if (pStats) pStats.style.display = oo.stats ? '' : 'none';
+  if (pLore)  pLore.style.display  = oo.lore  ? '' : 'none';
+  if (pImage) pImage.style.display = oo.image ? '' : 'none';
+}
+
 
 /* ============================================================
    RANDOMIZE
@@ -1418,7 +1499,9 @@ function updateGenBtn() {
   const btn  = document.getElementById('btnGenerate');
   const nameVal  = getCombined('name');
   const classVal = getCombined('charClass');
-  btn.disabled = !(nameVal && classVal) || STATE.generating;
+  const oo = STATE.outputOptions;
+  const anyOutput = oo.stats || oo.lore || oo.image;
+  btn.disabled = !(nameVal && classVal && anyOutput) || STATE.generating;
 
   const flat     = flatAnswers();
   const filled   = QUESTIONS.filter(q =>
@@ -1469,8 +1552,17 @@ async function generateCharacter() {
 
   const flat = flatAnswers();
 
+  const oo = STATE.outputOptions;
+  const imageOnlyIds = new Set(['artStyle','composition','imageSize']);
+  const statsOnlyIds = new Set(['equipMethod','spells']);
+
   const lines = QUESTIONS
-    .filter(q => flat[q.id] && (!q.condition || q.condition(flat)))
+    .filter(q => {
+      if (!flat[q.id]) return false;
+      if (!oo.image && imageOnlyIds.has(q.id)) return false;
+      if (!oo.stats && statsOnlyIds.has(q.id)) return false;
+      return !q.condition || q.condition(flat);
+    })
     .map(q => {
       const val = (flat[q.id] || '').replace(/\|\|/g, ', ');
       return `${q.label}: ${val}`;
@@ -1478,14 +1570,88 @@ async function generateCharacter() {
 
   const answerBlock = lines.join('\n');
 
+  const SECTION_STATS = `SECTION: CHARACTER STATS
+Mechanical data only — no prose. Include in this order:
+Character Name | Level | Ancestry / Race with edition-appropriate racial features listed | Class and Subclass | Background | Alignment | All six ability scores | Proficiency Bonus (calculated from level) | Saving Throw Proficiencies | Skill Proficiencies | Languages Known | Feats | Hit Points (show calculation) | Armor Class (show components) | Initiative | Speed | Starting Equipment (list specific named items) | Spellcasting (if applicable: Spellcasting Ability, Spell Save DC, Spell Attack Bonus, Cantrips known by name, Spells known/prepared by level with slot count)
+
+For each of the six ability scores, show the full build-up on one line in this exact form, with every applicable term included (omit only terms that are zero):
+STAT: [array/point-buy base] base, +[N] racial ([race name]), +[N] ASI = [final score] ([+/-modifier])
+Example: STR: 15 base, +2 racial (Mountain Dwarf), +2 ASI = 19 (+4)
+If a term does not apply (e.g. no racial bonus to that stat, no ASI applied to that stat), omit it from the chain rather than writing "+0". The final score and modifier must equal the sum of every term actually shown. Double-check the arithmetic on every line before output — these numbers must be internally consistent and must match the modifiers used later for saves, skills, attacks, AC, and spell DCs.
+If any selection conflicts with edition rules or viability, add a NOTES section at the end of this block flagging the issue and what was substituted or adjusted.`;
+
+  const SECTION_LORE = `SECTION: CHARACTER LORE
+In this order: Personality Traits | Ideal | Bond | Flaws | Physical Description | Voice and Mannerisms | Deeper Motivations
+Then a 2–3 paragraph Origin Story that weaves together background, class, personality, a formative event or turning point, core motivations, and at least one clear adventure hook. Write in engaging narrative style.`;
+
+  const SECTION_PORTRAIT = `SECTION: PORTRAIT PROMPT
+Write one cohesive paragraph (two short ones only if needed) of flowing, descriptive prose ready for direct input to an image generator — not a list of fields, not pipe-separated, no labels. Use spatial and relational language throughout — "framed by", "falling across", "where the light catches", "set against" — to weave the character's ancestry, build, skin/body surface, distinguishing marks, equipment, and pose into one coherent figure, then describe their expression, setting, and lighting around them.
+
+The ancestry must be visually unmistakable, not just named. State the race's defining physical traits explicitly, drawn from this reference (apply to the chosen ancestry and any of its listed sub-races). Where a trait below conflicts with the chosen skin/body palette, the skin/body palette wins for coloring, but all structural traits (ears, horns, tails, builds, scales, etc.) still apply:
+- Human, Variant Human: average human height and build, fully human facial structure, no nonhuman markers.
+- Elf, High Elf, Wood Elf: slender, graceful build, under 150 lbs, roughly human height or slightly shorter, with long pointed ears and sharply angular, fine-boned faces; no facial hair.
+- Drow (Dark Elf): same slender elven build and pointed ears as other elves, with charcoal-to-obsidian-black skin and stark white or pale-yellow hair, and very pale eyes (lilac, silver, pink, or red) unless the chosen skin palette specifies otherwise.
+- Half-Elf: build between human and elf — leaner than a human, slightly broader than an elf, with pointed ears shorter and more rounded than a full elf's, and an angular but slightly softer face.
+- Dwarf, Mountain Dwarf, Hill Dwarf: short and stocky, 4–5 feet tall, broad shoulders and a heavy compact build, with a prominent brow ridge and (unless specified otherwise) a thick, groomed beard on both sexes.
+- Halfling, Lightfoot Halfling, Stout Halfling: small, about 3 feet tall, stocky-but-soft build, round ears, round soft facial features, curly hair, and bare hairy feet.
+- Gnome, Forest Gnome, Rock Gnome: small, about 3 feet tall, slender energetic build with exaggerated features — a large nose, big bright eyes, and pointed ears — a fantasy adventurer, never a garden/lawn ornament.
+- Orc: tall, broad, heavily muscled, with a sloped forehead, heavy brow, broad flat nose, sharply pointed ears, and prominent lower canine tusks.
+- Half-Orc: tall and powerfully built, with a heavy brow, slightly pointed ears, and visible protruding lower canine tusks — a more human-proportioned version of the orc look.
+- Tiefling: large horns (curling like a ram, straight like a gazelle, or spiraling like an antelope), a long thick tail 4–5 feet long, sharp canine teeth, and solid-colored eyes with no visible sclera or pupil (black, red, white, silver, or gold).
+- Dragonborn: tall, heavily muscled, wingless, with a draconic head (blunt snout, strong brow, swept-back horn-like scale frills), a body covered in fine scales with larger plate-like scales on the forearms, shoulders, and legs, and a long tail; scale color reflects the character's draconic ancestry (e.g. black, blue, green, red, white, brass, bronze, copper, gold, or silver).
+- Genasi — Air: lighter, leaner build than other genasi, with pale blue-grey or ashen skin and hair that appears to drift as if stirred by a constant unseen breeze.
+- Genasi — Earth: stocky, heavy build with deep brown, grey, or stone-toned skin, sometimes with visible mineral veining, pebbled texture, or embedded crystal flecks.
+- Genasi — Fire: lean build with flame-red, orange, or ember-toned skin and fiery red hair that appears to flicker or smoke like flame.
+- Genasi — Water: sturdier build with blue or green skin, overlarge blue-black eyes, and hair that drifts as if underwater, sometimes with faint gill-like markings on the neck.
+- Goliath: towering, 7–8 feet tall, heavily muscled, with grey skin mottled in darker and lighter patches plus small hard "lithoderm" growths on the arms, shoulders, and torso, and a jutting brow ridge.
+- Aasimar, Protector Aasimar, Fallen Aasimar, Scourge Aasimar: human-like build with celestial markers — luminous or solid-color eyes and sometimes a faint halo of light; Protector Aasimar manifest a pair of luminous, incorporeal feathered wings; Fallen Aasimar manifest dark, skeletal, flightless black wings and pool-like dark eyes; Scourge Aasimar radiate visible cracks of divine light across the skin when active.
+- Tabaxi: tall, slender feline humanoid with a furred cat-like face, large pointed ears, retractable claws, a long tail, and big-cat coat patterning (stripes, spots, or solid coloring).
+- Centaur: a humanoid torso, head, and arms set atop the full body of a horse with four legs, a horse tail, and an equine coat.
+- Firbolg: very tall, 7–8 feet, burly muscular build, with pointed elf-like ears, a broad nose, and thick unkempt hair.
+- Kenku: bird-person about 5 feet tall, covered in feathers, with a sharp beak, human-like arms ending in clawed talon-hands (no functional wings), bird-talon feet, and a short feathered tail.
+- Triton: humanoid build around 6 feet tall with visible gill slits on the neck, webbed hands and feet, small fin-like ridges on the calves, and hair with a kelp-like texture.
+- Warforged: tall, broad, heavily built construct body composed of layered wood, metal, and stone plating with visible seams, and crystal-like eyes — no organic skin or hair.
+- Changeling: in true form, a thin humanoid with pale grey, almost featureless faded skin, wispy white hair, milky pupil-less eyes, and understated nose and ears.
+- Shifter: human-like build but leaner and more flexible, with a bestial cast to the face — large eyes, a flattened nose, pointed ears, and prominent canine teeth visible even in normal form.
+- Kalashtar: appears nearly human, typically taller and slimmer with highly symmetrical, graceful features; eyes visibly glow when feeling strong emotion or focusing.
+- Lizardfolk: reptilian humanoid, 6–7 feet tall, bulky and muscular, with scaled skin, slit-pupiled eyes, sharp claws and teeth, and a long powerful 3–4 foot tail.
+- Tortle: 5–6 feet tall but heavy due to a large shell on the back (darker/shinier) and a lighter underside shell, with hairless skin, a curved toothless beak, and eyes with horizontal pupils under heavy bony brows.
+- Bugbear: large goblinoid, 6–8 feet tall, covered in shaggy fur, with long gangly limbs, a stooped posture, prominent fangs, and pointed ears.
+- Goblin: small humanoid, about 3–4 feet tall, with a broad flat nose, a wide mouth full of sharp teeth, and large pointed ears.
+- Hobgoblin: resembles a large muscular human, 5–6 feet tall, with coarse body hair and pointed goblinoid ears.
+- Kobold: small reptilian humanoid around 3 feet tall, slightly chubby, with scaled hairless skin, a long rat-like tail, a doglike head with pointed ears flat against the skull, small horns above the eyes, and a row of blunt spines down the back of the neck.
+- Yuan-Ti Pureblood: roughly human in size and build with patches of fine scales on the skin, slit-pupiled snake-like eyes, and sometimes a thin forked tongue or small fangs.
+- Loxodon: bipedal elephant-headed humanoid, 7–8 feet tall, with thick leathery hide, large flapping ears, ivory tusks, a long prehensile trunk, and three-fingered hands.
+- Vedalken: tall, slender humanoid, nearly a head taller than humans, hairless, with no external ears and a broad flat nose.
+- Simic Hybrid: a humanoid (human, elf, or vedalken base) merged with aquatic creature traits — fin-like or membranous wings, gills, crab or lobster pincers, tentacles, or sharklike teeth, layered onto an otherwise humanoid body.
+- Leonin: muscular, lion-headed feline humanoid, 6–7 feet tall, covered in fur with a thick mane, retractable feline claws, and a feline tail.
+- Satyr: medium humanoid with an elf-like upper body (pointed ears, fine features) and a goat's lower legs ending in cloven hooves, plus a pair of curling goat/ram horns on the head and a short goat-like tail.
+- Harengon: bipedal rabbit-like humanoid covered in fur, with tall upright rabbit ears, a small fluffy round tail, and long rabbit-like hind feet.
+- Owlin: bipedal humanoid covered in feathers with an owl-like face — large forward-facing eyes, a small hooked beak, prominent feathered ear-tufts — and a pair of feathered wings on the back.
+Apply the equivalent defining traits for any other ancestry not listed here. Never default to a generic human appearance for a non-human ancestry.
+
+The exact skin/body palette selection must appear word-for-word somewhere in the prose — the art style cannot replace or dilute it. Incorporate: art style, composition, ancestry and gender, the skin/body palette (verbatim), physical details (age, build, distinguishing features), posture and expression, class and subclass visual elements, equipment theme and specific items, and personality reflected in pose and expression. Close with a clear sense of image aspect ratio.
+
+Do not explain or comment — output only the descriptive paragraph itself, with no line breaks within it.`;
+
+  const requestedSections = [
+    oo.stats ? SECTION_STATS   : null,
+    oo.lore  ? SECTION_LORE    : null,
+    oo.image ? SECTION_PORTRAIT : null,
+  ].filter(Boolean);
+
+  const sectionCount = requestedSections.length;
+  const outputInstruction = `Output exactly ${sectionCount === 1 ? 'one section' : sectionCount === 2 ? 'two sections' : 'three sections'} using ${sectionCount === 1 ? 'this header' : 'these headers'} on their own lines:\n\n${requestedSections.join('\n\n')}`;
+
+  const palettRule = oo.image ? '\n3. Skin palette enforcement — the Skin / Body Covering Palette must appear word-for-word in the portrait prompt. The art style cannot replace or dilute it.' : '';
+
   const prompt = `Using the player's selections below, produce a complete, mechanically correct D&D character package.
 
 CRITICAL RULES:
 1. Edition compliance — strictly use only classes, ancestries, subclasses, spells, feats, and mechanics that exist in the selected edition. Flag any selection that does not exist in the chosen edition and substitute the closest valid equivalent.
-2. Pipe character handling — any answer containing ( | ) means the player chose a list option AND added custom detail. Honour both parts.
-3. Skin palette enforcement — the Skin / Body Covering Palette must appear word-for-word in the portrait prompt. The art style cannot replace or dilute it.
-4. Clarifications override — if the Clarifications and Overrides field is filled, it takes precedence over all other answers.
-5. Mechanical viability — see the VIABILITY RULES section below before assigning any numbers.
+2. Pipe character handling — any answer containing ( | ) means the player chose a list option AND added custom detail. Honour both parts.${palettRule}
+${oo.image ? '4' : '3'}. Clarifications override — if the Clarifications and Overrides field is filled, it takes precedence over all other answers.
+${oo.image ? '5' : '4'}. Mechanical viability — see the VIABILITY RULES section below before assigning any numbers.
 
 VIABILITY RULES — read before assigning ability scores:
 
@@ -1561,71 +1727,7 @@ ${answerBlock}
 
 ---
 
-Output exactly three sections using these headers on their own lines:
-
-SECTION: CHARACTER STATS
-Mechanical data only — no prose. Include in this order:
-Character Name | Level | Ancestry / Race with edition-appropriate racial features listed | Class and Subclass | Background | Alignment | All six ability scores | Proficiency Bonus (calculated from level) | Saving Throw Proficiencies | Skill Proficiencies | Languages Known | Feats | Hit Points (show calculation) | Armor Class (show components) | Initiative | Speed | Starting Equipment (list specific named items) | Spellcasting (if applicable: Spellcasting Ability, Spell Save DC, Spell Attack Bonus, Cantrips known by name, Spells known/prepared by level with slot count)
-
-For each of the six ability scores, show the full build-up on one line in this exact form, with every applicable term included (omit only terms that are zero):
-STAT: [array/point-buy base] base, +[N] racial ([race name]), +[N] ASI = [final score] ([+/-modifier])
-Example: STR: 15 base, +2 racial (Mountain Dwarf), +2 ASI = 19 (+4)
-If a term does not apply (e.g. no racial bonus to that stat, no ASI applied to that stat), omit it from the chain rather than writing "+0". The final score and modifier must equal the sum of every term actually shown. Double-check the arithmetic on every line before output — these numbers must be internally consistent and must match the modifiers used later for saves, skills, attacks, AC, and spell DCs.
-If any selection conflicts with edition rules or viability, add a NOTES section at the end of this block flagging the issue and what was substituted or adjusted.
-
-SECTION: CHARACTER LORE
-In this order: Personality Traits | Ideal | Bond | Flaws | Physical Description | Voice and Mannerisms | Deeper Motivations
-Then a 2–3 paragraph Origin Story that weaves together background, class, personality, a formative event or turning point, core motivations, and at least one clear adventure hook. Write in engaging narrative style.
-
-SECTION: PORTRAIT PROMPT
-Write one cohesive paragraph (two short ones only if needed) of flowing, descriptive prose ready for direct input to an image generator — not a list of fields, not pipe-separated, no labels. Use spatial and relational language throughout — "framed by", "falling across", "where the light catches", "set against" — to weave the character's ancestry, build, skin/body surface, distinguishing marks, equipment, and pose into one coherent figure, then describe their expression, setting, and lighting around them.
-
-The ancestry must be visually unmistakable, not just named. State the race's defining physical traits explicitly, drawn from this reference (apply to the chosen ancestry and any of its listed sub-races). Where a trait below conflicts with the chosen skin/body palette, the skin/body palette wins for coloring, but all structural traits (ears, horns, tails, builds, scales, etc.) still apply:
-- Human, Variant Human: average human height and build, fully human facial structure, no nonhuman markers.
-- Elf, High Elf, Wood Elf: slender, graceful build, under 150 lbs, roughly human height or slightly shorter, with long pointed ears and sharply angular, fine-boned faces; no facial hair.
-- Drow (Dark Elf): same slender elven build and pointed ears as other elves, with charcoal-to-obsidian-black skin and stark white or pale-yellow hair, and very pale eyes (lilac, silver, pink, or red) unless the chosen skin palette specifies otherwise.
-- Half-Elf: build between human and elf — leaner than a human, slightly broader than an elf, with pointed ears shorter and more rounded than a full elf's, and an angular but slightly softer face.
-- Dwarf, Mountain Dwarf, Hill Dwarf: short and stocky, 4–5 feet tall, broad shoulders and a heavy compact build, with a prominent brow ridge and (unless specified otherwise) a thick, groomed beard on both sexes.
-- Halfling, Lightfoot Halfling, Stout Halfling: small, about 3 feet tall, stocky-but-soft build, round ears, round soft facial features, curly hair, and bare hairy feet.
-- Gnome, Forest Gnome, Rock Gnome: small, about 3 feet tall, slender energetic build with exaggerated features — a large nose, big bright eyes, and pointed ears — a fantasy adventurer, never a garden/lawn ornament.
-- Orc: tall, broad, heavily muscled, with a sloped forehead, heavy brow, broad flat nose, sharply pointed ears, and prominent lower canine tusks.
-- Half-Orc: tall and powerfully built, with a heavy brow, slightly pointed ears, and visible protruding lower canine tusks — a more human-proportioned version of the orc look.
-- Tiefling: large horns (curling like a ram, straight like a gazelle, or spiraling like an antelope), a long thick tail 4–5 feet long, sharp canine teeth, and solid-colored eyes with no visible sclera or pupil (black, red, white, silver, or gold).
-- Dragonborn: tall, heavily muscled, wingless, with a draconic head (blunt snout, strong brow, swept-back horn-like scale frills), a body covered in fine scales with larger plate-like scales on the forearms, shoulders, and legs, and a long tail; scale color reflects the character's draconic ancestry (e.g. black, blue, green, red, white, brass, bronze, copper, gold, or silver).
-- Genasi — Air: lighter, leaner build than other genasi, with pale blue-grey or ashen skin and hair that appears to drift as if stirred by a constant unseen breeze.
-- Genasi — Earth: stocky, heavy build with deep brown, grey, or stone-toned skin, sometimes with visible mineral veining, pebbled texture, or embedded crystal flecks.
-- Genasi — Fire: lean build with flame-red, orange, or ember-toned skin and fiery red hair that appears to flicker or smoke like flame.
-- Genasi — Water: sturdier build with blue or green skin, overlarge blue-black eyes, and hair that drifts as if underwater, sometimes with faint gill-like markings on the neck.
-- Goliath: towering, 7–8 feet tall, heavily muscled, with grey skin mottled in darker and lighter patches plus small hard "lithoderm" growths on the arms, shoulders, and torso, and a jutting brow ridge.
-- Aasimar, Protector Aasimar, Fallen Aasimar, Scourge Aasimar: human-like build with celestial markers — luminous or solid-color eyes and sometimes a faint halo of light; Protector Aasimar manifest a pair of luminous, incorporeal feathered wings; Fallen Aasimar manifest dark, skeletal, flightless black wings and pool-like dark eyes; Scourge Aasimar radiate visible cracks of divine light across the skin when active.
-- Tabaxi: tall, slender feline humanoid with a furred cat-like face, large pointed ears, retractable claws, a long tail, and big-cat coat patterning (stripes, spots, or solid coloring).
-- Centaur: a humanoid torso, head, and arms set atop the full body of a horse with four legs, a horse tail, and an equine coat.
-- Firbolg: very tall, 7–8 feet, burly muscular build, with pointed elf-like ears, a broad nose, and thick unkempt hair.
-- Kenku: bird-person about 5 feet tall, covered in feathers, with a sharp beak, human-like arms ending in clawed talon-hands (no functional wings), bird-talon feet, and a short feathered tail.
-- Triton: humanoid build around 6 feet tall with visible gill slits on the neck, webbed hands and feet, small fin-like ridges on the calves, and hair with a kelp-like texture.
-- Warforged: tall, broad, heavily built construct body composed of layered wood, metal, and stone plating with visible seams, and crystal-like eyes — no organic skin or hair.
-- Changeling: in true form, a thin humanoid with pale grey, almost featureless faded skin, wispy white hair, milky pupil-less eyes, and understated nose and ears.
-- Shifter: human-like build but leaner and more flexible, with a bestial cast to the face — large eyes, a flattened nose, pointed ears, and prominent canine teeth visible even in normal form.
-- Kalashtar: appears nearly human, typically taller and slimmer with highly symmetrical, graceful features; eyes visibly glow when feeling strong emotion or focusing.
-- Lizardfolk: reptilian humanoid, 6–7 feet tall, bulky and muscular, with scaled skin, slit-pupiled eyes, sharp claws and teeth, and a long powerful 3–4 foot tail.
-- Tortle: 5–6 feet tall but heavy due to a large shell on the back (darker/shinier) and a lighter underside shell, with hairless skin, a curved toothless beak, and eyes with horizontal pupils under heavy bony brows.
-- Bugbear: large goblinoid, 6–8 feet tall, covered in shaggy fur, with long gangly limbs, a stooped posture, prominent fangs, and pointed ears.
-- Goblin: small humanoid, about 3–4 feet tall, with a broad flat nose, a wide mouth full of sharp teeth, and large pointed ears.
-- Hobgoblin: resembles a large muscular human, 5–6 feet tall, with coarse body hair and pointed goblinoid ears.
-- Kobold: small reptilian humanoid around 3 feet tall, slightly chubby, with scaled hairless skin, a long rat-like tail, a doglike head with pointed ears flat against the skull, small horns above the eyes, and a row of blunt spines down the back of the neck.
-- Yuan-Ti Pureblood: roughly human in size and build with patches of fine scales on the skin, slit-pupiled snake-like eyes, and sometimes a thin forked tongue or small fangs.
-- Loxodon: bipedal elephant-headed humanoid, 7–8 feet tall, with thick leathery hide, large flapping ears, ivory tusks, a long prehensile trunk, and three-fingered hands.
-- Vedalken: tall, slender humanoid, nearly a head taller than humans, hairless, with no external ears and a broad flat nose.
-- Simic Hybrid: a humanoid (human, elf, or vedalken base) merged with aquatic creature traits — fin-like or membranous wings, gills, crab or lobster pincers, tentacles, or sharklike teeth, layered onto an otherwise humanoid body.
-- Leonin: muscular, lion-headed feline humanoid, 6–7 feet tall, covered in fur with a thick mane, retractable feline claws, and a feline tail.
-- Satyr: medium humanoid with an elf-like upper body (pointed ears, fine features) and a goat's lower legs ending in cloven hooves, plus a pair of curling goat/ram horns on the head and a short goat-like tail.
-- Harengon: bipedal rabbit-like humanoid covered in fur, with tall upright rabbit ears, a small fluffy round tail, and long rabbit-like hind feet.
-- Owlin: bipedal humanoid covered in feathers with an owl-like face — large forward-facing eyes, a small hooked beak, prominent feathered ear-tufts — and a pair of feathered wings on the back.
-Apply the equivalent defining traits for any other ancestry not listed here. Never default to a generic human appearance for a non-human ancestry.
-
-The exact skin/body palette selection must appear word-for-word somewhere in the prose — the art style cannot replace or dilute it. Incorporate: art style, composition, ancestry and gender, the skin/body palette (verbatim), physical details (age, build, distinguishing features), posture and expression, class and subclass visual elements, equipment theme and specific items, and personality reflected in pose and expression. Close with a clear sense of image aspect ratio.
-
-Do not explain or comment — output only the descriptive paragraph itself, with no line breaks within it.
+${outputInstruction}
 
 Formatting rules: plain text only, no markdown asterisks or hash symbols, use ALL CAPS for sub-headings within sections.`;
 
