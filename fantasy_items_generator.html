@@ -197,6 +197,30 @@ html, body {
   letter-spacing: 0.05em;
 }
 .field-wrap { margin-bottom: 14px; }
+.field-wrap.hidden { display: none; }
+
+/* OUTPUT OPTIONS */
+.out-opts {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-top: 4px;
+}
+.out-opt-item {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  font-size: 0.88rem;
+  color: var(--pale-blue);
+  user-select: none;
+}
+.out-opt-item input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  accent-color: var(--soft-cyan);
+  cursor: pointer;
+}
 
 /* OPTIONS GRID */
 .options-grid {
@@ -531,10 +555,17 @@ footer {
           </div>
         </div>
 
+        <div class="field-wrap">
+          <div class="field-label">Output Sections</div>
+          <div class="out-opts">
+            <label class="out-opt-item"><input type="checkbox" id="oo-stats" checked onchange="onOutputChange()"> Item Stats</label>
+            <label class="out-opt-item"><input type="checkbox" id="oo-lore"  checked onchange="onOutputChange()"> Item Lore</label>
+            <label class="out-opt-item"><input type="checkbox" id="oo-image" checked onchange="onOutputChange()"> Visual Prompt</label>
+          </div>
+        </div>
+
       </div>
     </div>
-
-    <!-- Power and Mechanics -->
     <div class="section">
       <div class="section-title">Power and Mechanics</div>
       <div class="section-body">
@@ -918,7 +949,7 @@ const Q = {
 };
 
 // STATE
-let state = { ans:{}, custom:{} };
+let state = { ans:{}, custom:{}, oo:{ stats:true, lore:true, image:true } };
 
 // PRESETS
 const PRESETS = {
@@ -1090,11 +1121,63 @@ function updatePreview() {
 }
 
 // ============================================================
+// OUTPUT TOGGLES
+// ============================================================
+function onOutputChange() {
+  state.oo = {
+    stats: document.getElementById('oo-stats').checked,
+    lore:  document.getElementById('oo-lore').checked,
+    image: document.getElementById('oo-image').checked
+  };
+  updateOutputConditionals();
+}
+
+function updateOutputConditionals() {
+  const imgFields = ['Q16','Q17','Q19','Q21'];
+  imgFields.forEach(qid => {
+    const wrap = document.getElementById(qid+'-opts')?.closest('.field-wrap');
+    if (wrap) wrap.classList.toggle('hidden', !state.oo.image);
+  });
+  document.getElementById('out-stats').style.display =
+    state.oo.stats && document.getElementById('stats-body').textContent ? 'block' : 'none';
+  document.getElementById('out-lore').style.display =
+    state.oo.lore && document.getElementById('lore-body').textContent ? 'block' : 'none';
+  document.getElementById('out-visual').style.display =
+    state.oo.image && document.getElementById('visual-body').textContent ? 'block' : 'none';
+  const btn = document.getElementById('gen-btn');
+  const any = state.oo.stats || state.oo.lore || state.oo.image;
+  btn.disabled = !any;
+  if (!any) btn.title = 'Select at least one output section';
+  else btn.title = '';
+}
+
+function buildJsonInstruction() {
+  const keys = [];
+  const descs = [];
+  if (state.oo.stats) {
+    keys.push('"stats": "..."');
+    descs.push('stats: 5-12 lines of formatted item statistics. Include item name, category, rarity, power level, materials, and all applicable mechanical bonuses/abilities/requirements in the correct format for the chosen rule system. If cursed or sentient, include appropriate game mechanics.');
+  }
+  if (state.oo.lore) {
+    keys.push('"lore": "..."');
+    descs.push('lore: 3-4 sentences of evocative in-world history, origin, and reputation. Specific names, events, and places are encouraged. Match the tone to the rule system (high fantasy for DnD, grittier for OSR, purely descriptive for System Neutral).');
+  }
+  if (state.oo.image) {
+    keys.push('"visual_prompt": "..."');
+    descs.push('visual_prompt: A single dense paragraph optimized for AI image generation. Include the item type, materials, construction details, visual design language, distinctive features, color palette, presentation context, and art style. End with: "Ultra-fine surface detail. Cinematic physically plausible lighting. Single unified item, all effects integrated into the item itself, no floating or detached elements. Professional production-grade rendering."');
+  }
+  return `\nReturn ONLY a JSON object with exactly ${keys.length === 1 ? 'this key' : 'these keys'}. No preamble, no markdown, no backticks:\n{\n  ${keys.join(',\n  ')}\n}\n\n${descs.join('\n\n')}`;
+}
+
+// ============================================================
 // GENERATE
 // ============================================================
 async function generateFinal() {
   const apiKey = document.getElementById('api-key').value.trim();
   if (!apiKey) { showErr('Enter your xAI API key above.'); return; }
+  if (!state.oo.stats && !state.oo.lore && !state.oo.image) {
+    showErr('Select at least one output section.'); return;
+  }
 
   const ruleSet = getAns('Q1a') || 'System Neutral';
   const category = getAns('Q2') || 'item';
@@ -1159,18 +1242,13 @@ INTERNAL CONSISTENCY CHECKS:
 
 If any selection conflicts with the chosen rule system's conventions or with item viability, add a line beginning "NOTES:" at the end of the stats string explaining what was adjusted and why.
 
-Return ONLY a JSON object with exactly these three keys. No preamble, no markdown, no backticks:
-{
-  "stats": "...",
-  "lore": "...",
-  "visual_prompt": "..."
-}
+` + buildJsonInstruction();
 
-stats: 5-12 lines of formatted item statistics. Include item name, category, rarity, power level, materials, and all applicable mechanical bonuses/abilities/requirements in the correct format for the chosen rule system. If cursed or sentient, include appropriate game mechanics.
-
-lore: 3-4 sentences of evocative in-world history, origin, and reputation. Specific names, events, and places are encouraged. Match the tone to the rule system (high fantasy for DnD, grittier for OSR, purely descriptive for System Neutral).
-
-visual_prompt: A single dense paragraph optimized for AI image generation. Include the item type, materials, construction details, visual design language, distinctive features, color palette, presentation context, and art style. End with: "Ultra-fine surface detail. Cinematic physically plausible lighting. Single unified item, all effects integrated into the item itself, no floating or detached elements. Professional production-grade rendering."`;
+  const imgLines = state.oo.image ? `
+Color Palette: ${palette}
+Presentation Context: ${presentation}
+Art Style: ${artStyle}
+Aspect Ratio: ${aspect}` : '';
 
   const userMsg = `Generate a fantasy item with the following specifications:
 
@@ -1190,11 +1268,7 @@ Visual Design Language: ${design}
 Distinctive Features: ${features}
 Lore Standing: ${lore}
 Special Condition: ${specialCond}
-User Requirement: ${requirements}
-Color Palette: ${palette}
-Presentation Context: ${presentation}
-Art Style: ${artStyle}
-Aspect Ratio: ${aspect}
+User Requirement: ${requirements}${imgLines}
 ${clarifications ? `Clarifications and Overrides: ${clarifications}` : ''}
 
 Stay strictly within the ${ruleSet} rule system conventions. The item should be internally consistent and game-ready.`;
@@ -1247,8 +1321,9 @@ Stay strictly within the ${ruleSet} rule system conventions. The item should be 
     document.getElementById('lore-body').textContent = parsed.lore || '';
     document.getElementById('visual-body').textContent = parsed.visual_prompt || '';
 
-    ['out-stats','out-lore','out-visual'].forEach(id =>
-      document.getElementById(id).style.display = 'block');
+    document.getElementById('out-stats').style.display = state.oo.stats ? 'block' : 'none';
+    document.getElementById('out-lore').style.display = state.oo.lore ? 'block' : 'none';
+    document.getElementById('out-visual').style.display = state.oo.image ? 'block' : 'none';
 
     // Update live preview with visual prompt
     document.getElementById('live-preview').textContent = parsed.visual_prompt || raw;
@@ -1324,7 +1399,10 @@ function clearSaved() {
 }
 
 function resetApp() {
-  state = { ans:{}, custom:{} };
+  state = { ans:{}, custom:{}, oo:{ stats:true, lore:true, image:true } };
+  document.getElementById('oo-stats').checked = true;
+  document.getElementById('oo-lore').checked = true;
+  document.getElementById('oo-image').checked = true;
   document.getElementById('Q3-input').value = '';
   if (document.getElementById('Q18-input')) document.getElementById('Q18-input').value = '';
   document.getElementById('Q22-input').value = '';
@@ -1370,6 +1448,7 @@ document.addEventListener('DOMContentLoaded', () => {
 restoreApiKey();
 renderAll();
 updatePreview();
+updateOutputConditionals();
 </script>
 </body>
 </html>
