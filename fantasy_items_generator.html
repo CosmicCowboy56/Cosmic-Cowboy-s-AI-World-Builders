@@ -197,7 +197,7 @@ html, body {
   letter-spacing: 0.05em;
 }
 .field-wrap { margin-bottom: 14px; }
-.field-wrap.hidden { display: none; }
+.field-wrap.hidden, .section.hidden { display: none; }
 
 /* OUTPUT OPTIONS */
 .out-opts {
@@ -520,6 +520,15 @@ footer {
       <div class="section-body">
 
         <div class="field-wrap">
+          <div class="field-label">Output Sections</div>
+          <div class="out-opts">
+            <label class="out-opt-item"><input type="checkbox" id="oo-stats" checked onchange="onOutputChange()"> Item Stats</label>
+            <label class="out-opt-item"><input type="checkbox" id="oo-lore"  checked onchange="onOutputChange()"> Item Lore</label>
+            <label class="out-opt-item"><input type="checkbox" id="oo-image" checked onchange="onOutputChange()"> Visual Prompt</label>
+          </div>
+        </div>
+
+        <div class="field-wrap">
           <div class="field-label">
             Rule Set
             <button class="dice-btn" onclick="randField('Q1a')">Randomize</button>
@@ -555,18 +564,9 @@ footer {
           </div>
         </div>
 
-        <div class="field-wrap">
-          <div class="field-label">Output Sections</div>
-          <div class="out-opts">
-            <label class="out-opt-item"><input type="checkbox" id="oo-stats" checked onchange="onOutputChange()"> Item Stats</label>
-            <label class="out-opt-item"><input type="checkbox" id="oo-lore"  checked onchange="onOutputChange()"> Item Lore</label>
-            <label class="out-opt-item"><input type="checkbox" id="oo-image" checked onchange="onOutputChange()"> Visual Prompt</label>
-          </div>
-        </div>
-
       </div>
     </div>
-    <div class="section">
+    <div class="section" id="section-power">
       <div class="section-title">Power and Mechanics</div>
       <div class="section-body">
 
@@ -692,7 +692,7 @@ footer {
     </div>
 
     <!-- Visual Design -->
-    <div class="section">
+    <div class="section" id="section-visual">
       <div class="section-title">Visual Design</div>
       <div class="section-body">
 
@@ -1133,17 +1133,34 @@ function onOutputChange() {
 }
 
 function updateOutputConditionals() {
+  // Stats off → hide entire Power and Mechanics section
+  document.getElementById('section-power').classList.toggle('hidden', !state.oo.stats);
+
+  // Lore off → hide Lore or Reputation field (Q13)
+  const loreWrap = document.getElementById('Q13-opts')?.closest('.field-wrap');
+  if (loreWrap) loreWrap.classList.toggle('hidden', !state.oo.lore);
+
+  // Image off → hide image-only fields and entire Visual Design section if
+  // neither image nor lore needs fields from it
   const imgFields = ['Q16','Q17','Q19','Q21'];
   imgFields.forEach(qid => {
     const wrap = document.getElementById(qid+'-opts')?.closest('.field-wrap');
     if (wrap) wrap.classList.toggle('hidden', !state.oo.image);
   });
+  // Hide the whole Visual Design section only when both image AND lore are off
+  // (design language and distinctive features still inform lore tone)
+  const visualSection = document.getElementById('section-visual');
+  if (visualSection) visualSection.classList.toggle('hidden', !state.oo.image && !state.oo.lore);
+
+  // Output panels
   document.getElementById('out-stats').style.display =
     state.oo.stats && document.getElementById('stats-body').textContent ? 'block' : 'none';
   document.getElementById('out-lore').style.display =
     state.oo.lore && document.getElementById('lore-body').textContent ? 'block' : 'none';
   document.getElementById('out-visual').style.display =
     state.oo.image && document.getElementById('visual-body').textContent ? 'block' : 'none';
+
+  // Generate button
   const btn = document.getElementById('gen-btn');
   const any = state.oo.stats || state.oo.lore || state.oo.image;
   btn.disabled = !any;
@@ -1390,6 +1407,7 @@ function loadSaved() {
   if (d.Q22) document.getElementById('Q22-input').value = d.Q22;
   renderAll();
   updatePreview();
+  updateOutputConditionals();
   alert('Loaded.');
 }
 
@@ -1410,6 +1428,7 @@ function resetApp() {
   ['out-stats','out-lore','out-visual'].forEach(id => document.getElementById(id).style.display = 'none');
   hideErr();
   renderAll();
+  updateOutputConditionals();
 }
 
 // ============================================================
