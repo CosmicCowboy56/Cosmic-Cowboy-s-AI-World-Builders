@@ -1386,23 +1386,43 @@ function onOutputChange() {
 
 function updateOutputConditionals() {
   const oo = STATE.outputOptions;
-  ['artStyle','composition','imageSize'].forEach(id => {
+
+  // Hide entire accordion sections by title
+  const col = document.getElementById('accCol');
+  if (col) {
+    col.querySelectorAll('.acc-section').forEach(sec => {
+      const title = sec.querySelector('.acc-title')?.textContent.trim();
+      if (title === 'Portrait Settings') sec.classList.toggle('hidden', !oo.image);
+      if (title === 'Mechanics') sec.classList.toggle('hidden', !oo.stats);
+      if (title === 'Personality') sec.classList.toggle('hidden', !oo.lore);
+    });
+  }
+
+  // Image-only fields
+  ['artStyle','composition','imageSize','skin'].forEach(id => {
     const el = document.getElementById('q-' + id);
     if (el) el.classList.toggle('hidden', !oo.image);
   });
+
+  // Stats-only fields
   ['equipMethod','spells'].forEach(id => {
     const el = document.getElementById('q-' + id);
     if (el) el.classList.toggle('hidden', !oo.stats);
   });
-  const col = document.getElementById('accCol');
-  if (col) {
-    col.querySelectorAll('.acc-section').forEach(sec => {
-      const title = sec.querySelector('.acc-title');
-      if (title && title.textContent.trim() === 'Portrait Settings') {
-        sec.classList.toggle('hidden', !oo.image);
-      }
-    });
-  }
+
+  // Lore-only fields
+  ['voice','motivations'].forEach(id => {
+    const el = document.getElementById('q-' + id);
+    if (el) el.classList.toggle('hidden', !oo.lore);
+  });
+
+  // Shared lore+image fields — hide only when BOTH are off
+  ['physical','appearance','equipTheme'].forEach(id => {
+    const el = document.getElementById('q-' + id);
+    if (el) el.classList.toggle('hidden', !oo.lore && !oo.image);
+  });
+
+  // Output panels
   const pStats = document.getElementById('panel-stats');
   const pLore  = document.getElementById('panel-lore');
   const pImage = document.getElementById('panel-image');
