@@ -1,65 +1,50 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>D&D Character Generator — Cosmic Cowboy</title>
+<title>D&D Character Generator v2.0 - Cosmic Cowboy</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
 <style>
-
 :root {
-  --dark-blue:   #023E8A;
-  --ocean-blue:  #0077B6;
-  --soft-cyan:   #90E0EF;
-  --pale-blue:   #CAF0F8;
-  --deepest:     #010E1F;
-  --surface:     rgba(0,119,182,0.09);
-  --surface2:    rgba(0,119,182,0.17);
-  --border:      rgba(144,224,239,0.22);
-  --border-hi:   rgba(144,224,239,0.50);
-  --dim:         rgba(202,240,248,0.45);
-  --green:       #4ade80;
-  --red:         #f87171;
-  --glow:        0 0 12px rgba(144,224,239,0.30);
-  --accent:      #FFD166;
+  --deepest:    #010E1F;
+  --ocean-blue: #0077B6;
+  --soft-cyan:  #90E0EF;
+  --pale-blue:  #CAF0F8;
+  --accent:     #FFD166;
+  --surface:    rgba(0,119,182,0.09);
+  --surface2:   rgba(0,119,182,0.17);
+  --border:     rgba(144,224,239,0.22);
+  --border-hi:  rgba(144,224,239,0.50);
+  --dim:        rgba(202,240,248,0.45);
+  --green:      #4ade80;
+  --red:        #f87171;
+  --glow:       0 0 12px rgba(144,224,239,0.30);
 }
-
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
 html, body {
-  height: 100%;
-  overflow: hidden;
+  min-height: 100%;
   font-family: 'Exo 2', sans-serif;
   font-weight: 300;
   font-size: 15px;
-}
-
-body {
   background: var(--deepest);
   color: var(--pale-blue);
-  display: flex;
-  flex-direction: column;
 }
-
 ::-webkit-scrollbar              { width: 8px; height: 8px; }
-::-webkit-scrollbar-track        { background: rgba(0,0,0,0.15); border-radius: 4px; }
+::-webkit-scrollbar-track        { background: rgba(0,0,0,0.15); }
 ::-webkit-scrollbar-thumb        { background: rgba(144,224,239,0.3); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover  { background: rgba(144,224,239,0.6); }
-
-/* ── HEADER ── */
 .header {
-  flex-shrink: 0;
   height: 52px;
-  background: rgba(0,0,0,0.40);
+  background: rgba(0,0,0,0.50);
   border-bottom: 1px solid var(--border-hi);
-  padding: 0 20px;
+  padding: 0 24px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: relative;
-  z-index: 10;
+  position: sticky;
+  top: 0;
+  z-index: 100;
 }
 .header::after {
   content: '';
@@ -71,179 +56,133 @@ body {
 }
 .hdr-title {
   font-family: 'Cinzel', serif;
-  font-size: 1.10rem;
+  font-size: 1.05rem;
   font-weight: 900;
   letter-spacing: 0.12em;
   color: var(--pale-blue);
   text-shadow: 0 0 18px rgba(144,224,239,0.4);
 }
 .hdr-sub {
-  font-size: 0.60rem;
+  font-size: 0.62rem;
   color: var(--soft-cyan);
   letter-spacing: 0.2em;
-  margin-top: 2px;
+  text-transform: uppercase;
 }
-
-/* ── API BAR ── */
-.api-bar {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 6px 10px;
-  padding: 7px 20px;
-  background: rgba(0,0,0,0.25);
+.page-title {
+  text-align: center;
+  padding: 32px 24px 20px;
   border-bottom: 1px solid var(--border);
 }
-.api-lbl {
-  font-size: 0.62rem;
-  letter-spacing: 0.12em;
-  color: var(--soft-cyan);
-  white-space: nowrap;
-  font-weight: 500;
-}
-
-/* ── ACTION BAR ── */
-.action-bar {
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 16px;
-  background: rgba(0,0,0,0.18);
-  border-bottom: 1px solid var(--border);
-}
-
-/* ── BUTTONS ── */
-.btn {
-  font-family: 'Exo 2', sans-serif;
-  font-weight: 600;
-  font-size: 0.72rem;
+.page-title h1 {
+  font-family: 'Cinzel', serif;
+  font-size: 2rem;
+  font-weight: 900;
   letter-spacing: 0.08em;
-  padding: 6px 15px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-  background: transparent;
+  color: var(--pale-blue);
+  text-shadow: 0 0 24px rgba(144,224,239,0.35);
+  margin-bottom: 4px;
+}
+.page-title .v-tag {
+  font-size: 0.72rem;
   color: var(--soft-cyan);
-  cursor: pointer;
-  transition: all 0.15s;
-  white-space: nowrap;
-  display: inline-flex;
+  letter-spacing: 0.25em;
+  text-transform: uppercase;
+}
+.api-band {
+  background: rgba(0,0,0,0.35);
+  border-bottom: 1px solid var(--border);
+  padding: 10px 24px;
+  display: flex;
   align-items: center;
-  justify-content: center;
-  text-decoration: none;
+  gap: 10px;
+  flex-wrap: wrap;
 }
-.btn:hover:not(:disabled) { border-color: var(--soft-cyan); background: rgba(144,224,239,0.10); }
-.btn:disabled              { opacity: 0.30; cursor: not-allowed; }
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
-  border-color: var(--soft-cyan);
-  color: #fff;
+.api-band label {
+  font-size: 0.75rem;
+  color: var(--soft-cyan);
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  white-space: nowrap;
 }
-.btn-primary:hover:not(:disabled) {
-  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
-  box-shadow: 0 3px 14px rgba(0,119,182,0.40);
-}
-
-.btn-rand {
-  width: 30px; height: 30px;
-  padding: 0;
-  flex-shrink: 0;
-  font-size: 1rem;
-  align-self: flex-end;
-  margin-bottom: 1px;
-}
-
-.btn-connect     { font-size: 0.66rem; padding: 6px 16px; }
-.btn-connect.ok  { background: rgba(0,160,90,0.15);  color: var(--green); border-color: rgba(0,160,90,0.35); }
-.btn-connect.bad { background: rgba(200,30,30,0.12); color: var(--red);   border-color: rgba(200,30,30,0.35); }
-
-/* ── INPUTS ── */
-input[type="text"],
-input[type="password"],
-input[type="number"],
-select,
-textarea {
-  background: var(--surface2);
+.api-band input {
+  flex: 1;
+  min-width: 260px;
+  background: rgba(0,0,0,0.40);
   border: 1px solid var(--border);
   color: var(--pale-blue);
   font-family: 'Exo 2', sans-serif;
-  font-size: 0.92rem;
-  font-weight: 300;
+  font-size: 0.85rem;
+  padding: 6px 10px;
   border-radius: 4px;
-  padding: 7px 10px;
   outline: none;
-  transition: border-color 0.2s, box-shadow 0.2s;
-  -webkit-appearance: none;
-  width: 100%;
+  transition: border-color 0.2s;
 }
-input:focus, select:focus, textarea:focus {
-  border-color: var(--soft-cyan);
-  box-shadow: var(--glow);
+.api-band input:focus { border-color: var(--soft-cyan); }
+.api-status {
+  font-size: 0.72rem;
+  letter-spacing: 0.1em;
+  padding: 4px 10px;
+  border-radius: 3px;
+  font-weight: 600;
+  white-space: nowrap;
 }
-input::placeholder, textarea::placeholder { color: var(--dim); }
-select option            { background: #011830; color: var(--pale-blue); }
-select[multiple]         { min-height: 90px; padding: 4px; }
-select[multiple] option  { padding: 4px 8px; border-radius: 2px; }
-select[multiple] option:checked { background: rgba(144,224,239,0.2); }
-
-/* ── WORKSPACE ── */
-.workspace {
-  flex: 1;
-  overflow: hidden;
+.api-status.ok  { background: rgba(74,222,128,0.15); color: var(--green); border: 1px solid rgba(74,222,128,0.3); }
+.api-status.bad { background: rgba(248,113,113,0.15); color: var(--red);   border: 1px solid rgba(248,113,113,0.3); }
+.main-wrap {
   display: grid;
-  grid-template-columns: 1fr 270px;
+  grid-template-columns: 1fr 400px;
+  gap: 0;
+  min-height: calc(100vh - 52px);
+  align-items: start;
 }
-
-/* ── ACCORDION COLUMN ── */
-.acc-col {
+.form-col {
+  padding: 24px;
+  border-right: 1px solid var(--border);
+}
+.output-col {
+  padding: 24px;
+  position: sticky;
+  top: 52px;
+  max-height: calc(100vh - 52px);
   overflow-y: auto;
-  padding: 12px 16px 24px;
 }
-
-.acc-section {
+.section {
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
-  margin-bottom: 8px;
-  background: var(--surface);
+  margin-bottom: 16px;
   overflow: hidden;
 }
-
-.acc-header {
-  padding: 10px 14px;
+.section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--soft-cyan);
+  padding: 10px 16px;
+  background: rgba(0,0,0,0.25);
+  border-bottom: 1px solid var(--border);
+}
+.section-body { padding: 16px; }
+.field-label {
+  font-size: 0.72rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--soft-cyan);
+  margin-bottom: 8px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  cursor: pointer;
-  user-select: none;
-  background: rgba(0,0,0,0.20);
-  transition: background 0.15s;
 }
-.acc-header:hover { background: rgba(0,119,182,0.18); }
-
-.acc-title {
-  font-family: 'Cinzel', serif;
-  font-size: 0.82rem;
-  font-weight: 700;
-  letter-spacing: 0.10em;
-  color: var(--soft-cyan);
-}
-
-.acc-chevron {
-  font-size: 0.70rem;
+.field-label .multi-note {
+  font-size: 0.65rem;
   color: var(--dim);
-  transition: transform 0.2s;
+  text-transform: none;
+  letter-spacing: 0.05em;
 }
-.acc-section.open .acc-chevron { transform: rotate(180deg); }
-
-.acc-body {
-  padding: 12px 14px;
-  display: none;
-}
-.acc-section.open .acc-body { display: block; }
-
-/* ── OUTPUT OPTIONS ── */
+.field-wrap { margin-bottom: 14px; }
+.field-wrap.hidden, .section.hidden { display: none; }
 .out-opts {
   display: flex;
   gap: 14px;
@@ -256,7 +195,7 @@ select[multiple] option:checked { background: rgba(144,224,239,0.2); }
   gap: 7px;
   cursor: pointer;
   font-size: 0.88rem;
-  color: var(--fg);
+  color: var(--pale-blue);
   user-select: none;
 }
 .out-opt-item input[type="checkbox"] {
@@ -265,1333 +204,678 @@ select[multiple] option:checked { background: rgba(144,224,239,0.2); }
   accent-color: var(--soft-cyan);
   cursor: pointer;
 }
-
-/* ── QUESTION BLOCKS ── */
-.q-block {
-  margin-bottom: 16px;
+.options-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
 }
-.q-block:last-child { margin-bottom: 0; }
-.q-block.hidden { display: none; }
-.acc-section.hidden { display: none; }
-
-.q-label {
-  font-family: 'Cinzel', serif;
-  font-size: 0.88rem;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  color: var(--soft-cyan);
-  margin-bottom: 4px;
-}
-
-.q-hint {
+.opt-btn {
+  background: rgba(0,0,0,0.30);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  font-family: 'Exo 2', sans-serif;
   font-size: 0.80rem;
+  font-weight: 400;
+  padding: 5px 11px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
+  text-align: left;
+}
+.opt-btn:hover { background: var(--surface2); border-color: var(--soft-cyan); }
+.opt-btn.selected {
+  background: rgba(0,119,182,0.35);
+  border-color: var(--soft-cyan);
+  color: var(--pale-blue);
+  box-shadow: 0 0 6px rgba(144,224,239,0.2);
+}
+.text-input {
+  width: 100%;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.85rem;
+  padding: 7px 10px;
+  border-radius: 4px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+.text-input:focus { border-color: var(--soft-cyan); }
+textarea.text-input { resize: vertical; min-height: 72px; }
+.custom-row { display: flex; gap: 6px; margin-top: 6px; }
+.custom-row .text-input { flex: 1; }
+.tags-wrap { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+.tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background: rgba(0,119,182,0.25);
+  border: 1px solid rgba(144,224,239,0.35);
+  color: var(--soft-cyan);
+  font-size: 0.75rem;
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.tag button {
+  background: none; border: none; color: var(--dim);
+  cursor: pointer; font-size: 0.85rem; padding: 0; line-height: 1;
+}
+.tag button:hover { color: var(--red); }
+.dice-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--soft-cyan);
+  font-size: 0.75rem;
+  padding: 3px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.dice-btn:hover { background: var(--surface2); }
+.presets-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.preset-btn {
+  background: rgba(255,209,102,0.08);
+  border: 1px solid rgba(255,209,102,0.30);
+  color: var(--accent);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  padding: 5px 12px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+.preset-btn:hover { background: rgba(255,209,102,0.18); }
+.save-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
+.sec-btn {
+  background: rgba(0,0,0,0.30);
+  border: 1px solid var(--border);
   color: var(--dim);
-  font-style: italic;
-  line-height: 1.50;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.75rem;
+  padding: 4px 10px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background 0.15s, color 0.15s;
+}
+.sec-btn:hover { background: var(--surface2); color: var(--pale-blue); }
+.out-label {
+  font-family: 'Cinzel', serif;
+  font-size: 0.72rem;
+  letter-spacing: 0.20em;
+  text-transform: uppercase;
+  color: var(--soft-cyan);
   margin-bottom: 8px;
 }
-
-.q-input-row {
-  display: flex;
-  gap: 8px;
-  align-items: flex-end;
-}
-.q-input-row > :first-child { flex: 1; min-width: 0; }
-
-.field-lbl {
-  font-size: 0.68rem;
-  color: var(--dim);
-  letter-spacing: 0.05em;
-  margin-bottom: 3px;
-}
-
-.custom-wrap  { margin-top: 6px; }
-.custom-lbl {
-  font-size: 0.68rem;
-  color: var(--dim);
-  letter-spacing: 0.05em;
-  margin-bottom: 3px;
-}
-
-/* ── GENERATE PANEL ── */
-.gen-panel {
-  border-left: 1px solid var(--border);
-  background: rgba(0,0,0,0.18);
-  overflow-y: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 14px;
-}
-
-.gp-count {
-  font-size: 0.74rem;
-  color: var(--dim);
-  letter-spacing: 0.06em;
-  text-align: center;
-  padding: 6px 0;
-}
-
-.gp-btn {
-  width: 100%;
-  padding: 11px 0;
-  font-size: 0.76rem;
-  letter-spacing: 0.10em;
-}
-
-.gp-divider {
-  height: 1px;
-  background: var(--border);
-  margin: 2px 0;
-}
-
-.gen-bar {
-  display: none;
-  align-items: center;
-  gap: 8px;
-  padding: 8px 10px;
-  background: rgba(0,119,182,0.14);
+.live-preview {
+  background: rgba(0,0,0,0.40);
   border: 1px solid var(--border);
   border-radius: 4px;
-  font-size: 0.78rem;
-  color: var(--soft-cyan);
+  padding: 14px;
+  font-size: 0.82rem;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  min-height: 120px;
+  color: var(--pale-blue);
+  margin-bottom: 14px;
 }
-.gen-bar.visible { display: flex; }
-
-.spinner {
-  width: 14px; height: 14px;
-  border: 2px solid rgba(144,224,239,0.2);
-  border-top-color: var(--soft-cyan);
-  border-radius: 50%;
-  flex-shrink: 0;
-  animation: spin 0.8s linear infinite;
+.gen-btn {
+  width: 100%;
+  background: linear-gradient(135deg, var(--ocean-blue), rgba(0,119,182,0.7));
+  border: 1px solid var(--soft-cyan);
+  color: var(--pale-blue);
+  font-family: 'Cinzel', serif;
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  padding: 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-transform: uppercase;
+  box-shadow: var(--glow);
 }
-@keyframes spin { to { transform: rotate(360deg); } }
-
-/* ── OUTPUT ROW ── */
-.output-row {
-  flex-shrink: 0;
-  height: 360px;
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
+.gen-btn:hover { background: linear-gradient(135deg, rgba(0,119,182,0.9), var(--ocean-blue)); box-shadow: 0 0 20px rgba(144,224,239,0.4); }
+.gen-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+.action-row { display: flex; gap: 6px; margin-top: 8px; }
+.copy-btn, .reset-btn {
+  flex: 1;
+  background: rgba(0,0,0,0.30);
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.75rem;
+  padding: 6px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.copy-btn:hover, .reset-btn:hover { background: var(--surface2); color: var(--pale-blue); }
+.out-section {
+  margin-top: 14px;
+  background: rgba(0,0,0,0.35);
+  border: 1px solid var(--border);
+  border-radius: 4px;
   overflow: hidden;
-  border-top: 2px solid var(--border-hi);
-  background: rgba(0,0,0,0.20);
 }
-
-.out-panel {
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border-right: 1px solid var(--border);
-}
-.out-panel:last-child { border-right: none; }
-
-.out-head {
-  padding: 6px 12px;
+.out-section-title {
+  font-family: 'Cinzel', serif;
+  font-size: 0.68rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--accent);
+  padding: 7px 12px;
+  background: rgba(0,0,0,0.30);
   border-bottom: 1px solid var(--border);
-  background: rgba(0,0,0,0.20);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  flex-shrink: 0;
-  gap: 8px;
 }
-
-.out-title {
-  font-family: 'Exo 2', sans-serif;
-  font-size: 0.72rem;
-  font-weight: 700;
-  letter-spacing: 0.12em;
-  color: var(--accent);
-  text-transform: uppercase;
-}
-
-.out-note {
-  font-size: 0.62rem;
-  color: var(--dim);
-  font-style: italic;
-  flex: 1;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.out-body {
-  flex: 1;
-  overflow-y: auto;
-  padding: 10px 13px;
-  font-size: 0.86rem;
-  line-height: 1.65;
+.out-section-body {
+  padding: 12px;
+  font-size: 0.82rem;
+  line-height: 1.70;
   white-space: pre-wrap;
-  word-break: break-word;
+  color: var(--pale-blue);
 }
-.out-body.empty { color: var(--dim); font-style: italic; }
-
-@media (max-width: 760px) {
-  .workspace     { grid-template-columns: 1fr; }
-  .gen-panel     { display: none; }
-  .output-row    { grid-template-columns: 1fr; height: 600px; }
+.copy-sec-btn {
+  background: none;
+  border: 1px solid var(--border);
+  color: var(--dim);
+  font-size: 0.65rem;
+  padding: 2px 7px;
+  border-radius: 2px;
+  cursor: pointer;
+  font-family: 'Exo 2', sans-serif;
 }
-
+.copy-sec-btn:hover { color: var(--pale-blue); border-color: var(--soft-cyan); }
+.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(144,224,239,0.2); border-top-color: var(--soft-cyan); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+@keyframes spin { to { transform: rotate(360deg); } }
+.notice {
+  background: rgba(0,119,182,0.12);
+  border-left: 2px solid var(--soft-cyan);
+  padding: 8px 12px;
+  border-radius: 0 4px 4px 0;
+  font-size: 0.78rem;
+  color: var(--dim);
+  margin-bottom: 12px;
+  line-height: 1.5;
+}
+.notice strong { color: var(--soft-cyan); font-weight: 600; }
+.err-msg { font-size: 0.75rem; color: var(--red); padding: 6px 10px; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); border-radius: 3px; margin-top: 8px; display: none; }
+footer {
+  text-align: center;
+  padding: 18px;
+  font-size: 0.72rem;
+  color: var(--dim);
+  border-top: 1px solid var(--border);
+  letter-spacing: 0.08em;
+}
+@media (max-width: 920px) {
+  .main-wrap { grid-template-columns: 1fr; }
+  .form-col { border-right: none; border-bottom: 1px solid var(--border); }
+  .output-col { position: static; max-height: none; }
+}
 </style>
 </head>
 <body>
 
 <header class="header">
-  <div>
-    <div class="hdr-title">⚔ D&amp;D CHARACTER GENERATOR</div>
-    <div class="hdr-sub">COSMIC COWBOY'S AI WORLDBUILDERS</div>
-  </div>
-  <a class="btn" href="index.html">◀ HUB</a>
+  <span class="hdr-title">COSMIC COWBOY'S AI WORLDBUILDERS</span>
+  <span class="hdr-sub">D&amp;D Character Generator v2.0</span>
 </header>
 
-<div class="api-bar">
-  <span class="api-lbl">xAI API KEY</span>
-  <input type="password" id="apiKey" placeholder="your-xai-api-key"
-    style="flex:1;min-width:100px;" oninput="onKeyInput()">
-  <span style="font-size:0.62rem;color:var(--dim);white-space:nowrap;">Powered by xAI — grok-4.3</span>
-  <button class="btn btn-connect" id="connectBtn" onclick="confirmConnect()">CONNECT</button>
+<div class="page-title">
+  <h1>D&amp;D CHARACTER GENERATOR</h1>
+  <div class="v-tag">v2.0 - xAI Powered - Stats, Lore &amp; Portrait Prompt</div>
 </div>
 
-<div class="action-bar">
-  <button class="btn" onclick="randomizeAll()">⚄ RANDOMIZE ALL</button>
-  <button class="btn" onclick="clearAll()">✕ CLEAR ALL</button>
+<div class="api-band">
+  <label>xAI API Key</label>
+  <input type="password" id="api-key" placeholder="xai-..." autocomplete="off">
+  <span class="api-status" id="api-status" style="display:none"></span>
 </div>
 
-<div class="workspace">
+<div class="main-wrap">
+<div class="form-col">
 
-  <div class="acc-col" id="accCol"></div>
-
-  <div class="gen-panel">
-    <div class="gp-count" id="gpCount">Fill in fields to begin</div>
-    <button class="btn btn-primary gp-btn" id="btnGenerate" onclick="generateCharacter()" disabled>
-      GENERATE CHARACTER
-    </button>
-    <div class="gen-bar" id="genBar">
-      <div class="spinner"></div>
-      <span id="genText">Generating character...</span>
+<!-- QUICK START PRESETS -->
+<div class="section">
+  <div class="section-title">Quick Start Presets</div>
+  <div class="section-body">
+    <p style="font-size:0.78rem;color:var(--dim);margin-bottom:10px">Click any preset to auto-fill. Modify freely, then generate.</p>
+    <div class="presets-row">
+      <button class="preset-btn" onclick="applyPreset('classicFighter')">Classic Fighter</button>
+      <button class="preset-btn" onclick="applyPreset('elvenMage')">Elven Mage</button>
+      <button class="preset-btn" onclick="applyPreset('holyPaladin')">Holy Paladin</button>
+      <button class="preset-btn" onclick="applyPreset('shadowRogue')">Shadow Rogue</button>
+      <button class="preset-btn" onclick="applyPreset('wildSorcerer')">Wild Sorcerer</button>
+      <button class="preset-btn" onclick="applyPreset('random')">Randomize All</button>
     </div>
-    <div class="gp-divider"></div>
-    <div style="font-size:0.72rem;color:var(--dim);line-height:1.6;">
-      Fill in <strong style="color:var(--soft-cyan)">Name</strong> and
-      <strong style="color:var(--soft-cyan)">Class</strong> to unlock
-      generation. All other fields are optional.
+    <div class="save-row">
+      <button class="sec-btn" onclick="saveCurrent()">Save</button>
+      <button class="sec-btn" onclick="loadSaved()">Load</button>
+      <button class="sec-btn" onclick="clearSaved()">Clear Saved</button>
     </div>
   </div>
+</div>
+
+<!-- CORE SETUP -->
+<div class="section">
+  <div class="section-title">Core Setup</div>
+  <div class="section-body">
+    <div class="field-wrap">
+      <div class="field-label">Output Sections</div>
+      <div class="out-opts">
+        <label class="out-opt-item"><input type="checkbox" id="oo-stats" checked onchange="onOutputChange()"> Stats Sheet</label>
+        <label class="out-opt-item"><input type="checkbox" id="oo-lore"  checked onchange="onOutputChange()"> Character Lore</label>
+        <label class="out-opt-item"><input type="checkbox" id="oo-image" checked onchange="onOutputChange()"> Portrait Prompt</label>
+      </div>
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Edition <button class="dice-btn" onclick="randField('edition')">Randomize</button></div>
+      <div class="options-grid" id="edition-opts"></div>
+      <div class="notice" style="margin-top:10px;margin-bottom:0">
+        <strong>Edition</strong> determines available classes, subclasses, feats, and mechanical rules.
+      </div>
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Character Level <button class="dice-btn" onclick="randLevel()">Randomize</button></div>
+      <input type="number" class="text-input" id="level-input" min="1" max="20" placeholder="1–20" oninput="onLevelChange()">
+    </div>
+  </div>
+</div>
+
+<!-- IDENTITY -->
+<div class="section">
+  <div class="section-title">Identity</div>
+  <div class="section-body">
+    <div class="field-wrap">
+      <div class="field-label">Ancestry / Race <button class="dice-btn" onclick="randField('ancestry')">Randomize</button></div>
+      <div class="options-grid" id="ancestry-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="ancestry-custom" placeholder="Subrace or custom detail...">
+        <button class="sec-btn" onclick="addCustom('ancestry')">Add</button>
+      </div>
+      <div class="tags-wrap" id="ancestry-tags"></div>
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Gender <button class="dice-btn" onclick="randField('gender')">Randomize</button></div>
+      <div class="options-grid" id="gender-opts"></div>
+    </div>
+    <div class="field-wrap" id="skin-wrap">
+      <div class="field-label">Skin / Body Covering Palette <button class="dice-btn" onclick="randField('skin')">Randomize</button></div>
+      <div class="options-grid" id="skin-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="skin-custom" placeholder="Custom palette detail...">
+        <button class="sec-btn" onclick="addCustom('skin')">Add</button>
+      </div>
+      <div class="tags-wrap" id="skin-tags"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CLASS -->
+<div class="section">
+  <div class="section-title">Class</div>
+  <div class="section-body">
+    <div class="field-wrap">
+      <div class="field-label">Class <button class="dice-btn" onclick="randField('charClass')">Randomize</button></div>
+      <div class="options-grid" id="charClass-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="charClass-custom" placeholder="Multiclass or custom detail...">
+        <button class="sec-btn" onclick="addCustom('charClass')">Add</button>
+      </div>
+      <div class="tags-wrap" id="charClass-tags"></div>
+    </div>
+    <div class="field-wrap hidden" id="subclass-wrap">
+      <div class="field-label">Subclass / Archetype <button class="dice-btn" onclick="randField('subclass')">Randomize</button></div>
+      <div class="options-grid" id="subclass-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="subclass-custom" placeholder="Homebrew subclass...">
+        <button class="sec-btn" onclick="addCustom('subclass')">Add</button>
+      </div>
+      <div class="tags-wrap" id="subclass-tags"></div>
+    </div>
+  </div>
+</div>
+
+<!-- BACKGROUND AND ALIGNMENT -->
+<div class="section">
+  <div class="section-title">Background and Alignment</div>
+  <div class="section-body">
+    <div class="field-wrap">
+      <div class="field-label">Background <button class="dice-btn" onclick="randField('background')">Randomize</button></div>
+      <div class="options-grid" id="background-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="background-custom" placeholder="Custom background detail...">
+        <button class="sec-btn" onclick="addCustom('background')">Add</button>
+      </div>
+      <div class="tags-wrap" id="background-tags"></div>
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Alignment <button class="dice-btn" onclick="randField('alignment')">Randomize</button></div>
+      <div class="options-grid" id="alignment-opts"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MECHANICS -->
+<div class="section" id="section-mechanics">
+  <div class="section-title">Mechanics</div>
+  <div class="section-body">
+    <div class="field-wrap">
+      <div class="field-label">Ability Score Method</div>
+      <div class="options-grid" id="abilityMethod-opts"></div>
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Skill Proficiencies <button class="dice-btn" onclick="randField('skills')">Randomize</button></div>
+      <div class="options-grid" id="skills-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="skills-custom" placeholder="Custom skills...">
+        <button class="sec-btn" onclick="addCustom('skills')">Add</button>
+      </div>
+      <div class="tags-wrap" id="skills-tags"></div>
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Languages Known <button class="dice-btn" onclick="randField('languages')">Randomize</button></div>
+      <div class="options-grid" id="languages-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="languages-custom" placeholder="Custom languages...">
+        <button class="sec-btn" onclick="addCustom('languages')">Add</button>
+      </div>
+      <div class="tags-wrap" id="languages-tags"></div>
+    </div>
+    <div class="field-wrap hidden" id="feats-wrap">
+      <div class="field-label">Feats <button class="dice-btn" onclick="randField('feats')">Randomize</button></div>
+      <div class="options-grid" id="feats-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="feats-custom" placeholder="Custom or homebrew feat...">
+        <button class="sec-btn" onclick="addCustom('feats')">Add</button>
+      </div>
+      <div class="tags-wrap" id="feats-tags"></div>
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Hit Points</div>
+      <div class="options-grid" id="hp-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="hp-custom" placeholder="Specific HP total...">
+        <button class="sec-btn" onclick="addCustom('hp')">Add</button>
+      </div>
+      <div class="tags-wrap" id="hp-tags"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PERSONALITY -->
+<div class="section" id="section-personality">
+  <div class="section-title">Personality</div>
+  <div class="section-body">
+    <div class="field-wrap">
+      <div class="field-label">Personality Traits <span class="multi-note">up to 2</span> <button class="dice-btn" onclick="randField('traits')">Randomize</button></div>
+      <div class="options-grid" id="traits-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="traits-custom" placeholder="Custom trait...">
+        <button class="sec-btn" onclick="addCustom('traits')">Add</button>
+      </div>
+      <div class="tags-wrap" id="traits-tags"></div>
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Ideal <button class="dice-btn" onclick="randField('ideal')">Randomize</button></div>
+      <div class="options-grid" id="ideal-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="ideal-custom" placeholder="Custom ideal...">
+        <button class="sec-btn" onclick="addCustom('ideal')">Add</button>
+      </div>
+      <div class="tags-wrap" id="ideal-tags"></div>
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Bond <button class="dice-btn" onclick="randField('bond')">Randomize</button></div>
+      <div class="options-grid" id="bond-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="bond-custom" placeholder="Custom bond...">
+        <button class="sec-btn" onclick="addCustom('bond')">Add</button>
+      </div>
+      <div class="tags-wrap" id="bond-tags"></div>
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Flaws <span class="multi-note">up to 2</span> <button class="dice-btn" onclick="randField('flaws')">Randomize</button></div>
+      <div class="options-grid" id="flaws-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="flaws-custom" placeholder="Custom flaw...">
+        <button class="sec-btn" onclick="addCustom('flaws')">Add</button>
+      </div>
+      <div class="tags-wrap" id="flaws-tags"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PHYSICAL -->
+<div class="section" id="section-physical">
+  <div class="section-title">Physical</div>
+  <div class="section-body">
+    <div class="field-wrap" id="physical-wrap">
+      <div class="field-label">Physical Details <button class="dice-btn" onclick="randField('physical')">Randomize</button></div>
+      <div class="options-grid" id="physical-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="physical-custom" placeholder="Custom physical detail...">
+        <button class="sec-btn" onclick="addCustom('physical')">Add</button>
+      </div>
+      <div class="tags-wrap" id="physical-tags"></div>
+    </div>
+    <div class="field-wrap" id="voice-wrap">
+      <div class="field-label">Voice and Mannerisms <button class="dice-btn" onclick="randField('voice')">Randomize</button></div>
+      <div class="options-grid" id="voice-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="voice-custom" placeholder="Custom voice detail...">
+        <button class="sec-btn" onclick="addCustom('voice')">Add</button>
+      </div>
+      <div class="tags-wrap" id="voice-tags"></div>
+    </div>
+    <div class="field-wrap" id="motivations-wrap">
+      <div class="field-label">Deeper Motivations <button class="dice-btn" onclick="randField('motivations')">Randomize</button></div>
+      <div class="options-grid" id="motivations-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="motivations-custom" placeholder="Custom motivations...">
+        <button class="sec-btn" onclick="addCustom('motivations')">Add</button>
+      </div>
+      <div class="tags-wrap" id="motivations-tags"></div>
+    </div>
+  </div>
+</div>
+
+<!-- APPEARANCE AND EQUIPMENT -->
+<div class="section" id="section-appearance">
+  <div class="section-title">Appearance and Equipment</div>
+  <div class="section-body">
+    <div class="field-wrap" id="appearance-wrap">
+      <div class="field-label">Appearance Profile <span class="multi-note">up to 2</span> <button class="dice-btn" onclick="randField('appearance')">Randomize</button></div>
+      <div class="options-grid" id="appearance-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="appearance-custom" placeholder="Custom appearance...">
+        <button class="sec-btn" onclick="addCustom('appearance')">Add</button>
+      </div>
+      <div class="tags-wrap" id="appearance-tags"></div>
+    </div>
+    <div class="field-wrap" id="equipTheme-wrap">
+      <div class="field-label">Equipment Theme <span class="multi-note">up to 2</span> <button class="dice-btn" onclick="randField('equipTheme')">Randomize</button></div>
+      <div class="options-grid" id="equipTheme-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="equipTheme-custom" placeholder="Custom equipment...">
+        <button class="sec-btn" onclick="addCustom('equipTheme')">Add</button>
+      </div>
+      <div class="tags-wrap" id="equipTheme-tags"></div>
+    </div>
+    <div class="field-wrap" id="equipMethod-wrap">
+      <div class="field-label">Starting Equipment Method</div>
+      <div class="options-grid" id="equipMethod-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="equipMethod-custom" placeholder="Specific items or gold total...">
+        <button class="sec-btn" onclick="addCustom('equipMethod')">Add</button>
+      </div>
+      <div class="tags-wrap" id="equipMethod-tags"></div>
+    </div>
+    <div class="field-wrap hidden" id="spells-wrap">
+      <div class="field-label">Spellcasting Details</div>
+      <div class="options-grid" id="spells-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="spells-custom" placeholder="Specific spells...">
+        <button class="sec-btn" onclick="addCustom('spells')">Add</button>
+      </div>
+      <div class="tags-wrap" id="spells-tags"></div>
+    </div>
+  </div>
+</div>
+
+<!-- PORTRAIT SETTINGS -->
+<div class="section" id="section-portrait">
+  <div class="section-title">Portrait Settings</div>
+  <div class="section-body">
+    <div class="field-wrap">
+      <div class="field-label">Portrait Art Style <button class="dice-btn" onclick="randField('artStyle')">Randomize</button></div>
+      <div class="options-grid" id="artStyle-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="artStyle-custom" placeholder="Custom style detail...">
+        <button class="sec-btn" onclick="addCustom('artStyle')">Add</button>
+      </div>
+      <div class="tags-wrap" id="artStyle-tags"></div>
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Portrait Composition <button class="dice-btn" onclick="randField('composition')">Randomize</button></div>
+      <div class="options-grid" id="composition-opts"></div>
+      <div class="custom-row">
+        <input type="text" class="text-input" id="composition-custom" placeholder="Custom staging detail...">
+        <button class="sec-btn" onclick="addCustom('composition')">Add</button>
+      </div>
+      <div class="tags-wrap" id="composition-tags"></div>
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Image Aspect Ratio</div>
+      <div class="options-grid" id="imageSize-opts"></div>
+    </div>
+  </div>
+</div>
+
+<!-- CLARIFICATIONS AND NAME -->
+<div class="section">
+  <div class="section-title">Clarifications and Name</div>
+  <div class="section-body">
+    <div class="field-wrap">
+      <div class="field-label">Clarifications and Overrides</div>
+      <div class="notice" style="margin-bottom:8px">Anything typed here overrides earlier answers. Use this to specify exact ability scores, rename equipment, correct conflicts, or add detail the buttons could not capture.</div>
+      <textarea class="text-input" id="revisions-input" rows="4" placeholder="Leave blank if none."></textarea>
+    </div>
+    <div class="field-wrap">
+      <div class="field-label">Character Name</div>
+      <input type="text" class="text-input" id="name-input" placeholder="Character name...">
+    </div>
+  </div>
+</div>
 
 </div>
 
-<div class="output-row">
+<!-- OUTPUT COLUMN -->
+<div class="output-col">
+  <div class="out-label">Live Preview</div>
+  <div class="live-preview" id="live-preview">Fill in the form to see a live summary...</div>
 
-  <div class="out-panel" id="panel-stats">
-    <div class="out-head">
-      <span class="out-title">Character Stats</span>
-      <button class="btn" style="font-size:0.60rem;padding:3px 10px;" onclick="copyOut('outStats',this)">COPY</button>
-    </div>
-    <div class="out-body empty" id="outStats">Awaiting generation...</div>
+  <button class="gen-btn" id="gen-btn" onclick="generateCharacter()">Generate Character</button>
+  <div class="err-msg" id="err-msg"></div>
+
+  <div class="action-row">
+    <button class="copy-btn" onclick="copySection('visual')">Copy Portrait Prompt</button>
+    <button class="reset-btn" onclick="resetApp()">Reset All</button>
   </div>
 
-  <div class="out-panel" id="panel-lore">
-    <div class="out-head">
-      <span class="out-title">Character Lore</span>
-      <span class="out-note">Lore may need editing to match your vision.</span>
-      <button class="btn" style="font-size:0.60rem;padding:3px 10px;" onclick="copyOut('outLore',this)">COPY</button>
+  <div id="out-stats" class="out-section" style="display:none">
+    <div class="out-section-title">
+      Character Stats
+      <button class="copy-sec-btn" onclick="copySection('stats')">Copy</button>
     </div>
-    <div class="out-body empty" id="outLore">Awaiting generation...</div>
+    <div class="out-section-body" id="stats-body"></div>
   </div>
 
-  <div class="out-panel" id="panel-image">
-    <div class="out-head">
-      <span class="out-title">Portrait Prompt</span>
-      <button class="btn" style="font-size:0.60rem;padding:3px 10px;" onclick="copyOut('outPrompt',this)">COPY</button>
+  <div id="out-lore" class="out-section" style="display:none">
+    <div class="out-section-title">
+      Character Lore
+      <button class="copy-sec-btn" onclick="copySection('lore')">Copy</button>
     </div>
-    <div class="out-body empty" id="outPrompt">Awaiting generation...</div>
+    <div class="out-section-body" id="lore-body"></div>
   </div>
 
+  <div id="out-visual" class="out-section" style="display:none">
+    <div class="out-section-title">
+      Portrait Prompt
+      <button class="copy-sec-btn" onclick="copySection('visual')">Copy</button>
+    </div>
+    <div class="out-section-body" id="visual-body"></div>
+  </div>
+</div>
 </div>
 
+<footer>r/CCsAIWorldBuilders - Cosmic Cowboy's AI Worldbuilders</footer>
 
 <script>
-
-/* ============================================================
-   DATA — SUBCLASSES
-   ============================================================ */
 const SUBCLASSES = {
-  'Barbarian':    ['Path of the Berserker','Path of the Totem Warrior','Path of the Ancestral Guardian','Path of the Storm Herald','Path of the Zealot','Path of the Beast','Path of Wild Magic'],
-  'Bard':         ['College of Lore','College of Valor','College of Glamour','College of Swords','College of Whispers','College of Eloquence','College of Creation'],
-  'Cleric':       ['Life Domain','War Domain','Tempest Domain','Trickery Domain','Light Domain','Knowledge Domain','Nature Domain','Death Domain','Forge Domain','Grave Domain','Order Domain','Twilight Domain','Peace Domain'],
-  'Druid':        ['Circle of the Land','Circle of the Moon','Circle of Dreams','Circle of the Shepherd','Circle of Spores','Circle of Stars','Circle of Wildfire'],
-  'Fighter':      ['Champion','Battle Master','Eldritch Knight','Arcane Archer','Cavalier','Samurai','Psi Warrior','Rune Knight','Echo Knight'],
-  'Monk':         ['Way of the Open Hand','Way of Shadow','Way of the Four Elements','Way of the Drunken Master','Way of the Kensei','Way of the Sun Soul','Way of Mercy','Way of the Astral Self'],
-  'Paladin':      ['Oath of Devotion','Oath of the Ancients','Oath of Vengeance','Oath of Conquest','Oath of Redemption','Oath of Glory','Oath of the Watchers','Oathbreaker'],
-  'Ranger':       ['Hunter','Beast Master','Gloom Stalker','Horizon Walker','Monster Slayer','Fey Wanderer','Swarmkeeper','Drakewarden'],
-  'Rogue':        ['Thief','Assassin','Arcane Trickster','Inquisitive','Mastermind','Scout','Swashbuckler','Phantom','Soulknife'],
-  'Sorcerer':     ['Draconic Bloodline','Wild Magic','Divine Soul','Shadow Magic','Storm Sorcery','Aberrant Mind','Clockwork Soul'],
-  'Warlock':      ['The Fiend','The Archfey','The Great Old One','The Celestial','The Hexblade','The Fathomless','The Genie','The Undead'],
-  'Wizard':       ['School of Abjuration','School of Conjuration','School of Divination','School of Enchantment','School of Evocation','School of Illusion','School of Necromancy','School of Transmutation','Bladesinging','War Magic','Chronurgy Magic','Graviturgy Magic'],
-  'Artificer':    ['Alchemist','Armorer','Artillerist','Battle Smith'],
-  'Blood Hunter': ['Order of the Profane Soul','Order of the Ghostslayer','Order of the Mutant','Order of the Lycan'],
+  'Barbarian':['Path of the Berserker','Path of the Totem Warrior','Path of the Ancestral Guardian','Path of the Storm Herald','Path of the Zealot','Path of the Beast','Path of Wild Magic'],
+  'Bard':['College of Lore','College of Valor','College of Glamour','College of Swords','College of Whispers','College of Eloquence','College of Creation'],
+  'Cleric':['Life Domain','War Domain','Tempest Domain','Trickery Domain','Light Domain','Knowledge Domain','Nature Domain','Death Domain','Forge Domain','Grave Domain','Order Domain','Twilight Domain','Peace Domain'],
+  'Druid':['Circle of the Land','Circle of the Moon','Circle of Dreams','Circle of the Shepherd','Circle of Spores','Circle of Stars','Circle of Wildfire'],
+  'Fighter':['Champion','Battle Master','Eldritch Knight','Arcane Archer','Cavalier','Samurai','Psi Warrior','Rune Knight','Echo Knight'],
+  'Monk':['Way of the Open Hand','Way of Shadow','Way of the Four Elements','Way of the Drunken Master','Way of the Kensei','Way of the Sun Soul','Way of Mercy','Way of the Astral Self'],
+  'Paladin':['Oath of Devotion','Oath of the Ancients','Oath of Vengeance','Oath of Conquest','Oath of Redemption','Oath of Glory','Oath of the Watchers','Oathbreaker'],
+  'Ranger':['Hunter','Beast Master','Gloom Stalker','Horizon Walker','Monster Slayer','Fey Wanderer','Swarmkeeper','Drakewarden'],
+  'Rogue':['Thief','Assassin','Arcane Trickster','Inquisitive','Mastermind','Scout','Swashbuckler','Phantom','Soulknife'],
+  'Sorcerer':['Draconic Bloodline','Wild Magic','Divine Soul','Shadow Magic','Storm Sorcery','Aberrant Mind','Clockwork Soul'],
+  'Warlock':['The Fiend','The Archfey','The Great Old One','The Celestial','The Hexblade','The Fathomless','The Genie','The Undead'],
+  'Wizard':['School of Abjuration','School of Conjuration','School of Divination','School of Enchantment','School of Evocation','School of Illusion','School of Necromancy','School of Transmutation','Bladesinging','War Magic','Chronurgy Magic','Graviturgy Magic'],
+  'Artificer':['Alchemist','Armorer','Artillerist','Battle Smith'],
+  'Blood Hunter':['Order of the Profane Soul','Order of the Ghostslayer','Order of the Mutant','Order of the Lycan'],
+};
+const SUBCLASS_LEVEL = {'Barbarian':3,'Bard':3,'Cleric':1,'Druid':2,'Fighter':3,'Monk':3,'Paladin':3,'Ranger':3,'Rogue':3,'Sorcerer':1,'Warlock':1,'Wizard':2,'Artificer':3,'Blood Hunter':3};
+const SPELLCASTING_CLASSES = new Set(['Bard','Cleric','Druid','Sorcerer','Warlock','Wizard','Artificer']);
+
+const Q = {
+  edition: { type:'single', opts:['D&D 5e','D&D 2024 Revision','OSR style generic fantasy','System neutral'] },
+  ancestry: { type:'single', opts:['Human','Variant Human','Elf','High Elf','Wood Elf','Drow (Dark Elf)','Half-Elf','Dwarf','Mountain Dwarf','Hill Dwarf','Halfling','Lightfoot Halfling','Stout Halfling','Gnome','Forest Gnome','Rock Gnome','Orc','Half-Orc','Tiefling','Dragonborn','Genasi — Air','Genasi — Earth','Genasi — Fire','Genasi — Water','Goliath','Aasimar','Fallen Aasimar','Protector Aasimar','Scourge Aasimar','Tabaxi','Centaur','Firbolg','Kenku','Triton','Warforged','Changeling','Shifter','Kalashtar','Lizardfolk','Tortle','Bugbear','Goblin','Hobgoblin','Kobold','Yuan-Ti Pureblood','Loxodon','Vedalken','Simic Hybrid','Leonin','Satyr','Harengon','Owlin'] },
+  gender: { type:'single', opts:['Male','Female','Nonbinary','Unknown'] },
+  skin: { type:'single', opts:['Natural Palette','European','East Asian','African','Medium earth tones, warm brown','Light, fair complexion','Deep, rich dark brown','Olive, sun-weathered complexion','Tawny golden-brown, warm undertones','Rosy-pale with freckling','Drow (obsidian-black to dark charcoal, stark white hair)','Eldritch or prismatic, shifting iridescence','Elemental (stone, flame, water, air tones)','Arcane (deep violet, midnight blue, silver veins)','Undead pallor (grey-green, chalk white, mottled)','Bestial or scaled (reptilian, furred, chitinous)','Infernal (deep red, charcoal, ember glow)','Celestial (radiant gold, luminous white, soft halo)','Fey (blue-grey, pale green, silver shimmer)','Draconic (scaled, metallic sheen, colour-coded to bloodline)'] },
+  charClass: { type:'single', opts:['Barbarian','Bard','Cleric','Druid','Fighter','Monk','Paladin','Ranger','Rogue','Sorcerer','Warlock','Wizard','Artificer (5e and 2024 only)','Blood Hunter (homebrew / Critical Role)'] },
+  subclass: { type:'single', opts:[] },
+  background: { type:'single', opts:['Acolyte','Charlatan','Criminal','Criminal (Spy Variant)','Entertainer','Gladiator','Folk Hero','Guild Artisan','Hermit','Noble','Knight','Outlander','Sage','Sailor','Sailor (Pirate Variant)','Soldier','Urchin','Haunted One','Far Traveler','Witchlight Hand','Clan Crafter','Cloistered Scholar','Courtier','Faction Agent','Inheritor','Mercenary Veteran','Urban Bounty Hunter','Feylost'] },
+  alignment: { type:'single', opts:['Lawful Good','Neutral Good','Chaotic Good','Lawful Neutral','True Neutral','Chaotic Neutral','Lawful Evil','Neutral Evil','Chaotic Evil','None or Unaligned'] },
+  abilityMethod: { type:'single', opts:['Standard array (15, 14, 13, 12, 10, 8)','Point buy (27 points)','Rolled — 4d6 drop lowest','Rolled — 3d6 in order','Pre-assigned by class optimization','User input — I will specify each score in the Clarifications step'] },
+  skills: { type:'single', opts:['Fighter / Soldier: Athletics, Intimidation, Perception, Survival','Fighter / Noble: Athletics, History, Intimidation, Persuasion','Fighter / Criminal: Athletics, Deception, Perception, Stealth','Barbarian / Outlander: Athletics, Intimidation, Nature, Survival','Barbarian / Folk Hero: Animal Handling, Athletics, Intimidation, Survival','Barbarian / Soldier: Athletics, Intimidation, Perception, Survival','Paladin / Noble: Athletics, History, Persuasion, Religion','Paladin / Soldier: Athletics, Insight, Intimidation, Medicine','Paladin / Acolyte: Athletics, Insight, Medicine, Religion','Ranger / Outlander: Athletics, Nature, Stealth, Survival','Ranger / Folk Hero: Animal Handling, Nature, Perception, Stealth, Survival','Ranger / Soldier: Animal Handling, Athletics, Intimidation, Investigation, Perception','Monk / Hermit: Acrobatics, Insight, Medicine, Religion','Monk / Urchin: Acrobatics, Insight, Sleight of Hand, Stealth','Monk / Outlander: Acrobatics, Athletics, Stealth, Survival','Rogue / Criminal: Acrobatics, Deception, Investigation, Sleight of Hand, Stealth','Rogue / Urchin: Acrobatics, Investigation, Sleight of Hand, Stealth','Rogue / Charlatan: Deception, Insight, Perception, Sleight of Hand, Stealth','Rogue / Criminal (Spy Variant): Deception, Intimidation, Investigation, Perception, Stealth','Bard / Entertainer: Acrobatics, Deception, Performance, Persuasion, Stealth','Bard / Charlatan: Deception, Insight, Performance, Persuasion, Sleight of Hand','Bard / Noble: History, Insight, Performance, Persuasion','Wizard / Sage: Arcana, History, Insight, Investigation','Wizard / Acolyte: Arcana, History, Insight, Religion','Wizard / Cloistered Scholar: Arcana, History, Investigation, Medicine','Sorcerer / Noble: Arcana, History, Intimidation, Persuasion','Sorcerer / Hermit: Arcana, Insight, Medicine, Religion','Warlock / Charlatan: Arcana, Deception, Intimidation, Sleight of Hand','Warlock / Acolyte: Arcana, History, Insight, Religion','Artificer / Guild Artisan: Arcana, History, Insight, Persuasion','Cleric / Acolyte: History, Insight, Medicine, Persuasion, Religion','Cleric / Sage: Arcana, History, Insight, Religion','Druid / Hermit: Animal Handling, Medicine, Nature, Religion, Survival','Druid / Outlander: Animal Handling, Athletics, Nature, Survival','Blood Hunter / Soldier: Athletics, Intimidation, Investigation, Survival','Jack of All Trades — four skills of your choice (specify in the field below)'] },
+  languages: { type:'single', opts:['Common, Dwarvish, Orcish','Common, Elvish, Sylvan','Common, Draconic, Giant','Common, Infernal, Abyssal','Common, Celestial, Draconic','Common, Primordial, Giant','Common, Undercommon, Deep Speech','Common, Goblin, Orcish, Giant','Common, Elvish, Draconic, Sylvan','Common, Dwarvish, Gnomish, Halfling','Common, Draconic, Infernal, Abyssal','Common, Celestial, Primordial, Sylvan',"Common, Thieves' Cant, one language of your choice",'Common, Gnomish, Dwarvish, Halfling','Common plus three languages of your choice (specify in the field below)'] },
+  feats: { type:'single', opts:['None','Alert — cannot be surprised; +5 initiative','Great Weapon Master — heavy weapon bonus damage; -5/+10 attack option','Sharpshooter — ranged bonus damage; -5/+10 attack option; ignore cover','War Caster — advantage on concentration saves; cast as opportunity attack','Polearm Master — bonus attack with polearm butt; opportunity attack on approach','Sentinel — freeze attackers on hit; opportunity attacks ignore Disengage','Lucky — 3 luck points per day to reroll attack, ability check, or saving throw','Tough — +2 HP per level, retroactive','Mobile — +10 ft speed; no opportunity attacks after Dash; ignore difficult terrain on attack target','Resilient (Constitution) — proficiency in CON saving throws','Heavy Armor Master — damage reduction 3 vs non-magical attacks while in heavy armor','Crossbow Expert — ignore loading; no disadvantage at close range; bonus hand crossbow attack','Magic Initiate — learn 2 cantrips and 1 first-level spell from one class list','Ritual Caster — cast ritual spells from a ritual book','Spell Sniper — double spell range; ignore half and three-quarters cover','Dual Wielder — +1 AC with two weapons; use non-light weapons for two-weapon fighting','Observant — +5 passive Perception and Investigation; read lips','Inspiring Leader — grant temporary HP equal to level + CHA modifier to up to 6 allies','Crusher — push target 5 ft on bludgeoning hit; advantage on next attack after crit','Piercer — reroll one damage die on piercing hit; additional damage die on crit','Slasher — reduce speed 10 ft on slashing hit; disadvantage on attacks after crit','Actor — advantage on Deception and Performance disguise checks; mimic voices','Athlete — improve movement after going prone; climb speed equals walk speed','Charger — bonus action charge attack or shove after Dash','Dungeon Delver — advantage on Perception/Investigation for secret doors; advantage vs traps','Elemental Adept — ignore resistance of chosen element; treat 1s as 2s on damage dice','Grappler — advantage on attacks vs grappled creatures; pin with contested grapple','Keen Mind — +1 INT; know direction, hours since sunrise, things memorized in last 30 days','Linguist — +1 INT; learn 3 languages; create ciphers','Mage Slayer — reaction attack when creature casts nearby; impose disadvantage on concentration','Mounted Combatant — advantage on attacks vs unmounted creatures; redirect attacks to mount','Shield Master — bonus shove after Attack; add shield bonus to DEX saves; no damage on successful DEX save','Skulker — hide when lightly obscured; no reveal on missed ranged attack','Tavern Brawler — proficiency with improvised weapons; bonus action grapple on hit'] },
+  hp: { type:'single', opts:['Auto-calculate — average HP per level (most common)','Auto-calculate — maximum HP per level','Roll for HP — roll hit dice for each level after first'] },
+  traits: { type:'multi', max:2, opts:['Brave and fearless','Cautious and calculated','Reckless and impulsive','Scholarly and bookish','Charismatic and silver-tongued','Stoic and unreadable','Curious and inquisitive','Compassionate and selfless','Ambitious and driven','Cynical and world-weary','Optimistic and upbeat','Pragmatic and no-nonsense','Idealistic and principled','Sardonic and dry-witted','Energetic and enthusiastic','Methodical and precise','Darkly humorous','Serious and mission-focused','Warm and outgoing','Quiet and introspective','Fiercely loyal to companions','Intensely competitive','Deeply superstitious','Surprisingly gentle despite fierce appearance'] },
+  ideal: { type:'single', opts:['Honor — I keep my word and stand by my principles','Freedom — Everyone deserves liberty and self-determination','Power — Strength and influence are what matter','Knowledge — Understanding the world is the highest calling','Compassion — Ease suffering wherever it is found','Revenge — Old wrongs must be righted, whatever the cost','Balance — Order and chaos must be kept in equilibrium','Creativity — Expression and inspiration are the point of living','Justice — The law must be upheld and wrongdoers punished','Tradition — The old ways have value and must be preserved','Independence — I answer to no one but myself','Faith — My deity’s will guides everything I do','Greed — Wealth and possessions are the measure of success','Redemption — Everyone deserves a second chance, including me','Glory — Legendary deeds are what a life is for','Survival — I will do what I must to see another day','Community — The group matters more than the individual','Truth — Lies corrode everything; I speak plainly','Change — Stagnation is death; things must always move forward'] },
+  bond: { type:'single', opts:['Family — devoted to protecting or reuniting with family','Mentor — seeking to honor or avenge a teacher or patron','Lost homeland — driven to reclaim or preserve ancestral lands','Sacred vow — bound by an oath that cannot be broken','Companion or animal — inseparable from a trusted friend or creature','Organization or guild — loyal to a faction above all else','Protected person — must keep a specific individual safe at all costs','Meaningful place — emotionally anchored to a location','Significant item — possesses an object of deep personal importance','Debt — owes someone a life, service, or great sum','Nemesis — consumed by the need to destroy a specific enemy','Dangerous secret — guards information that could change everything','Fallen comrade — carrying the memory and mission of someone lost','Innocent life — responsible for someone who cannot protect themselves'] },
+  flaws: { type:'multi', max:2, opts:['Impulsive — acts before thinking','Arrogant — cannot admit mistakes or accept criticism','Distrustful — suspicious of everyone’s motives','Secretive — withholds information even from allies','Hot-tempered — quick to anger, slow to forgive','Overconfident — consistently underestimates danger','Cowardly — avoids confrontation whenever possible','Greedy — values wealth over people','Stubborn — refuses to change course once decided','Naive — always assumes the best in others','Vengeful — cannot let a slight go unanswered','Jealous — envious of others’ success or possessions','Addicted — dependent on a substance, habit, or vice','Reckless — courts danger for the thrill of it','Dishonest — lies easily and often','Self-sacrificing — cannot accept help; must shoulder every burden','Condescending — cannot hide contempt for those less capable','Obsessive — becomes fixated on problems or enemies to an unhealthy degree'] },
+  physical: { type:'single', opts:['Young adult (18–25), average height and build, clean appearance, no notable scars','Young adult (18–25), tall and athletic, single prominent facial scar','Young adult (18–25), short and wiry, multiple small scars, restless energy','Young adult (18–25), lean and angular, close-cropped hair, sharp eyes','Young adult (18–25), powerfully built, imposing frame, intense gaze','Prime adult (26–35), average height, muscular build, no distinguishing marks','Prime adult (26–35), tall and imposing, broad shoulders, broken nose','Prime adult (26–35), short and stocky, heavily tattooed arms and neck','Prime adult (26–35), lean and quick, long facial scar from temple to jaw','Prime adult (26–35), average build, missing a finger or ear from old injury','Prime adult (26–35), commanding posture, multiple healed battle wounds','Middle-aged (36–50), average height and build, greying hair, weathered face','Middle-aged (36–50), tall and still powerful, multiple old battle scars','Middle-aged (36–50), compact build, ritual tattoos on forearms and hands','Middle-aged (36–50), lean and sharp-featured, streaked grey hair, measuring gaze','Middle-aged (36–50), slight stoop from years of study, ink-stained fingers','Mature (51–65), average build, slight stoop, wise eyes, silver hair','Mature (51–65), still robust, network of old scars, deliberate movements','Mature (51–65), slight frame, long braided or knotted hair, unhurried manner','Elderly (66+), frail build, long white hair or beard, deeply lined face','Elderly (66+), still vigorous and wiry, weathered skin, commanding presence'] },
+  voice: { type:'single', opts:['Deep, resonant voice — speaks slowly and deliberately; stands with arms crossed','High, clear voice — speaks quickly and enthusiastically; gestures expressively','Gravelly, rough voice — short clipped sentences; constantly checking weapons or gear','Soft, gentle voice — thoughtful pauses before speaking; holds steady eye contact','Loud, booming voice — laughs often; greets people with a clap on the shoulder','Quiet, measured voice — precise word choice; goes still when listening carefully','Melodious voice — flowing speech; uses hands to emphasize points','Hoarse, damaged voice — minimal speech; nods and gestures instead of talking','Accented Common — friendly and warm; smiles and nods to compensate for words','Flat, monotone voice — literal and direct; avoids eye contact','Rapid-fire speech — talks over people; fidgets constantly with hands or equipment','Cultured, refined speech — complex vocabulary; sips from a flask when thinking','Military cadence — clipped and efficient; stands at near-attention habitually','Scholarly tone — explains everything at length; strokes chin when pondering','Dry, sardonic delivery — smirks more than smiles; leans on walls whenever possible','Warm, parental tone — pats shoulders; always has food or drink to offer','Nervous and stammering — adjusts clothing or wrings hands under pressure','Commanding and direct — sustained eye contact; uses titles and ranks with everyone','Conspiratorial whisper — leans in close; glances around before speaking','Singsong, lyrical cadence — hums between sentences; moves with theatrical flair'] },
+  motivations: { type:'single', opts:['Fear: failure and letting others down. Desire: prove worth to family. Conflict: duty vs personal wants.','Fear: losing loved ones. Desire: protect home and community. Conflict: peaceful nature vs violent world.','Fear: being forgotten. Desire: achieve legendary status. Conflict: glory vs wisdom and restraint.','Fear: powerlessness. Desire: accumulate power and influence. Conflict: ambition vs morality.','Fear: confinement and loss of freedom. Desire: break all chains. Conflict: chaos vs order.','Fear: the unknown. Desire: uncover every secret. Conflict: ethics vs insatiable curiosity.','Fear: poverty and deprivation. Desire: security and comfort for those I love. Conflict: idealism vs pragmatism.','Fear: being truly alone. Desire: find people worth trusting. Conflict: openness vs self-protection.','Fear: death and oblivion. Desire: achieve some form of immortality. Conflict: life vs the lure of undeath.','Fear: disorder and chaos. Desire: impose structure and law. Conflict: control vs individual freedom.','Fear: betrayal by trusted allies. Desire: find people truly worthy of loyalty. Conflict: trust vs self-interest.','Fear: past mistakes catching up. Desire: earn genuine redemption. Conflict: guilt vs the need to move forward.','Fear: being ordinary. Desire: master something rare and extraordinary. Conflict: uniqueness vs belonging.','Fear: losing cultural identity. Desire: preserve traditions and heritage. Conflict: old ways vs a changing world.','Fear: losing control of a power or curse. Desire: master or remove the affliction. Conflict: power vs safety.','Fear: causing harm to innocents. Desire: use strength only in service of good. Conflict: mercy vs justice.','Fear: being manipulated. Desire: expose hidden truths. Conflict: justified paranoia vs reality.','Fear: wasting a rare talent or destiny. Desire: fulfill a perceived purpose. Conflict: free will vs fate.','Fear: being judged for past crimes. Desire: build a new identity and life. Conflict: honesty vs necessary secrecy.','Fear: failing to understand the world. Desire: learn everything before time runs out. Conflict: scholarship vs action.'] },
+  appearance: { type:'multi', max:2, opts:['Rugged','Regal','Scholarly','Mysterious','Battle-worn','Elegant','Minimalist','Cultural or traditional','Weathered and road-worn','Youthful','Physically imposing','Unassuming and easy to overlook','Eccentric and unusual','Quietly menacing','Approachably friendly'] },
+  equipTheme: { type:'multi', max:2, opts:['Standard class kit','Heavy military plate and arms','Arcane focus, robes, and component pouch','Hunter’s gear — practical, weathered, utilitarian','Stealth kit — dark clothing, minimal noise, hidden blades','Holy regalia — symbol, vestments, sacred weapon','Artisan or crafter tools alongside weapons','Tribal or primitive — bone, hide, natural materials','Noble courtly attire with concealed or ceremonial weapons','Scavenged and improvised — mismatched but functional','Sea-worn — rope, oilskin, boarding weapons','Wizard’s laboratory aesthetic — pouches, scrolls, strange devices','Monastic — simple robes, minimal gear, exceptional quality weapons','Druidic — living materials, carved wood, feathers, vine-work','Military campaign kit — travel-worn armor, spare rations, field gear'] },
+  equipMethod: { type:'single', opts:['Standard starting equipment for class and background','Starting gold to purchase equipment'] },
+  spells: { type:'single', opts:['Auto-generate appropriate spells for class and level','Random spell selection'] },
+  artStyle: { type:'single', opts:['Fantasy realism — realistic, heroic, detailed illustration','Cinematic concept art — dramatic lighting, painterly, character-focused','Classic ink and parchment — old-school fantasy line art, crosshatching','Anime inspired — stylized, clean lines, bold expression and colour','Painterly oil style — traditional fantasy painting texture','Photorealistic — near-photographic quality rendering','Digital art — clean, vibrant, modern digital painting','Watercolor style — soft edges, translucent washes, delicate detail','Dark fantasy — grim, desaturated, heavy shadows, gritty detail','Storybook illustration — warm, inviting, slightly stylized'] },
+  composition: { type:'single', opts:['Bust portrait — head and shoulders, neutral background','Half-body — waist up, environment suggested','Full body standing — complete figure, clear silhouette','Action pose — mid-movement, dynamic angle','At rest — seated in camp, tavern, or study','In battle — weapons drawn, mid-combat','Casting or channeling — spell or power visually active','On watch — alert, scanning surroundings','Dramatic low angle — heroic framing, looking upward','Profile view — strong silhouette emphasis'] },
+  imageSize: { type:'single', opts:['Square (1:1)','Portrait — tall (2:3)','Landscape — wide (3:2)'] },
 };
 
-const SUBCLASS_LEVEL = {
-  'Barbarian':3,'Bard':3,'Cleric':1,'Druid':2,'Fighter':3,'Monk':3,
-  'Paladin':3,'Ranger':3,'Rogue':3,'Sorcerer':1,'Warlock':1,'Wizard':2,
-  'Artificer':3,'Blood Hunter':3
+let state = { ans:{}, custom:{}, oo:{ stats:true, lore:true, image:true } };
+
+const PRESETS = {
+  classicFighter: { edition:'D&D 5e', _level:5, ancestry:'Human', gender:'Male', charClass:'Fighter', background:'Soldier', alignment:'Lawful Good', abilityMethod:'Standard array (15, 14, 13, 12, 10, 8)', hp:'Auto-calculate — average HP per level (most common)', traits:['Brave and fearless','Pragmatic and no-nonsense'], ideal:'Honor — I keep my word and stand by my principles', bond:'Fallen comrade — carrying the memory and mission of someone lost', flaws:['Stubborn — refuses to change course once decided'], physical:'Prime adult (26–35), tall and imposing, broad shoulders, broken nose', appearance:['Battle-worn','Physically imposing'], equipTheme:['Heavy military plate and arms'], equipMethod:'Standard starting equipment for class and background', artStyle:'Fantasy realism — realistic, heroic, detailed illustration', composition:'Half-body — waist up, environment suggested', imageSize:'Portrait — tall (2:3)', skin:'European' },
+  elvenMage: { edition:'D&D 5e', _level:7, ancestry:'High Elf', gender:'Female', charClass:'Wizard', background:'Sage', alignment:'Neutral Good', abilityMethod:'Standard array (15, 14, 13, 12, 10, 8)', hp:'Auto-calculate — average HP per level (most common)', traits:['Scholarly and bookish','Curious and inquisitive'], ideal:'Knowledge — Understanding the world is the highest calling', bond:'Mentor — seeking to honor or avenge a teacher or patron', flaws:['Obsessive — becomes fixated on problems or enemies to an unhealthy degree'], physical:'Young adult (18–25), lean and angular, close-cropped hair, sharp eyes', appearance:['Elegant','Scholarly'], equipTheme:['Arcane focus, robes, and component pouch'], equipMethod:'Standard starting equipment for class and background', spells:'Auto-generate appropriate spells for class and level', artStyle:'Digital art — clean, vibrant, modern digital painting', composition:'Casting or channeling — spell or power visually active', imageSize:'Portrait — tall (2:3)', skin:'Light, fair complexion' },
+  holyPaladin: { edition:'D&D 5e', _level:6, ancestry:'Aasimar', gender:'Male', charClass:'Paladin', background:'Acolyte', alignment:'Lawful Good', abilityMethod:'Pre-assigned by class optimization', hp:'Auto-calculate — average HP per level (most common)', traits:['Idealistic and principled','Warm and outgoing'], ideal:'Faith — My deity’s will guides everything I do', bond:'Sacred vow — bound by an oath that cannot be broken', flaws:['Self-sacrificing — cannot accept help; must shoulder every burden'], physical:'Prime adult (26–35), commanding posture, multiple healed battle wounds', appearance:['Regal','Physically imposing'], equipTheme:['Holy regalia — symbol, vestments, sacred weapon'], equipMethod:'Standard starting equipment for class and background', artStyle:'Cinematic concept art — dramatic lighting, painterly, character-focused', composition:'Dramatic low angle — heroic framing, looking upward', imageSize:'Portrait — tall (2:3)', skin:'Celestial (radiant gold, luminous white, soft halo)' },
+  shadowRogue: { edition:'D&D 5e', _level:5, ancestry:'Half-Elf', gender:'Female', charClass:'Rogue', background:'Criminal', alignment:'Chaotic Neutral', abilityMethod:'Standard array (15, 14, 13, 12, 10, 8)', hp:'Auto-calculate — average HP per level (most common)', traits:['Cautious and calculated','Sardonic and dry-witted'], ideal:'Freedom — Everyone deserves liberty and self-determination', bond:'Dangerous secret — guards information that could change everything', flaws:['Distrustful — suspicious of everyone’s motives'], physical:'Young adult (18–25), short and wiry, multiple small scars, restless energy', appearance:['Mysterious','Minimalist'], equipTheme:['Stealth kit — dark clothing, minimal noise, hidden blades'], equipMethod:'Standard starting equipment for class and background', artStyle:'Dark fantasy — grim, desaturated, heavy shadows, gritty detail', composition:'On watch — alert, scanning surroundings', imageSize:'Portrait — tall (2:3)', skin:'Olive, sun-weathered complexion' },
+  wildSorcerer: { edition:'D&D 5e', _level:8, ancestry:'Tiefling', gender:'Nonbinary', charClass:'Sorcerer', background:'Hermit', alignment:'Chaotic Good', abilityMethod:'Rolled — 4d6 drop lowest', hp:'Auto-calculate — average HP per level (most common)', traits:['Energetic and enthusiastic','Reckless and impulsive'], ideal:'Change — Stagnation is death; things must always move forward', bond:'Family — devoted to protecting or reuniting with family', flaws:['Reckless — courts danger for the thrill of it'], physical:'Young adult (18–25), powerfully built, imposing frame, intense gaze', appearance:['Eccentric and unusual','Youthful'], equipTheme:['Arcane focus, robes, and component pouch'], equipMethod:'Standard starting equipment for class and background', spells:'Auto-generate appropriate spells for class and level', artStyle:'Fantasy realism — realistic, heroic, detailed illustration', composition:'Action pose — mid-movement, dynamic angle', imageSize:'Portrait — tall (2:3)', skin:'Infernal (deep red, charcoal, ember glow)' },
 };
 
-const SPELLCASTING_CLASSES = new Set([
-  'Bard','Cleric','Druid','Sorcerer','Warlock','Wizard','Artificer'
-]);
-
-
-/* ============================================================
-   DATA — QUESTIONS
-   ============================================================ */
-const QUESTIONS = [
-
-  /* ── CORE ── */
-  {
-    id: 'edition', label: 'Edition', required: true,
-    hint: 'Determines the mechanical rules used for ability scores, class features, and equipment.',
-    type: 'select', allowRandom: false, allowCustom: false,
-    options: ['D&D 5e','D&D 2024 Revision','OSR style generic fantasy','System neutral'],
-  },
-  {
-    id: 'level', label: 'Character Level', required: true,
-    hint: 'Level determines subclass availability, feat slots, spell slots, proficiency bonus, and hit points.',
-    type: 'number', min: 1, max: 20,
-    allowRandom: true, allowCustom: false,
-  },
-
-  /* ── IDENTITY ── */
-  {
-    id: 'ancestry', label: 'Ancestry / Race', required: true,
-    hint: 'Choose from the list. Use the field below to specify a subrace or add detail.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'Human','Variant Human','Elf','High Elf','Wood Elf','Drow (Dark Elf)','Half-Elf',
-      'Dwarf','Mountain Dwarf','Hill Dwarf','Halfling','Lightfoot Halfling','Stout Halfling',
-      'Gnome','Forest Gnome','Rock Gnome','Orc','Half-Orc','Tiefling',
-      'Dragonborn','Genasi — Air','Genasi — Earth','Genasi — Fire','Genasi — Water',
-      'Goliath','Aasimar','Fallen Aasimar','Protector Aasimar','Scourge Aasimar',
-      'Tabaxi','Centaur','Firbolg','Kenku','Triton','Warforged','Changeling','Shifter',
-      'Kalashtar','Lizardfolk','Tortle','Bugbear','Goblin','Hobgoblin','Kobold',
-      'Yuan-Ti Pureblood','Loxodon','Vedalken','Simic Hybrid','Leonin','Satyr','Harengon','Owlin',
-    ],
-  },
-  {
-    id: 'gender', label: 'Gender', required: true,
-    hint: '',
-    type: 'select', allowRandom: true, allowCustom: false,
-    options: ['Male','Female','Nonbinary','Unknown'],
-  },
-  {
-    id: 'skin', label: 'Skin / Body Covering Palette', required: true,
-    hint: 'This palette is enforced explicitly in the portrait prompt and cannot be overridden by the art style.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'Natural Palette',
-      'European',
-      'East Asian',
-      'African',
-      'Medium earth tones, warm brown',
-      'Light, fair complexion',
-      'Deep, rich dark brown',
-      'Olive, sun-weathered complexion',
-      'Tawny golden-brown, warm undertones',
-      'Rosy-pale with freckling',
-      'Drow (obsidian-black to dark charcoal, stark white hair)',
-      'Eldritch or prismatic, shifting iridescence',
-      'Elemental (stone, flame, water, air tones)',
-      'Arcane (deep violet, midnight blue, silver veins)',
-      'Undead pallor (grey-green, chalk white, mottled)',
-      'Bestial or scaled (reptilian, furred, chitinous)',
-      'Infernal (deep red, charcoal, ember glow)',
-      'Celestial (radiant gold, luminous white, soft halo)',
-      'Fey (blue-grey, pale green, silver shimmer)',
-      'Draconic (scaled, metallic sheen, colour-coded to bloodline)',
-    ],
-  },
-
-  /* ── CLASS ── */
-  {
-    id: 'charClass', label: 'Class', required: true,
-    hint: 'Choose one class. For multiclassing, use the field below to specify both classes and the level split.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'Barbarian','Bard','Cleric','Druid','Fighter','Monk','Paladin','Ranger',
-      'Rogue','Sorcerer','Warlock','Wizard',
-      'Artificer (5e and 2024 only)',
-      'Blood Hunter (homebrew / Critical Role)',
-    ],
-  },
-  {
-    id: 'subclass', label: 'Subclass / Archetype', required: false,
-    hint: 'Choose a subclass appropriate to your class. Use the field below to type a homebrew or custom subclass name.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [],
-    condition: (a) => {
-      if (!a.charClass || !a.level) return false;
-      const cls = a.charClass.split('(')[0].split(',')[0].trim();
-      const unlockLevel = SUBCLASS_LEVEL[cls];
-      return unlockLevel !== undefined && parseInt(a.level) >= unlockLevel;
-    },
-  },
-
-  /* ── BACKGROUND & ALIGNMENT ── */
-  {
-    id: 'background', label: 'Background', required: true,
-    hint: 'Background determines starting skill proficiencies, languages, and equipment. Use the field below to describe a custom background.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'Acolyte','Charlatan','Criminal','Criminal (Spy Variant)','Entertainer','Gladiator','Folk Hero',
-      'Guild Artisan','Hermit','Noble','Knight','Outlander','Sage',
-      'Sailor','Sailor (Pirate Variant)','Soldier','Urchin','Haunted One','Far Traveler',
-      'Witchlight Hand','Clan Crafter','Cloistered Scholar','Courtier',
-      'Faction Agent','Inheritor','Mercenary Veteran','Urban Bounty Hunter','Feylost',
-    ],
-  },
-  {
-    id: 'alignment', label: 'Alignment', required: true,
-    hint: 'Reflects moral and ethical outlook. Some classes and subclasses restrict alignment options.',
-    type: 'select', allowRandom: true, allowCustom: false,
-    options: [
-      'Lawful Good','Neutral Good','Chaotic Good',
-      'Lawful Neutral','True Neutral','Chaotic Neutral',
-      'Lawful Evil','Neutral Evil','Chaotic Evil',
-      'None or Unaligned',
-    ],
-  },
-
-  /* ── MECHANICS ── */
-  {
-    id: 'abilityMethod', label: 'Ability Score Method', required: true,
-    hint: '"Pre-assigned by class optimization" places the highest available scores in the primary stats for the selected class.',
-    type: 'select', allowRandom: false, allowCustom: false,
-    options: [
-      'Standard array (15, 14, 13, 12, 10, 8)',
-      'Point buy (27 points)',
-      'Rolled — 4d6 drop lowest',
-      'Rolled — 3d6 in order',
-      'Pre-assigned by class optimization',
-      'User input — I will specify each score in the Clarifications step',
-    ],
-  },
-  {
-    id: 'skills', label: 'Skill Proficiencies', required: true,
-    hint: 'Choose the preset that best fits your class and background. Use the field below to add or substitute specific skills.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'Fighter / Soldier: Athletics, Intimidation, Perception, Survival',
-      'Fighter / Noble: Athletics, History, Intimidation, Persuasion',
-      'Fighter / Criminal: Athletics, Deception, Perception, Stealth',
-      'Barbarian / Outlander: Athletics, Intimidation, Nature, Survival',
-      'Barbarian / Folk Hero: Animal Handling, Athletics, Intimidation, Survival',
-      'Barbarian / Soldier: Athletics, Intimidation, Perception, Survival',
-      'Paladin / Noble: Athletics, History, Persuasion, Religion',
-      'Paladin / Soldier: Athletics, Insight, Intimidation, Medicine',
-      'Paladin / Acolyte: Athletics, Insight, Medicine, Religion',
-      'Ranger / Outlander: Athletics, Nature, Stealth, Survival',
-      'Ranger / Folk Hero: Animal Handling, Nature, Perception, Stealth, Survival',
-      'Ranger / Soldier: Animal Handling, Athletics, Intimidation, Investigation, Perception',
-      'Monk / Hermit: Acrobatics, Insight, Medicine, Religion',
-      'Monk / Urchin: Acrobatics, Insight, Sleight of Hand, Stealth',
-      'Monk / Outlander: Acrobatics, Athletics, Stealth, Survival',
-      'Rogue / Criminal: Acrobatics, Deception, Investigation, Sleight of Hand, Stealth',
-      'Rogue / Urchin: Acrobatics, Investigation, Sleight of Hand, Stealth',
-      'Rogue / Charlatan: Deception, Insight, Perception, Sleight of Hand, Stealth',
-      'Rogue / Criminal (Spy Variant): Deception, Intimidation, Investigation, Perception, Stealth',
-      'Bard / Entertainer: Acrobatics, Deception, Performance, Persuasion, Stealth',
-      'Bard / Charlatan: Deception, Insight, Performance, Persuasion, Sleight of Hand',
-      'Bard / Noble: History, Insight, Performance, Persuasion',
-      'Wizard / Sage: Arcana, History, Insight, Investigation',
-      'Wizard / Acolyte: Arcana, History, Insight, Religion',
-      'Wizard / Cloistered Scholar: Arcana, History, Investigation, Medicine',
-      'Sorcerer / Noble: Arcana, History, Intimidation, Persuasion',
-      'Sorcerer / Hermit: Arcana, Insight, Medicine, Religion',
-      'Warlock / Charlatan: Arcana, Deception, Intimidation, Sleight of Hand',
-      'Warlock / Acolyte: Arcana, History, Insight, Religion',
-      'Artificer / Guild Artisan: Arcana, History, Insight, Persuasion',
-      'Cleric / Acolyte: History, Insight, Medicine, Persuasion, Religion',
-      'Cleric / Sage: Arcana, History, Insight, Religion',
-      'Druid / Hermit: Animal Handling, Medicine, Nature, Religion, Survival',
-      'Druid / Outlander: Animal Handling, Athletics, Nature, Survival',
-      'Blood Hunter / Soldier: Athletics, Intimidation, Investigation, Survival',
-      'Jack of All Trades — four skills of your choice (specify in the field below)',
-    ],
-  },
-  {
-    id: 'languages', label: 'Languages Known', required: true,
-    hint: 'Typically Common plus 1–3 additional languages based on ancestry and background.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'Common, Dwarvish, Orcish',
-      'Common, Elvish, Sylvan',
-      'Common, Draconic, Giant',
-      'Common, Infernal, Abyssal',
-      'Common, Celestial, Draconic',
-      'Common, Primordial, Giant',
-      'Common, Undercommon, Deep Speech',
-      'Common, Goblin, Orcish, Giant',
-      'Common, Elvish, Draconic, Sylvan',
-      'Common, Dwarvish, Gnomish, Halfling',
-      'Common, Draconic, Infernal, Abyssal',
-      'Common, Celestial, Primordial, Sylvan',
-      "Common, Thieves' Cant, one language of your choice",
-      'Common, Gnomish, Dwarvish, Halfling',
-      'Common plus three languages of your choice (specify in the field below)',
-    ],
-  },
-  {
-    id: 'feats', label: 'Feats', required: false,
-    hint: 'Available at levels 4, 8, 12, 16, 19 in 5e and 2024. Use the field below to describe a custom or homebrew feat.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'None',
-      'Alert — cannot be surprised; +5 initiative',
-      'Great Weapon Master — heavy weapon bonus damage; -5/+10 attack option',
-      'Sharpshooter — ranged bonus damage; -5/+10 attack option; ignore cover',
-      'War Caster — advantage on concentration saves; cast as opportunity attack',
-      'Polearm Master — bonus attack with polearm butt; opportunity attack on approach',
-      'Sentinel — freeze attackers on hit; opportunity attacks ignore Disengage',
-      'Lucky — 3 luck points per day to reroll attack, ability check, or saving throw',
-      'Tough — +2 HP per level, retroactive',
-      'Mobile — +10 ft speed; no opportunity attacks after Dash; ignore difficult terrain on attack target',
-      'Resilient (Constitution) — proficiency in CON saving throws',
-      'Heavy Armor Master — damage reduction 3 vs non-magical attacks while in heavy armor',
-      'Crossbow Expert — ignore loading; no disadvantage at close range; bonus hand crossbow attack',
-      'Magic Initiate — learn 2 cantrips and 1 first-level spell from one class list',
-      'Ritual Caster — cast ritual spells from a ritual book',
-      'Spell Sniper — double spell range; ignore half and three-quarters cover',
-      'Dual Wielder — +1 AC with two weapons; use non-light weapons for two-weapon fighting',
-      'Observant — +5 passive Perception and Investigation; read lips',
-      'Inspiring Leader — grant temporary HP equal to level + CHA modifier to up to 6 allies',
-      'Crusher — push target 5 ft on bludgeoning hit; advantage on next attack after crit',
-      'Piercer — reroll one damage die on piercing hit; additional damage die on crit',
-      'Slasher — reduce speed 10 ft on slashing hit; disadvantage on attacks after crit',
-      'Actor — advantage on Deception and Performance disguise checks; mimic voices',
-      'Athlete — improve movement after going prone; climb speed equals walk speed',
-      'Charger — bonus action charge attack or shove after Dash',
-      'Dungeon Delver — advantage on Perception/Investigation for secret doors; advantage vs traps',
-      'Elemental Adept — ignore resistance of chosen element; treat 1s as 2s on damage dice',
-      'Grappler — advantage on attacks vs grappled creatures; pin with contested grapple',
-      'Keen Mind — +1 INT; know direction, hours since sunrise, things memorized in last 30 days',
-      'Linguist — +1 INT; learn 3 languages; create ciphers',
-      'Mage Slayer — reaction attack when creature casts nearby; impose disadvantage on concentration',
-      'Mounted Combatant — advantage on attacks vs unmounted creatures; redirect attacks to mount',
-      'Shield Master — bonus shove after Attack; add shield bonus to DEX saves; no damage on successful DEX save',
-      'Skulker — hide when lightly obscured; no reveal on missed ranged attack',
-      'Tavern Brawler — proficiency with improvised weapons; bonus action grapple on hit',
-    ],
-    condition: (a) => {
-      const lvl = parseInt(a.level) || 0;
-      const ed  = a.edition || '';
-      if (ed === 'OSR style generic fantasy' || ed === 'System neutral') return false;
-      return lvl >= 4;
-    },
-  },
-  {
-    id: 'hp', label: 'Hit Points', required: true,
-    hint: 'Choose a calculation method. To set a specific total, type it in the field below.',
-    type: 'select', allowRandom: false, allowCustom: true,
-    options: [
-      'Auto-calculate — average HP per level (most common)',
-      'Auto-calculate — maximum HP per level',
-      'Roll for HP — roll hit dice for each level after first',
-    ],
-  },
-
-  /* ── PERSONALITY ── */
-  {
-    id: 'traits', label: 'Personality Traits', required: true,
-    hint: 'Hold Ctrl / Cmd to select up to two. Use the field below to write your own.',
-    type: 'multiselect', allowRandom: true, allowCustom: true,
-    options: [
-      'Brave and fearless','Cautious and calculated','Reckless and impulsive','Scholarly and bookish',
-      'Charismatic and silver-tongued','Stoic and unreadable','Curious and inquisitive',
-      'Compassionate and selfless','Ambitious and driven','Cynical and world-weary',
-      'Optimistic and upbeat','Pragmatic and no-nonsense','Idealistic and principled',
-      'Sardonic and dry-witted','Energetic and enthusiastic','Methodical and precise',
-      'Darkly humorous','Serious and mission-focused','Warm and outgoing','Quiet and introspective',
-      'Fiercely loyal to companions','Intensely competitive','Deeply superstitious',
-      'Surprisingly gentle despite fierce appearance',
-    ],
-  },
-  {
-    id: 'ideal', label: 'Ideal', required: true,
-    hint: 'The core belief that drives your character. Use the field below to add nuance.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'Honor — I keep my word and stand by my principles',
-      'Freedom — Everyone deserves liberty and self-determination',
-      'Power — Strength and influence are what matter',
-      'Knowledge — Understanding the world is the highest calling',
-      'Compassion — Ease suffering wherever it is found',
-      'Revenge — Old wrongs must be righted, whatever the cost',
-      'Balance — Order and chaos must be kept in equilibrium',
-      'Creativity — Expression and inspiration are the point of living',
-      'Justice — The law must be upheld and wrongdoers punished',
-      'Tradition — The old ways have value and must be preserved',
-      'Independence — I answer to no one but myself',
-      "Faith — My deity's will guides everything I do",
-      'Greed — Wealth and possessions are the measure of success',
-      'Redemption — Everyone deserves a second chance, including me',
-      'Glory — Legendary deeds are what a life is for',
-      'Survival — I will do what I must to see another day',
-      'Community — The group matters more than the individual',
-      'Truth — Lies corrode everything; I speak plainly',
-      'Change — Stagnation is death; things must always move forward',
-    ],
-  },
-  {
-    id: 'bond', label: 'Bond', required: true,
-    hint: 'What ties your character to the world. Use the field below to name specific people, places, or items.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'Family — devoted to protecting or reuniting with family',
-      'Mentor — seeking to honor or avenge a teacher or patron',
-      'Lost homeland — driven to reclaim or preserve ancestral lands',
-      'Sacred vow — bound by an oath that cannot be broken',
-      'Companion or animal — inseparable from a trusted friend or creature',
-      'Organization or guild — loyal to a faction above all else',
-      'Protected person — must keep a specific individual safe at all costs',
-      'Meaningful place — emotionally anchored to a location',
-      'Significant item — possesses an object of deep personal importance',
-      'Debt — owes someone a life, service, or great sum',
-      'Nemesis — consumed by the need to destroy a specific enemy',
-      'Dangerous secret — guards information that could change everything',
-      'Fallen comrade — carrying the memory and mission of someone lost',
-      'Innocent life — responsible for someone who cannot protect themselves',
-    ],
-  },
-  {
-    id: 'flaws', label: 'Flaws', required: true,
-    hint: 'Hold Ctrl / Cmd to select up to two. Use the field below to write your own.',
-    type: 'multiselect', allowRandom: true, allowCustom: true,
-    options: [
-      'Impulsive — acts before thinking','Arrogant — cannot admit mistakes or accept criticism',
-      'Distrustful — suspicious of everyone\'s motives','Secretive — withholds information even from allies',
-      'Hot-tempered — quick to anger, slow to forgive','Overconfident — consistently underestimates danger',
-      'Cowardly — avoids confrontation whenever possible','Greedy — values wealth over people',
-      'Stubborn — refuses to change course once decided','Naive — always assumes the best in others',
-      'Vengeful — cannot let a slight go unanswered','Jealous — envious of others\' success or possessions',
-      'Addicted — dependent on a substance, habit, or vice','Reckless — courts danger for the thrill of it',
-      'Dishonest — lies easily and often','Self-sacrificing — cannot accept help; must shoulder every burden',
-      'Condescending — cannot hide contempt for those less capable',
-      'Obsessive — becomes fixated on problems or enemies to an unhealthy degree',
-    ],
-  },
-
-  /* ── PHYSICAL ── */
-  {
-    id: 'physical', label: 'Physical Details', required: true,
-    hint: 'Age range, build, height, and distinguishing features. Use the field below to add specific details.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'Young adult (18–25), average height and build, clean appearance, no notable scars',
-      'Young adult (18–25), tall and athletic, single prominent facial scar',
-      'Young adult (18–25), short and wiry, multiple small scars, restless energy',
-      'Young adult (18–25), lean and angular, close-cropped hair, sharp eyes',
-      'Young adult (18–25), powerfully built, imposing frame, intense gaze',
-      'Prime adult (26–35), average height, muscular build, no distinguishing marks',
-      'Prime adult (26–35), tall and imposing, broad shoulders, broken nose',
-      'Prime adult (26–35), short and stocky, heavily tattooed arms and neck',
-      'Prime adult (26–35), lean and quick, long facial scar from temple to jaw',
-      'Prime adult (26–35), average build, missing a finger or ear from old injury',
-      'Prime adult (26–35), commanding posture, multiple healed battle wounds',
-      'Middle-aged (36–50), average height and build, greying hair, weathered face',
-      'Middle-aged (36–50), tall and still powerful, multiple old battle scars',
-      'Middle-aged (36–50), compact build, ritual tattoos on forearms and hands',
-      'Middle-aged (36–50), lean and sharp-featured, streaked grey hair, measuring gaze',
-      'Middle-aged (36–50), slight stoop from years of study, ink-stained fingers',
-      'Mature (51–65), average build, slight stoop, wise eyes, silver hair',
-      'Mature (51–65), still robust, network of old scars, deliberate movements',
-      'Mature (51–65), slight frame, long braided or knotted hair, unhurried manner',
-      'Elderly (66+), frail build, long white hair or beard, deeply lined face',
-      'Elderly (66+), still vigorous and wiry, weathered skin, commanding presence',
-    ],
-  },
-  {
-    id: 'voice', label: 'Voice and Mannerisms', required: true,
-    hint: 'Speech patterns and physical habits that define how the character carries themselves.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'Deep, resonant voice — speaks slowly and deliberately; stands with arms crossed',
-      'High, clear voice — speaks quickly and enthusiastically; gestures expressively',
-      'Gravelly, rough voice — short clipped sentences; constantly checking weapons or gear',
-      'Soft, gentle voice — thoughtful pauses before speaking; holds steady eye contact',
-      'Loud, booming voice — laughs often; greets people with a clap on the shoulder',
-      'Quiet, measured voice — precise word choice; goes still when listening carefully',
-      'Melodious voice — flowing speech; uses hands to emphasize points',
-      'Hoarse, damaged voice — minimal speech; nods and gestures instead of talking',
-      'Accented Common — friendly and warm; smiles and nods to compensate for words',
-      'Flat, monotone voice — literal and direct; avoids eye contact',
-      'Rapid-fire speech — talks over people; fidgets constantly with hands or equipment',
-      'Cultured, refined speech — complex vocabulary; sips from a flask when thinking',
-      'Military cadence — clipped and efficient; stands at near-attention habitually',
-      'Scholarly tone — explains everything at length; strokes chin when pondering',
-      'Dry, sardonic delivery — smirks more than smiles; leans on walls whenever possible',
-      'Warm, parental tone — pats shoulders; always has food or drink to offer',
-      'Nervous and stammering — adjusts clothing or wrings hands under pressure',
-      'Commanding and direct — sustained eye contact; uses titles and ranks with everyone',
-      'Conspiratorial whisper — leans in close; glances around before speaking',
-      'Singsong, lyrical cadence — hums between sentences; moves with theatrical flair',
-    ],
-  },
-  {
-    id: 'motivations', label: 'Deeper Motivations', required: true,
-    hint: 'Core fears, desires, internal conflicts, and relationship to faith or deity.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'Fear: failure and letting others down. Desire: prove worth to family. Conflict: duty vs personal wants.',
-      'Fear: losing loved ones. Desire: protect home and community. Conflict: peaceful nature vs violent world.',
-      'Fear: being forgotten. Desire: achieve legendary status. Conflict: glory vs wisdom and restraint.',
-      'Fear: powerlessness. Desire: accumulate power and influence. Conflict: ambition vs morality.',
-      'Fear: confinement and loss of freedom. Desire: break all chains. Conflict: chaos vs order.',
-      'Fear: the unknown. Desire: uncover every secret. Conflict: ethics vs insatiable curiosity.',
-      'Fear: poverty and deprivation. Desire: security and comfort for those I love. Conflict: idealism vs pragmatism.',
-      'Fear: being truly alone. Desire: find people worth trusting. Conflict: openness vs self-protection.',
-      'Fear: death and oblivion. Desire: achieve some form of immortality. Conflict: life vs the lure of undeath.',
-      'Fear: disorder and chaos. Desire: impose structure and law. Conflict: control vs individual freedom.',
-      'Fear: betrayal by trusted allies. Desire: find people truly worthy of loyalty. Conflict: trust vs self-interest.',
-      'Fear: past mistakes catching up. Desire: earn genuine redemption. Conflict: guilt vs the need to move forward.',
-      'Fear: being ordinary. Desire: master something rare and extraordinary. Conflict: uniqueness vs belonging.',
-      'Fear: losing cultural identity. Desire: preserve traditions and heritage. Conflict: old ways vs a changing world.',
-      'Fear: losing control of a power or curse. Desire: master or remove the affliction. Conflict: power vs safety.',
-      'Fear: causing harm to innocents. Desire: use strength only in service of good. Conflict: mercy vs justice.',
-      'Fear: being manipulated. Desire: expose hidden truths. Conflict: justified paranoia vs reality.',
-      'Fear: wasting a rare talent or destiny. Desire: fulfill a perceived purpose. Conflict: free will vs fate.',
-      'Fear: being judged for past crimes. Desire: build a new identity and life. Conflict: honesty vs necessary secrecy.',
-      'Fear: failing to understand the world. Desire: learn everything before time runs out. Conflict: scholarship vs action.',
-    ],
-  },
-
-  /* ── APPEARANCE & EQUIPMENT ── */
-  {
-    id: 'appearance', label: 'Appearance Profile', required: true,
-    hint: 'Overall visual impression of the character. Hold Ctrl / Cmd to select up to two.',
-    type: 'multiselect', allowRandom: true, allowCustom: true,
-    options: [
-      'Rugged','Regal','Scholarly','Mysterious','Battle-worn','Elegant','Minimalist',
-      'Cultural or traditional','Weathered and road-worn','Youthful','Physically imposing',
-      'Unassuming and easy to overlook','Eccentric and unusual','Quietly menacing','Approachably friendly',
-    ],
-  },
-  {
-    id: 'equipTheme', label: 'Equipment Theme', required: true,
-    hint: 'The general style of gear and clothing. Hold Ctrl / Cmd to select up to two. Add specific items in the field below.',
-    type: 'multiselect', allowRandom: true, allowCustom: true,
-    options: [
-      'Standard class kit',
-      'Heavy military plate and arms',
-      'Arcane focus, robes, and component pouch',
-      "Hunter's gear — practical, weathered, utilitarian",
-      'Stealth kit — dark clothing, minimal noise, hidden blades',
-      'Holy regalia — symbol, vestments, sacred weapon',
-      'Artisan or crafter tools alongside weapons',
-      'Tribal or primitive — bone, hide, natural materials',
-      'Noble courtly attire with concealed or ceremonial weapons',
-      'Scavenged and improvised — mismatched but functional',
-      'Sea-worn — rope, oilskin, boarding weapons',
-      "Wizard's laboratory aesthetic — pouches, scrolls, strange devices",
-      'Monastic — simple robes, minimal gear, exceptional quality weapons',
-      'Druidic — living materials, carved wood, feathers, vine-work',
-      'Military campaign kit — travel-worn armor, spare rations, field gear',
-    ],
-  },
-  {
-    id: 'equipMethod', label: 'Starting Equipment Method', required: true,
-    hint: 'How starting gear is determined. Add specific items or a gold total in the field below.',
-    type: 'select', allowRandom: false, allowCustom: true,
-    options: [
-      'Standard starting equipment for class and background',
-      'Starting gold to purchase equipment',
-    ],
-  },
-  {
-    id: 'spells', label: 'Spellcasting Details', required: false,
-    hint: 'How spells are selected. Type a specific spell list in the field below if you have particular spells in mind.',
-    type: 'select', allowRandom: false, allowCustom: true,
-    options: [
-      'Auto-generate appropriate spells for class and level',
-      'Random spell selection',
-    ],
-    condition: (a) => {
-      if (!a.charClass) return false;
-      const cls = a.charClass.split('(')[0].split(',')[0].trim();
-      if ((cls === 'Paladin' || cls === 'Ranger') && parseInt(a.level) >= 2) return true;
-      if (a.subclass && parseInt(a.level) >= 3) {
-        if (a.subclass.includes('Eldritch Knight') || a.subclass.includes('Arcane Trickster')) return true;
-      }
-      return SPELLCASTING_CLASSES.has(cls);
-    },
-  },
-
-  /* ── PORTRAIT SETTINGS ── */
-  {
-    id: 'artStyle', label: 'Portrait Art Style', required: true,
-    hint: 'This style descriptor opens the portrait generation prompt. Add style detail in the field below.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'Fantasy realism — realistic, heroic, detailed illustration',
-      'Cinematic concept art — dramatic lighting, painterly, character-focused',
-      'Classic ink and parchment — old-school fantasy line art, crosshatching',
-      'Anime inspired — stylized, clean lines, bold expression and colour',
-      'Painterly oil style — traditional fantasy painting texture',
-      'Photorealistic — near-photographic quality rendering',
-      'Digital art — clean, vibrant, modern digital painting',
-      'Watercolor style — soft edges, translucent washes, delicate detail',
-      'Dark fantasy — grim, desaturated, heavy shadows, gritty detail',
-      'Storybook illustration — warm, inviting, slightly stylized',
-      'None — I only need the character stats and lore',
-    ],
-  },
-  {
-    id: 'composition', label: 'Portrait Composition', required: true,
-    hint: 'Framing and context for the portrait. Add specific staging detail in the field below.',
-    type: 'select', allowRandom: true, allowCustom: true,
-    options: [
-      'Bust portrait — head and shoulders, neutral background',
-      'Half-body — waist up, environment suggested',
-      'Full body standing — complete figure, clear silhouette',
-      'Action pose — mid-movement, dynamic angle',
-      'At rest — seated in camp, tavern, or study',
-      'In battle — weapons drawn, mid-combat',
-      'Casting or channeling — spell or power visually active',
-      'On watch — alert, scanning surroundings',
-      'Dramatic low angle — heroic framing, looking upward',
-      'Profile view — strong silhouette emphasis',
-    ],
-  },
-  {
-    id: 'imageSize', label: 'Image Aspect Ratio', required: true,
-    hint: 'Determines the proportions of the portrait generation prompt.',
-    type: 'select', allowRandom: false, allowCustom: false,
-    options: ['Square (1:1)','Portrait — tall (2:3)','Landscape — wide (3:2)'],
-  },
-
-  /* ── FINAL ── */
-  {
-    id: 'revisions', label: 'Clarifications and Overrides', required: false,
-    hint: 'Anything typed here overrides earlier answers. Use this to specify exact ability scores, rename equipment, correct conflicts, or add detail the dropdowns could not capture. Leave blank to skip.',
-    type: 'textarea',
-    allowRandom: false, allowCustom: false,
-  },
-  {
-    id: 'name', label: 'Character Name', required: true,
-    hint: "What is your character's name?",
-    type: 'text',
-    allowRandom: false, allowCustom: false,
-  },
-
-];
-
-
-/* ============================================================
-   SECTIONS — accordion layout
-   ============================================================ */
-const SECTIONS = [
-  { title: 'Core Setup',              ids: ['edition','level'] },
-  { title: 'Identity',                ids: ['ancestry','gender','skin'] },
-  { title: 'Class',                   ids: ['charClass','subclass'] },
-  { title: 'Background and Alignment',ids: ['background','alignment'] },
-  { title: 'Mechanics',               ids: ['abilityMethod','skills','languages','feats','hp'] },
-  { title: 'Personality',             ids: ['traits','ideal','bond','flaws'] },
-  { title: 'Physical',                ids: ['physical','voice','motivations'] },
-  { title: 'Appearance and Equipment',ids: ['appearance','equipTheme','equipMethod','spells'] },
-  { title: 'Portrait Settings',       ids: ['artStyle','composition','imageSize'] },
-  { title: 'Clarifications and Name', ids: ['revisions','name'] },
-];
-
-const QMAP = {};
-QUESTIONS.forEach(q => QMAP[q.id] = q);
-
-
-/* ============================================================
-   STATE
-   ============================================================ */
-const STATE = {
-  answers:       {},
-  generating:    false,
-  outputOptions: { stats: true, lore: true, image: true },
-};
-
-
-/* ============================================================
-   ANSWER STORAGE
-   ============================================================ */
-function getDropdown(id) { return (STATE.answers[id] || {}).dropdown || ''; }
-function getCustom(id)   { return (STATE.answers[id] || {}).custom   || ''; }
-
-function setDropdown(id, val) {
-  if (!STATE.answers[id]) STATE.answers[id] = {};
-  STATE.answers[id].dropdown = val;
-}
-function setCustom(id, val) {
-  if (!STATE.answers[id]) STATE.answers[id] = {};
-  STATE.answers[id].custom = val;
-}
-
-function getCombined(id) {
-  const d = getDropdown(id);
-  const c = getCustom(id);
-  if (d && c) return d + ' | ' + c;
-  return d || c || '';
-}
-
-function flatAnswers() {
-  const out = {};
-  QUESTIONS.forEach(q => { out[q.id] = getCombined(q.id); });
-  return out;
-}
-
-
-/* ============================================================
-   API KEY PERSISTENCE
-   ============================================================ */
-const KEY_STORE = 'xaiKey_dndChar';
-
-(function loadSavedKey() {
-  const saved = localStorage.getItem(KEY_STORE);
-  if (saved) document.getElementById('apiKey').value = saved;
-})();
-
-function onKeyInput() {
-  const key = document.getElementById('apiKey').value.trim();
-  if (key) localStorage.setItem(KEY_STORE, key);
-  else localStorage.removeItem(KEY_STORE);
-  resetConnect();
-}
-
-
-/* ============================================================
-   API CONNECTION
-   ============================================================ */
-function resetConnect() {
-  const btn = document.getElementById('connectBtn');
-  btn.textContent = 'CONNECT';
-  btn.className   = 'btn btn-connect';
-}
-
-const XAI_ENDPOINT = 'https://api.x.ai/v1/chat/completions';
-const XAI_MODEL    = 'grok-4.3';
-
-function confirmConnect() {
-  const key = document.getElementById('apiKey').value.trim();
-  const btn = document.getElementById('connectBtn');
-  if (!key || key.length < 6) {
-    btn.textContent = 'NEED API KEY'; btn.className = 'btn btn-connect bad'; return;
-  }
-  localStorage.setItem(KEY_STORE, key);
-  btn.textContent = 'CONNECTED';
-  btn.className = 'btn btn-connect ok';
-}
-
-
-/* ============================================================
-   RENDER ACCORDION
-   ============================================================ */
-function renderAll() {
-  const col = document.getElementById('accCol');
-  col.innerHTML = '';
-
-  SECTIONS.forEach((sec, si) => {
-    const section = document.createElement('div');
-    section.className = 'acc-section open';
-    section.id = 'sec-' + si;
-
-    const header = document.createElement('div');
-    header.className = 'acc-header';
-    header.innerHTML = `<span class="acc-title">${sec.title}</span><span class="acc-chevron">▼</span>`;
-    header.onclick = () => toggleSection(section);
-
-    const body = document.createElement('div');
-    body.className = 'acc-body';
-
-    sec.ids.forEach(qid => {
-      const q = QMAP[qid];
-      if (!q) return;
-      body.appendChild(buildQBlock(q));
-    });
-
-    if (sec.title === 'Core Setup') {
-      body.appendChild(buildOutputBlock());
-    }
-
-    section.appendChild(header);
-    section.appendChild(body);
-    col.appendChild(section);
-  });
-
-  updateConditionals();
-  updateOutputConditionals();
-}
-
-function buildQBlock(q) {
-  const wrap = document.createElement('div');
-  wrap.className = 'q-block';
-  wrap.id = 'q-' + q.id;
-
-  let html = `<div class="q-label">${q.label}</div>`;
-  if (q.hint) html += `<div class="q-hint">${q.hint}</div>`;
-
-  if (q.type === 'select') {
-    html += `<div class="q-input-row"><div>
-      <div class="field-lbl">Choose an option</div>
-      <select id="f-${q.id}" onchange="onFieldChange('${q.id}')">
-        <option value="">— Select —</option>
-        ${q.options.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('')}
-      </select>
-    </div>`;
-    if (q.allowRandom) html += `<button class="btn btn-rand" title="Pick for me" onclick="randField('${q.id}')">⚄</button>`;
-    html += `</div>`;
-    if (q.allowCustom) html += customFieldHtml(q.id);
-  }
-
-  else if (q.type === 'multiselect') {
-    html += `<div class="q-input-row"><div>
-      <div class="field-lbl">Hold Ctrl / Cmd to select multiple</div>
-      <select id="f-${q.id}" multiple onchange="onFieldChange('${q.id}')">
-        ${q.options.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('')}
-      </select>
-    </div>`;
-    if (q.allowRandom) html += `<button class="btn btn-rand" title="Pick for me" onclick="randField('${q.id}')">⚄</button>`;
-    html += `</div>`;
-    if (q.allowCustom) html += customFieldHtml(q.id);
-  }
-
-  else if (q.type === 'number') {
-    html += `<div class="q-input-row"><div>
-      <div class="field-lbl">Enter a number (${q.min}–${q.max})</div>
-      <input type="number" id="f-${q.id}" min="${q.min}" max="${q.max}" oninput="onFieldChange('${q.id}')">
-    </div>`;
-    if (q.allowRandom) html += `<button class="btn btn-rand" title="Pick for me" onclick="randField('${q.id}')">⚄</button>`;
-    html += `</div>`;
-  }
-
-  else if (q.type === 'text') {
-    html += `<div class="field-lbl">Type your answer</div>
-      <input type="text" id="f-${q.id}" oninput="onFieldChange('${q.id}')">`;
-  }
-
-  else if (q.type === 'textarea') {
-    html += `<div class="field-lbl">Type here, or leave blank to skip</div>
-      <textarea id="f-${q.id}" rows="4" oninput="onFieldChange('${q.id}')"></textarea>`;
-  }
-
-  wrap.innerHTML = html;
-  return wrap;
-}
-
-function customFieldHtml(id) {
-  return `<div class="custom-wrap">
-    <div class="custom-lbl">Additional detail — appended to the selection above:</div>
-    <input type="text" id="fc-${id}" placeholder="Type to add or refine..." oninput="onCustomChange('${id}')">
-  </div>`;
-}
-
-function toggleSection(section) {
-  section.classList.toggle('open');
-}
-
-
-/* ============================================================
-   INPUT HANDLERS
-   ============================================================ */
-function onFieldChange(id) {
-  const q  = QMAP[id];
-  const el = document.getElementById('f-' + id);
-  if (!el) return;
-
-  if (q.type === 'multiselect') {
-    const vals = Array.from(el.selectedOptions).map(o => o.value);
-    setDropdown(id, vals.join('||'));
-  } else {
-    setDropdown(id, el.value);
-  }
-
-  if (id === 'charClass') refreshSubclassOptions();
-  updateConditionals();
-  updateGenBtn();
-}
-
-function onCustomChange(id) {
-  const el = document.getElementById('fc-' + id);
-  if (!el) return;
-  setCustom(id, el.value.trim());
-  updateGenBtn();
-}
-
-
-/* ============================================================
-   SUBCLASS OPTIONS
-   ============================================================ */
-function refreshSubclassOptions() {
-  const sel  = document.getElementById('f-subclass');
-  if (!sel) return;
-  const cls  = getDropdown('charClass').split('(')[0].split(',')[0].trim();
-  const opts = SUBCLASSES[cls] || [];
-  sel.innerHTML = `<option value="">— Select —</option>` +
-    opts.map(o => `<option value="${esc(o)}">${esc(o)}</option>`).join('');
-  setDropdown('subclass', '');
-}
-
-
-/* ============================================================
-   CONDITIONALS
-   ============================================================ */
-function updateConditionals() {
-  const flat = flatAnswers();
-  QUESTIONS.forEach(q => {
-    if (!q.condition) return;
-    const block = document.getElementById('q-' + q.id);
-    if (!block) return;
-    const visible = q.condition(flat);
-    block.classList.toggle('hidden', !visible);
-    if (!visible) {
-      setDropdown(q.id, '');
-      const el = document.getElementById('f-' + q.id);
-      if (el) {
-        if (el.tagName === 'SELECT') el.value = el.multiple ? [] : '';
-        else el.value = '';
-      }
-    }
-  });
-}
-
-function buildOutputBlock() {
-  const wrap = document.createElement('div');
-  wrap.className = 'q-block';
-  wrap.id = 'q-outputOptions';
-  const oo = STATE.outputOptions;
-  wrap.innerHTML = `
-    <div class="q-label">Output Sections</div>
-    <div class="q-hint">Choose which sections to generate. At least one must be selected.</div>
-    <div class="out-opts">
-      <label class="out-opt-item"><input type="checkbox" id="oo-stats" ${oo.stats ? 'checked' : ''} onchange="onOutputChange()"> Stats Sheet</label>
-      <label class="out-opt-item"><input type="checkbox" id="oo-lore"  ${oo.lore  ? 'checked' : ''} onchange="onOutputChange()"> Character Lore</label>
-      <label class="out-opt-item"><input type="checkbox" id="oo-image" ${oo.image ? 'checked' : ''} onchange="onOutputChange()"> Portrait Prompt</label>
-    </div>`;
-  return wrap;
-}
-
-function onOutputChange() {
-  STATE.outputOptions.stats = document.getElementById('oo-stats').checked;
-  STATE.outputOptions.lore  = document.getElementById('oo-lore').checked;
-  STATE.outputOptions.image = document.getElementById('oo-image').checked;
-  updateOutputConditionals();
-  updateGenBtn();
-}
-
-function updateOutputConditionals() {
-  const oo = STATE.outputOptions;
-
-  // Hide entire accordion sections by title
-  const col = document.getElementById('accCol');
-  if (col) {
-    col.querySelectorAll('.acc-section').forEach(sec => {
-      const title = sec.querySelector('.acc-title')?.textContent.trim();
-      if (title === 'Portrait Settings') sec.classList.toggle('hidden', !oo.image);
-      if (title === 'Mechanics') sec.classList.toggle('hidden', !oo.stats);
-      if (title === 'Personality') sec.classList.toggle('hidden', !oo.lore);
-    });
-  }
-
-  // Image-only fields
-  ['artStyle','composition','imageSize','skin'].forEach(id => {
-    const el = document.getElementById('q-' + id);
-    if (el) el.classList.toggle('hidden', !oo.image);
-  });
-
-  // Stats-only fields
-  ['equipMethod','spells'].forEach(id => {
-    const el = document.getElementById('q-' + id);
-    if (el) el.classList.toggle('hidden', !oo.stats);
-  });
-
-  // Lore-only fields
-  ['voice','motivations'].forEach(id => {
-    const el = document.getElementById('q-' + id);
-    if (el) el.classList.toggle('hidden', !oo.lore);
-  });
-
-  // Shared lore+image fields — hide only when BOTH are off
-  ['physical','appearance','equipTheme'].forEach(id => {
-    const el = document.getElementById('q-' + id);
-    if (el) el.classList.toggle('hidden', !oo.lore && !oo.image);
-  });
-
-  // Output panels
-  const pStats = document.getElementById('panel-stats');
-  const pLore  = document.getElementById('panel-lore');
-  const pImage = document.getElementById('panel-image');
-  if (pStats) pStats.style.display = oo.stats ? '' : 'none';
-  if (pLore)  pLore.style.display  = oo.lore  ? '' : 'none';
-  if (pImage) pImage.style.display = oo.image ? '' : 'none';
-}
-
-
-/* ============================================================
-   RANDOMIZE
-   ============================================================ */
-function randField(id) {
-  const q = QMAP[id];
-  if (!q) return;
-
-  if (q.type === 'number') {
-    const val = String(Math.floor(Math.random() * (q.max - q.min + 1)) + q.min);
-    setDropdown(id, val);
-    const el = document.getElementById('f-' + id);
-    if (el) el.value = val;
-  } else if (q.options && q.options.length) {
-    if (q.type === 'multiselect') {
-      const shuffled = [...q.options].sort(() => Math.random() - 0.5);
-      const count    = Math.random() < 0.5 ? 1 : 2;
-      const chosen   = shuffled.slice(0, count);
-      setDropdown(id, chosen.join('||'));
-      const el = document.getElementById('f-' + id);
-      if (el) Array.from(el.options).forEach(o => { o.selected = chosen.includes(o.value); });
-    } else {
-      const chosen = q.options[Math.floor(Math.random() * q.options.length)];
-      setDropdown(id, chosen);
-      const el = document.getElementById('f-' + id);
-      if (el) el.value = chosen;
-    }
-  }
-
-  if (id === 'charClass') refreshSubclassOptions();
-  updateConditionals();
-  updateGenBtn();
-}
-
-function randomizeAll() {
-  const skip = new Set(['edition','abilityMethod','equipMethod','imageSize','revisions','name']);
-  const flat = flatAnswers();
-
-  QUESTIONS.forEach(q => {
-    if (skip.has(q.id)) return;
-    if (q.condition && !q.condition(flat)) return;
-
-    if (q.type === 'number') {
-      const val = String(Math.floor(Math.random() * (q.max - q.min + 1)) + q.min);
-      setDropdown(q.id, val);
-      const el = document.getElementById('f-' + q.id);
-      if (el) el.value = val;
-    } else if (q.options && q.options.length) {
-      if (q.type === 'multiselect') {
-        const shuffled = [...q.options].sort(() => Math.random() - 0.5);
-        const count    = Math.random() < 0.5 ? 1 : 2;
-        const chosen   = shuffled.slice(0, count);
-        setDropdown(q.id, chosen.join('||'));
-        const el = document.getElementById('f-' + q.id);
-        if (el) Array.from(el.options).forEach(o => { o.selected = chosen.includes(o.value); });
-      } else if (q.type === 'select') {
-        const opts   = q.id === 'subclass'
-          ? (SUBCLASSES[getDropdown('charClass').split('(')[0].split(',')[0].trim()] || [])
-          : q.options;
-        if (!opts.length) return;
-        const chosen = opts[Math.floor(Math.random() * opts.length)];
-        setDropdown(q.id, chosen);
-        const el = document.getElementById('f-' + q.id);
-        if (el) el.value = chosen;
-      }
-    }
-  });
-
-  refreshSubclassOptions();
-  const subOpts = SUBCLASSES[getDropdown('charClass').split('(')[0].split(',')[0].trim()] || [];
-  if (subOpts.length) {
-    const chosen = subOpts[Math.floor(Math.random() * subOpts.length)];
-    setDropdown('subclass', chosen);
-    const el = document.getElementById('f-subclass');
-    if (el) el.value = chosen;
-  }
-
-  updateConditionals();
-  updateGenBtn();
-}
-
-
-/* ============================================================
-   GENERATE BUTTON STATE
-   ============================================================ */
-function updateGenBtn() {
-  const btn  = document.getElementById('btnGenerate');
-  const nameVal  = getCombined('name');
-  const classVal = getCombined('charClass');
-  const oo = STATE.outputOptions;
-  const anyOutput = oo.stats || oo.lore || oo.image;
-  btn.disabled = !(nameVal && classVal && anyOutput) || STATE.generating;
-
-  const flat     = flatAnswers();
-  const filled   = QUESTIONS.filter(q =>
-    flat[q.id] && (!q.condition || q.condition(flat))
-  ).length;
-  const total = QUESTIONS.filter(q => !q.condition || q.condition(flat)).length;
-  document.getElementById('gpCount').textContent = `${filled} / ${total} fields filled`;
-}
-
-
-/* ============================================================
-   CLEAR ALL
-   ============================================================ */
-function clearAll() {
-  STATE.answers = {};
-  STATE.generating = false;
-
-  QUESTIONS.forEach(q => {
-    const el = document.getElementById('f-' + q.id);
-    if (!el) return;
-    if (el.tagName === 'SELECT') {
-      if (el.multiple) Array.from(el.options).forEach(o => o.selected = false);
-      else el.value = '';
-    } else {
-      el.value = '';
-    }
-    const cEl = document.getElementById('fc-' + q.id);
-    if (cEl) cEl.value = '';
-  });
-
-  ['outStats','outLore','outPrompt'].forEach(id => {
-    const el = document.getElementById(id);
-    el.textContent = 'Awaiting generation...';
-    el.className = 'out-body empty';
-  });
-
-  document.getElementById('genBar').classList.remove('visible');
-  updateConditionals();
-  updateGenBtn();
-}
-
-
-/* ============================================================
-   GENERATE CHARACTER
-   ============================================================ */
-async function generateCharacter() {
-  if (STATE.generating) return;
-
-  const flat = flatAnswers();
-
-  const oo = STATE.outputOptions;
-  const imageOnlyIds = new Set(['artStyle','composition','imageSize']);
-  const statsOnlyIds = new Set(['equipMethod','spells']);
-
-  const lines = QUESTIONS
-    .filter(q => {
-      if (!flat[q.id]) return false;
-      if (!oo.image && imageOnlyIds.has(q.id)) return false;
-      if (!oo.stats && statsOnlyIds.has(q.id)) return false;
-      return !q.condition || q.condition(flat);
-    })
-    .map(q => {
-      const val = (flat[q.id] || '').replace(/\|\|/g, ', ');
-      return `${q.label}: ${val}`;
-    });
-
-  const answerBlock = lines.join('\n');
-
-  const SECTION_STATS = `SECTION: CHARACTER STATS
+const SECTION_STATS = `SECTION: CHARACTER STATS
 Mechanical data only — no prose. Include in this order:
 Character Name | Level | Ancestry / Race with edition-appropriate racial features listed | Class and Subclass | Background | Alignment | All six ability scores | Proficiency Bonus (calculated from level) | Saving Throw Proficiencies | Skill Proficiencies | Languages Known | Feats | Hit Points (show calculation) | Armor Class (show components) | Initiative | Speed | Starting Equipment (list specific named items) | Spellcasting (if applicable: Spellcasting Ability, Spell Save DC, Spell Attack Bonus, Cantrips known by name, Spells known/prepared by level with slot count)
 
@@ -1601,11 +885,11 @@ Example: STR: 15 base, +2 racial (Mountain Dwarf), +2 ASI = 19 (+4)
 If a term does not apply (e.g. no racial bonus to that stat, no ASI applied to that stat), omit it from the chain rather than writing "+0". The final score and modifier must equal the sum of every term actually shown. Double-check the arithmetic on every line before output — these numbers must be internally consistent and must match the modifiers used later for saves, skills, attacks, AC, and spell DCs.
 If any selection conflicts with edition rules or viability, add a NOTES section at the end of this block flagging the issue and what was substituted or adjusted.`;
 
-  const SECTION_LORE = `SECTION: CHARACTER LORE
+const SECTION_LORE = `SECTION: CHARACTER LORE
 In this order: Personality Traits | Ideal | Bond | Flaws | Physical Description | Voice and Mannerisms | Deeper Motivations
 Then a 2–3 paragraph Origin Story that weaves together background, class, personality, a formative event or turning point, and core motivations. Write in engaging narrative style.`;
 
-  const SECTION_PORTRAIT = `SECTION: PORTRAIT PROMPT
+const SECTION_PORTRAIT = `SECTION: PORTRAIT PROMPT
 Write a single dense paragraph that an AI image generator can render directly into a compelling character portrait. This is NOT a data dump — it is a scene description. A human artist should be able to paint from it.
 
 COMPOSITION APPROACH:
@@ -1614,30 +898,21 @@ COMPOSITION APPROACH:
 3. Pick the 4–5 most visually impactful details from the selections and make them vivid. Weave lesser details in only where they serve the image — skip anything that adds words without adding visual information.
 4. Close with lighting, atmosphere, and mood.
 
-MANDATORY ELEMENTS — the prompt MUST include all of these, translated into visual description:
-
-GENDER: State the character's gender clearly and reinforce it visually. "A towering female firbolg" is not enough — describe feminine or masculine features (jaw shape, build proportion, chest, facial structure) so the image AI cannot default to the wrong sex. If the character is female, make femininity unmistakable through physical description, not just the word "woman."
-
-CLASS EQUIPMENT: The character's class and role must be visible through what they carry, wear, and wield — never describe a character in plain generic clothing with no class identity. Use the equipment theme, appearance profile, and any specific equipment selections to determine what gear looks like. The character's weapons, armor, tools, and accessories should make their profession obvious at a glance without naming the class.
-
-PERSONALITY AND EXPRESSION: The character's face and body language must reflect their personality traits, background, and demeanor. A hermit carries herself differently than a noble. A chaotic character moves differently than a lawful one. Describe the specific expression (a wry half-smile, a thousand-yard stare, narrowed suspicious eyes) and posture (slouched and casual, rigid and alert, coiled and ready to spring) that reveal who this person IS.
-
 CRITICAL — DO NOT PASTE TEMPLATE SELECTIONS:
 Never copy selection text verbatim into the prompt. Every selection must be TRANSLATED into visual description.
 
-BAD (pasting): "Dark fantasy — grim, desaturated, heavy shadows, gritty detail" or "Drow (obsidian-black to dark charcoal, stark white hair)" or "Medium earth tones, warm brown"
-GOOD (describing): "skin like polished obsidian catching faint torchlight, stark white hair whipping across a sharp-boned face" or "tawny brown fur rippling across broad shoulders, catching the afternoon light"
+BAD (pasting): "Dark fantasy — grim, desaturated, heavy shadows, gritty detail" or "Drow (obsidian-black to dark charcoal, stark white hair)"
+GOOD (describing): "skin like polished obsidian catching faint torchlight, stark white hair whipping across a sharp-boned face" or "rendered in deep desaturated tones with heavy shadow and gritty texture"
 
 The art style selection tells you HOW to render — it sets the visual tone and technique, but its label should never appear as text in the output. Describe what the viewer sees, not what menu option was picked.
 
-The skin/body palette selection tells you WHAT COLORS to use for the character's skin, hair, and body surface. Faithfully render every color and texture the palette describes, but as natural visual description woven into the scene — never as a parenthetical label or a quoted phrase.
+The skin/body palette selection tells you WHAT COLORS to use for the character's skin, hair, and body surface. Faithfully render every color and texture the palette describes, but as natural visual description woven into the scene — never as a parenthetical label.
 
 WHAT TO SKIP:
 - Do not name game mechanics, class names, or rule terms ("standard class kit", "proficiency", "subclass"). Describe what is SEEN, not what is on the character sheet.
 - Do not state the aspect ratio — it is a rendering parameter, not a visual detail.
 - Do not list every single selection. If a detail does not change what the image looks like, leave it out.
 - Do not use labels, colons, or field names anywhere in the output.
-- Do not describe the character in generic clothing when class-specific equipment was selected.
 
 ANCESTRY — the race must be visually unmistakable, not just named. Use these physical references (where a trait conflicts with the chosen skin/body palette, the palette wins for coloring, but all structural traits still apply):
 - Human, Variant Human: average human height and build, fully human facial structure, no nonhuman markers.
@@ -1686,26 +961,19 @@ QUALITY: End the paragraph with: "Cinematic physically plausible lighting, profe
 
 Output only the descriptive paragraph. No labels, no colons, no line breaks within it, no commentary.`;
 
-  const requestedSections = [
-    oo.stats ? SECTION_STATS   : null,
-    oo.lore  ? SECTION_LORE    : null,
-    oo.image ? SECTION_PORTRAIT : null,
-  ].filter(Boolean);
+const SYSTEM_PROMPT = `You are an expert D&D character generator with deep knowledge of D&D 5e, the 2024 revision, OSR systems, and system-neutral play.
 
-  const sectionCount = requestedSections.length;
-  const outputInstruction = `Output exactly ${sectionCount === 1 ? 'one section' : sectionCount === 2 ? 'two sections' : 'three sections'} using ${sectionCount === 1 ? 'this header' : 'these headers'} on their own lines:\n\n${requestedSections.join('\n\n')}`;
+Your primary obligation is mechanical accuracy and character viability. Every character you generate must be functional and playable — no trap builds, no invalid mechanics, no wrong edition content.
 
-  const palettRule = oo.image ? '\n3. Skin palette enforcement — the portrait prompt must faithfully render every color and texture described in the Skin / Body Covering Palette selection, but as natural visual description, never by pasting the selection text verbatim.' : '';
+Follow these absolute rules:
+1. Assign ability scores so the primary stat for the chosen class always receives a high score. Never dump the primary stat.
+2. Calculate all derived numbers precisely: HP using correct hit dice, spell DCs using 8 + prof + ability mod, AC using correct armor formula.
+3. Only include subclasses, spells, feats, ancestries, and equipment that legally exist in the selected edition.
+4. For multiclass characters, verify that the character meets all ability score prerequisites before proceeding.
+5. If a selection is invalid or would produce a non-viable character, note it clearly in the NOTES sub-section at the end of CHARACTER STATS and substitute the closest valid option.
+6. Follow all output format instructions exactly — three sections, plain text, ALL CAPS sub-headings.`;
 
-  const prompt = `Using the player's selections below, produce a complete, mechanically correct D&D character package.
-
-CRITICAL RULES:
-1. Edition compliance — strictly use only classes, ancestries, subclasses, spells, feats, and mechanics that exist in the selected edition. Flag any selection that does not exist in the chosen edition and substitute the closest valid equivalent.
-2. Pipe character handling — any answer containing ( | ) means the player chose a list option AND added custom detail. Honour both parts.${palettRule}
-${oo.image ? '4' : '3'}. Clarifications override — if the Clarifications and Overrides field is filled, it takes precedence over all other answers.
-${oo.image ? '5' : '4'}. Mechanical viability — see the VIABILITY RULES section below before assigning any numbers.
-
-VIABILITY RULES — read before assigning ability scores:
+const VIABILITY_RULES = `VIABILITY RULES — read before assigning ability scores:
 
 CLASS PRIMARY STATS (place highest scores here; never place the dump stat in a primary):
 - Barbarian: STR primary, CON secondary (unarmored defense uses CON)
@@ -1772,143 +1040,530 @@ SPELLCASTING — calculate precisely:
 HIT POINTS — calculate correctly:
 - First level: max hit die + CON modifier
 - Subsequent levels: average (or max or rolled, per selection) + CON modifier per level
-- Hit die by class: d12 Barbarian, d10 Fighter/Paladin/Ranger/Blood Hunter, d8 Bard/Cleric/Druid/Monk/Rogue/Warlock/Artificer, d6 Sorcerer/Wizard
+- Hit die by class: d12 Barbarian, d10 Fighter/Paladin/Ranger/Blood Hunter, d8 Bard/Cleric/Druid/Monk/Rogue/Warlock/Artificer, d6 Sorcerer/Wizard`;
 
-PLAYER'S ANSWERS:
-${answerBlock}
+function renderAll() {
+  Object.keys(Q).forEach(qid => renderField(qid));
+}
 
----
+function renderField(qid) {
+  const q = Q[qid];
+  if (!q) return;
+  const cont = document.getElementById(qid + '-opts');
+  if (!cont) return;
+  cont.innerHTML = '';
+  q.opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt;
+    const sel = state.ans[qid];
+    if (sel) {
+      if (Array.isArray(sel) && sel.includes(opt)) btn.classList.add('selected');
+      else if (sel === opt) btn.classList.add('selected');
+    }
+    btn.onclick = () => handleClick(qid, opt);
+    cont.appendChild(btn);
+  });
+  renderTags(qid);
+}
 
-${outputInstruction}
+function handleClick(qid, opt) {
+  const q = Q[qid];
+  if (q.type === 'single') {
+    state.ans[qid] = opt;
+  } else {
+    let cur = state.ans[qid] || [];
+    if (!Array.isArray(cur)) cur = [];
+    if (cur.includes(opt)) {
+      state.ans[qid] = cur.filter(v => v !== opt);
+    } else if (cur.length < q.max) {
+      state.ans[qid] = [...cur, opt];
+    } else {
+      return;
+    }
+  }
+  renderField(qid);
+  if (qid === 'charClass') updateSubclass();
+  if (qid === 'charClass' || qid === 'edition') updateConditionals();
+  updatePreview();
+}
 
-Formatting rules: plain text only, no markdown asterisks or hash symbols, use ALL CAPS for sub-headings within sections.`;
+function addCustom(qid) {
+  const inp = document.getElementById(qid + '-custom');
+  if (!inp) return;
+  const val = inp.value.trim();
+  if (!val) return;
+  if (!state.custom[qid]) state.custom[qid] = [];
+  state.custom[qid].push(val);
+  inp.value = '';
+  renderTags(qid);
+  updatePreview();
+}
 
-  STATE.generating = true;
-  document.getElementById('genBar').classList.add('visible');
-  document.getElementById('btnGenerate').disabled = true;
-  document.getElementById('genText').textContent  = 'Generating character — this may take a moment...';
+function removeCustom(qid, idx) {
+  state.custom[qid].splice(idx, 1);
+  renderTags(qid);
+  updatePreview();
+}
+
+function renderTags(qid) {
+  const wrap = document.getElementById(qid + '-tags');
+  if (!wrap) return;
+  const tags = state.custom[qid] || [];
+  wrap.innerHTML = tags.map((t, i) =>
+    '<span class="tag">' + t + '<button onclick="removeCustom(\'' + qid + '\',' + i + ')">x</button></span>'
+  ).join('');
+}
+
+function getAns(qid) {
+  const a = state.ans[qid];
+  const customs = state.custom[qid] || [];
+  if (!a && customs.length === 0) return '';
+  const base = Array.isArray(a) ? a.join(', ') : (a || '');
+  return [base, ...customs].filter(Boolean).join(', ');
+}
+
+function getLevel() {
+  return parseInt(document.getElementById('level-input').value) || 0;
+}
+
+function getName() {
+  return document.getElementById('name-input').value.trim();
+}
+
+function getRevisions() {
+  return document.getElementById('revisions-input').value.trim();
+}
+
+function randField(qid) {
+  const q = Q[qid];
+  if (!q) return;
+  if (q.type === 'single') {
+    state.ans[qid] = q.opts[Math.floor(Math.random() * q.opts.length)];
+  } else {
+    const count = Math.floor(Math.random() * q.max) + 1;
+    state.ans[qid] = [...q.opts].sort(() => 0.5 - Math.random()).slice(0, count);
+  }
+  renderField(qid);
+  if (qid === 'charClass') updateSubclass();
+  if (qid === 'charClass' || qid === 'edition') updateConditionals();
+  updatePreview();
+}
+
+function randLevel() {
+  const val = Math.floor(Math.random() * 20) + 1;
+  document.getElementById('level-input').value = val;
+  onLevelChange();
+}
+
+function onLevelChange() {
+  updateConditionals();
+  updatePreview();
+}
+
+function updateSubclass() {
+  const cls = (state.ans.charClass || '').split('(')[0].split(',')[0].trim();
+  const opts = SUBCLASSES[cls] || [];
+  Q.subclass.opts = opts;
+  state.ans.subclass = undefined;
+  renderField('subclass');
+  updateConditionals();
+}
+
+function updateConditionals() {
+  const lvl = getLevel();
+  const cls = (state.ans.charClass || '').split('(')[0].split(',')[0].trim();
+  const ed = state.ans.edition || '';
+  const sub = state.ans.subclass || '';
+
+  // Subclass: show when class set AND level >= unlock level
+  const subWrap = document.getElementById('subclass-wrap');
+  const unlockLvl = SUBCLASS_LEVEL[cls];
+  const showSub = cls && unlockLvl !== undefined && lvl >= unlockLvl;
+  if (subWrap) subWrap.classList.toggle('hidden', !showSub);
+
+  // Feats: level >= 4 AND not OSR/System neutral
+  const featsWrap = document.getElementById('feats-wrap');
+  const showFeats = lvl >= 4 && ed !== 'OSR style generic fantasy' && ed !== 'System neutral';
+  if (featsWrap) featsWrap.classList.toggle('hidden', !showFeats);
+
+  // Spells: spellcasting classes, or Paladin/Ranger at lvl 2+, or EK/AT at lvl 3+
+  const spellsWrap = document.getElementById('spells-wrap');
+  let showSpells = SPELLCASTING_CLASSES.has(cls);
+  if ((cls === 'Paladin' || cls === 'Ranger') && lvl >= 2) showSpells = true;
+  if (lvl >= 3 && (sub.includes('Eldritch Knight') || sub.includes('Arcane Trickster'))) showSpells = true;
+  if (spellsWrap) spellsWrap.classList.toggle('hidden', !showSpells);
+}
+
+function onOutputChange() {
+  state.oo = {
+    stats: document.getElementById('oo-stats').checked,
+    lore:  document.getElementById('oo-lore').checked,
+    image: document.getElementById('oo-image').checked
+  };
+  updateOutputConditionals();
+}
+
+function updateOutputConditionals() {
+  const oo = state.oo;
+
+  // Stats off → hide Mechanics section, equipMethod, spells
+  document.getElementById('section-mechanics').classList.toggle('hidden', !oo.stats);
+  document.getElementById('equipMethod-wrap').classList.toggle('hidden', !oo.stats);
+  // spells-wrap has its own conditional too, only show if stats on AND spell class
+  if (!oo.stats) document.getElementById('spells-wrap').classList.add('hidden');
+
+  // Lore off → hide Personality section, voice, motivations
+  document.getElementById('section-personality').classList.toggle('hidden', !oo.lore);
+  document.getElementById('voice-wrap').classList.toggle('hidden', !oo.lore);
+  document.getElementById('motivations-wrap').classList.toggle('hidden', !oo.lore);
+
+  // Image off → hide Portrait Settings section, skin palette
+  document.getElementById('section-portrait').classList.toggle('hidden', !oo.image);
+  document.getElementById('skin-wrap').classList.toggle('hidden', !oo.image);
+
+  // Both lore AND image off → hide physical, appearance, equipTheme
+  const bothOff = !oo.lore && !oo.image;
+  document.getElementById('physical-wrap').classList.toggle('hidden', bothOff);
+  document.getElementById('appearance-wrap').classList.toggle('hidden', bothOff);
+  document.getElementById('equipTheme-wrap').classList.toggle('hidden', bothOff);
+
+  // Output panels
+  document.getElementById('out-stats').style.display =
+    oo.stats && document.getElementById('stats-body').textContent ? 'block' : 'none';
+  document.getElementById('out-lore').style.display =
+    oo.lore && document.getElementById('lore-body').textContent ? 'block' : 'none';
+  document.getElementById('out-visual').style.display =
+    oo.image && document.getElementById('visual-body').textContent ? 'block' : 'none';
+
+  // Generate button
+  const btn = document.getElementById('gen-btn');
+  const any = oo.stats || oo.lore || oo.image;
+  btn.disabled = !any;
+}
+
+function updatePreview() {
+  const parts = [];
+  const name = getName(); if (name) parts.push('Name: ' + name);
+  const anc = getAns('ancestry'); if (anc) parts.push('Ancestry: ' + anc);
+  const cls = getAns('charClass'); if (cls) parts.push('Class: ' + cls);
+  const sub = getAns('subclass'); if (sub) parts.push('Subclass: ' + sub);
+  const lvl = getLevel(); if (lvl) parts.push('Level: ' + lvl);
+  const ed = getAns('edition'); if (ed) parts.push('Edition: ' + ed);
+  const bg = getAns('background'); if (bg) parts.push('Background: ' + bg);
+  const al = getAns('alignment'); if (al) parts.push('Alignment: ' + al);
+  const gen = getAns('gender'); if (gen) parts.push('Gender: ' + gen);
+  const style = getAns('artStyle'); if (style) parts.push('Art Style: ' + style);
+  document.getElementById('live-preview').textContent =
+    parts.length ? parts.join('\n') : 'Fill in the form to see a live summary...';
+}
+
+function applyPreset(name) {
+  if (name === 'random') { randomizeAll(); return; }
+  const p = PRESETS[name];
+  if (!p) return;
+  state.ans = {};
+  state.custom = {};
+  Object.keys(p).forEach(k => {
+    if (k === '_level') {
+      document.getElementById('level-input').value = p[k];
+    } else if (Q[k]) {
+      state.ans[k] = p[k];
+    }
+  });
+  if (state.ans.charClass) updateSubclass();
+  renderAll();
+  updateConditionals();
+  updateOutputConditionals();
+  updatePreview();
+}
+
+function randomizeAll() {
+  state.ans = {};
+  state.custom = {};
+  const skip = new Set(['abilityMethod','equipMethod','imageSize','hp']);
+  document.getElementById('level-input').value = Math.floor(Math.random() * 20) + 1;
+  Object.keys(Q).forEach(qid => {
+    if (skip.has(qid)) return;
+    if (qid === 'subclass') return;
+    const q = Q[qid];
+    if (q.type === 'single') {
+      state.ans[qid] = q.opts[Math.floor(Math.random() * q.opts.length)];
+    } else {
+      const count = Math.floor(Math.random() * q.max) + 1;
+      state.ans[qid] = [...q.opts].sort(() => 0.5 - Math.random()).slice(0, count);
+    }
+  });
+  updateSubclass();
+  const subOpts = Q.subclass.opts;
+  if (subOpts.length) state.ans.subclass = subOpts[Math.floor(Math.random() * subOpts.length)];
+  renderAll();
+  updateConditionals();
+  updateOutputConditionals();
+  updatePreview();
+}
+
+function saveCurrent() {
+  const snapshot = {
+    ans: state.ans,
+    custom: state.custom,
+    level: document.getElementById('level-input').value,
+    name: getName(),
+    revisions: getRevisions(),
+    oo: state.oo
+  };
+  localStorage.setItem('cc_dnd_char_v2', JSON.stringify(snapshot));
+  alert('Saved.');
+}
+
+function loadSaved() {
+  const raw = localStorage.getItem('cc_dnd_char_v2');
+  if (!raw) { alert('No saved data.'); return; }
+  const d = JSON.parse(raw);
+  state.ans = d.ans || {};
+  state.custom = d.custom || {};
+  if (d.level) document.getElementById('level-input').value = d.level;
+  if (d.name) document.getElementById('name-input').value = d.name;
+  if (d.revisions) document.getElementById('revisions-input').value = d.revisions;
+  if (d.oo) {
+    state.oo = d.oo;
+    document.getElementById('oo-stats').checked = state.oo.stats;
+    document.getElementById('oo-lore').checked = state.oo.lore;
+    document.getElementById('oo-image').checked = state.oo.image;
+  }
+  if (state.ans.charClass) {
+    const cls = state.ans.charClass.split('(')[0].split(',')[0].trim();
+    Q.subclass.opts = SUBCLASSES[cls] || [];
+  }
+  renderAll();
+  updateConditionals();
+  updateOutputConditionals();
+  updatePreview();
+  alert('Loaded.');
+}
+
+function clearSaved() {
+  localStorage.removeItem('cc_dnd_char_v2');
+  alert('Cleared.');
+}
+
+function resetApp() {
+  state = { ans:{}, custom:{}, oo:{ stats:true, lore:true, image:true } };
+  document.getElementById('oo-stats').checked = true;
+  document.getElementById('oo-lore').checked = true;
+  document.getElementById('oo-image').checked = true;
+  document.getElementById('level-input').value = '';
+  document.getElementById('name-input').value = '';
+  document.getElementById('revisions-input').value = '';
+  document.getElementById('live-preview').textContent = 'Fill in the form to see a live summary...';
+  ['out-stats','out-lore','out-visual'].forEach(id => document.getElementById(id).style.display = 'none');
+  document.getElementById('stats-body').textContent = '';
+  document.getElementById('lore-body').textContent = '';
+  document.getElementById('visual-body').textContent = '';
+  Q.subclass.opts = [];
+  hideErr();
+  renderAll();
+  updateConditionals();
+  updateOutputConditionals();
+}
+
+function showErr(msg) {
+  const el = document.getElementById('err-msg');
+  el.textContent = msg;
+  el.style.display = 'block';
+}
+function hideErr() {
+  document.getElementById('err-msg').style.display = 'none';
+}
+
+function copySection(which) {
+  let text = '';
+  if (which === 'stats') text = document.getElementById('stats-body').textContent;
+  else if (which === 'lore') text = document.getElementById('lore-body').textContent;
+  else text = document.getElementById('visual-body').textContent ||
+               document.getElementById('live-preview').textContent;
+  if (!text || text === 'Fill in the form to see a live summary...') return;
+  navigator.clipboard.writeText(text).catch(() => {});
+}
+
+function confirmConnect() {
+  const key = document.getElementById('api-key').value.trim();
+  if (key) localStorage.setItem('xaiKey_dndChar', key);
+}
+
+function restoreApiKey() {
+  const saved = localStorage.getItem('xaiKey_dndChar');
+  if (saved) document.getElementById('api-key').value = saved;
+}
+
+
+async function generateCharacter() {
+  const apiKey = document.getElementById('api-key').value.trim();
+  if (!apiKey) { showErr('Enter your xAI API key above.'); return; }
+  if (!state.oo.stats && !state.oo.lore && !state.oo.image) {
+    showErr('Select at least one output section.'); return;
+  }
+
+  const oo = state.oo;
+  const lines = [];
+  function add(label, val) { if (val) lines.push(label + ': ' + val); }
+
+  add('Edition', getAns('edition'));
+  add('Character Level', getLevel() || '');
+  add('Ancestry / Race', getAns('ancestry'));
+  add('Gender', getAns('gender'));
+  if (oo.image) add('Skin / Body Covering Palette', getAns('skin'));
+  add('Class', getAns('charClass'));
+  add('Subclass', getAns('subclass'));
+  add('Background', getAns('background'));
+  add('Alignment', getAns('alignment'));
+  if (oo.stats) {
+    add('Ability Score Method', getAns('abilityMethod'));
+    add('Skill Proficiencies', getAns('skills'));
+    add('Languages Known', getAns('languages'));
+    add('Feats', getAns('feats'));
+    add('Hit Points', getAns('hp'));
+    add('Starting Equipment Method', getAns('equipMethod'));
+    add('Spellcasting Details', getAns('spells'));
+  }
+  if (oo.lore) {
+    add('Personality Traits', getAns('traits'));
+    add('Ideal', getAns('ideal'));
+    add('Bond', getAns('bond'));
+    add('Flaws', getAns('flaws'));
+    add('Voice and Mannerisms', getAns('voice'));
+    add('Deeper Motivations', getAns('motivations'));
+  }
+  if (oo.lore || oo.image) {
+    add('Physical Details', getAns('physical'));
+    add('Appearance Profile', getAns('appearance'));
+    add('Equipment Theme', getAns('equipTheme'));
+  }
+  if (oo.image) {
+    add('Portrait Art Style', getAns('artStyle'));
+    add('Portrait Composition', getAns('composition'));
+    add('Image Aspect Ratio', getAns('imageSize'));
+  }
+  add('Character Name', getName());
+  const rev = getRevisions();
+  if (rev) add('Clarifications and Overrides', rev);
+
+  const answerBlock = lines.join('\n');
+
+  const requestedSections = [
+    oo.stats ? SECTION_STATS : null,
+    oo.lore  ? SECTION_LORE  : null,
+    oo.image ? SECTION_PORTRAIT : null,
+  ].filter(Boolean);
+
+  const sectionCount = requestedSections.length;
+  const outputInstruction = 'Output exactly ' + (sectionCount === 1 ? 'one section' : sectionCount === 2 ? 'two sections' : 'three sections') + ' using ' + (sectionCount === 1 ? 'this header' : 'these headers') + ' on their own lines:\n\n' + requestedSections.join('\n\n');
+
+  const paletteRule = oo.image ? '\n3. Skin palette enforcement — the portrait prompt must faithfully render every color and texture described in the Skin / Body Covering Palette selection, but as natural visual description, never by pasting the selection text verbatim.' : '';
+
+  const ruleNum1 = oo.image ? '4' : '3';
+  const ruleNum2 = oo.image ? '5' : '4';
+
+  const userPrompt = 'Using the player\'s selections below, produce a complete, mechanically correct D&D character package.\n\nCRITICAL RULES:\n1. Edition compliance — strictly use only classes, ancestries, subclasses, spells, feats, and mechanics that exist in the selected edition. Flag any selection that does not exist in the chosen edition and substitute the closest valid equivalent.\n2. Pipe character handling — any answer containing ( | ) means the player chose a list option AND added custom detail. Honour both parts.' + paletteRule + '\n' + ruleNum1 + '. Clarifications override — if the Clarifications and Overrides field is filled, it takes precedence over all other answers.\n' + ruleNum2 + '. Mechanical viability — see the VIABILITY RULES section below before assigning any numbers.\n\n' + VIABILITY_RULES + '\n\nPLAYER\'S ANSWERS:\n' + answerBlock + '\n\n---\n\n' + outputInstruction + '\n\nFormatting rules: plain text only, no markdown asterisks or hash symbols, use ALL CAPS for sub-headings within sections.';
+
+  const btn = document.getElementById('gen-btn');
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span>Generating...';
+  hideErr();
+  ['out-stats','out-lore','out-visual'].forEach(id => document.getElementById(id).style.display = 'none');
 
   try {
-    const text = await callAPI(prompt);
+    const resp = await fetch('https://api.x.ai/v1/chat/completions', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      body: JSON.stringify({
+        model: 'grok-4.3',
+        max_tokens: 4096,
+        reasoning_effort: 'high',
+        messages: [
+          { role: 'system', content: SYSTEM_PROMPT },
+          { role: 'user', content: userPrompt }
+        ]
+      })
+    });
+
+    if (!resp.ok) {
+      const e = await resp.json().catch(() => ({}));
+      throw new Error(e.error?.message || 'API error ' + resp.status);
+    }
+
+    const data = await resp.json();
+    const text = data.choices?.[0]?.message?.content || '';
     parseAndDisplay(text);
-  } catch (e) {
-    document.getElementById('genText').textContent = 'Error: ' + e.message;
+
+    const statusEl = document.getElementById('api-status');
+    statusEl.textContent = 'API OK';
+    statusEl.className = 'api-status ok';
+    statusEl.style.display = 'inline-block';
+
+  } catch(err) {
+    showErr(err.message);
+    const statusEl = document.getElementById('api-status');
+    statusEl.textContent = 'API Error';
+    statusEl.className = 'api-status bad';
+    statusEl.style.display = 'inline-block';
   } finally {
-    STATE.generating = false;
-    document.getElementById('genBar').classList.remove('visible');
-    updateGenBtn();
+    btn.disabled = false;
+    btn.textContent = 'Generate Character';
   }
 }
 
-
-/* ============================================================
-   API CALL
-   ============================================================ */
-async function callAPI(userPrompt) {
-  const key = document.getElementById('apiKey').value.trim();
-
-  const sysPrompt = `You are an expert D&D character generator with deep knowledge of D&D 5e, the 2024 revision, OSR systems, and system-neutral play.
-
-Your primary obligation is mechanical accuracy and character viability. Every character you generate must be functional and playable — no trap builds, no invalid mechanics, no wrong edition content.
-
-Follow these absolute rules:
-1. Assign ability scores so the primary stat for the chosen class always receives a high score. Never dump the primary stat.
-2. Calculate all derived numbers precisely: HP using correct hit dice, spell DCs using 8 + prof + ability mod, AC using correct armor formula.
-3. Only include subclasses, spells, feats, ancestries, and equipment that legally exist in the selected edition.
-4. For multiclass characters, verify that the character meets all ability score prerequisites before proceeding.
-5. If a selection is invalid or would produce a non-viable character, note it clearly in the NOTES sub-section at the end of CHARACTER STATS and substitute the closest valid option.
-6. Follow all output format instructions exactly — three sections, plain text, ALL CAPS sub-headings.`;
-
-  const body = {
-    model:            XAI_MODEL,
-    max_tokens:       4096,
-    reasoning_effort: 'high',
-    messages: [
-      { role: 'system', content: sysPrompt },
-      { role: 'user',   content: userPrompt }
-    ]
-  };
-
-  const res  = await fetch(XAI_ENDPOINT, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + key },
-    body: JSON.stringify(body)
-  });
-  const data = await res.json();
-
-  if (!res.ok) throw new Error(data.error?.message || `API error ${res.status}`);
-  if (data.choices && data.choices[0]) return data.choices[0].message?.content || '';
-  throw new Error('No valid response from xAI.');
-}
-
-
-/* ============================================================
-   OUTPUT PARSER
-   ============================================================ */
 function parseAndDisplay(text) {
-  const markers = [
-    'SECTION: CHARACTER STATS',
-    'SECTION: CHARACTER LORE',
-    'SECTION: PORTRAIT PROMPT',
-  ];
-  const ids = ['outStats','outLore','outPrompt'];
+  const markers = ['SECTION: CHARACTER STATS','SECTION: CHARACTER LORE','SECTION: PORTRAIT PROMPT'];
+  const bodyIds = ['stats-body','lore-body','visual-body'];
+  const panelIds = ['out-stats','out-lore','out-visual'];
 
   const positions = markers
-    .map(m => ({ m, idx: text.indexOf(m) }))
+    .map((m,i) => ({ m, i, idx: text.indexOf(m) }))
     .filter(x => x.idx !== -1)
     .sort((a, b) => a.idx - b.idx);
 
-  if (positions.length === 0) { setOutput('outStats', text); return; }
+  if (positions.length === 0) {
+    document.getElementById('stats-body').textContent = text;
+    document.getElementById('out-stats').style.display = 'block';
+    return;
+  }
 
-  positions.forEach((pos, i) => {
-    const start   = pos.idx + pos.m.length;
-    const end     = positions[i + 1] ? positions[i + 1].idx : text.length;
+  positions.forEach((pos, pi) => {
+    const start = pos.idx + pos.m.length;
+    const end = positions[pi + 1] ? positions[pi + 1].idx : text.length;
     const content = text.slice(start, end).trim();
-    const panelId = ids[markers.indexOf(pos.m)];
-    if (panelId) setOutput(panelId, content);
+    document.getElementById(bodyIds[pos.i]).textContent = content;
+    document.getElementById(panelIds[pos.i]).style.display = 'block';
   });
 }
 
-function setOutput(id, text) {
-  const el = document.getElementById(id);
-  el.textContent = text;
-  el.className = 'out-body';
-}
+// API key persistence
+(function() {
+  const saved = localStorage.getItem('xaiKey_dndChar');
+  if (saved) document.getElementById('api-key').value = saved;
+})();
+document.getElementById('api-key').addEventListener('input', function() {
+  if (this.value.trim()) localStorage.setItem('xaiKey_dndChar', this.value.trim());
+  else localStorage.removeItem('xaiKey_dndChar');
+});
+document.getElementById('api-key').addEventListener('blur', function() {
+  if (this.value.trim()) localStorage.setItem('xaiKey_dndChar', this.value.trim());
+});
 
+// Input listeners
+document.getElementById('level-input').addEventListener('input', function() {
+  updateConditionals();
+  updatePreview();
+});
+document.getElementById('revisions-input').addEventListener('input', updatePreview);
+document.getElementById('name-input').addEventListener('input', updatePreview);
 
-/* ============================================================
-   COPY BUTTONS
-   ============================================================ */
-function copyOut(id, btn) {
-  const el = document.getElementById(id);
-  if (!el || el.classList.contains('empty')) return;
-  navigator.clipboard.writeText(el.textContent).then(() => {
-    const orig = btn.textContent;
-    btn.textContent = 'COPIED';
-    setTimeout(() => btn.textContent = orig, 1500);
-  });
-}
-
-
-/* ============================================================
-   UTILITY
-   ============================================================ */
-function esc(str) {
-  if (!str) return '';
-  return String(str)
-    .replace(/&/g,'&amp;')
-    .replace(/"/g,'&quot;')
-    .replace(/</g,'&lt;')
-    .replace(/>/g,'&gt;');
-}
-
-
-/* ============================================================
-   INIT
-   ============================================================ */
+// Init
 renderAll();
-updateGenBtn();
-
+updateConditionals();
+updateOutputConditionals();
+updatePreview();
 </script>
 </body>
 </html>
