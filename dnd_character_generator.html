@@ -601,6 +601,7 @@ const QUESTIONS = [
       'Olive, sun-weathered complexion',
       'Tawny golden-brown, warm undertones',
       'Rosy-pale with freckling',
+      'Drow (obsidian-black to dark charcoal, stark white hair)',
       'Eldritch or prismatic, shifting iridescence',
       'Elemental (stone, flame, water, air tones)',
       'Arcane (deep violet, midnight blue, silver veins)',
@@ -1585,9 +1586,20 @@ In this order: Personality Traits | Ideal | Bond | Flaws | Physical Description 
 Then a 2–3 paragraph Origin Story that weaves together background, class, personality, a formative event or turning point, and core motivations. Write in engaging narrative style.`;
 
   const SECTION_PORTRAIT = `SECTION: PORTRAIT PROMPT
-Write one cohesive paragraph (two short ones only if needed) of flowing, descriptive prose ready for direct input to an image generator — not a list of fields, not pipe-separated, no labels. Use spatial and relational language throughout — "framed by", "falling across", "where the light catches", "set against" — to weave the character's ancestry, build, skin/body surface, distinguishing marks, equipment, and pose into one coherent figure, then describe their expression, setting, and lighting around them.
+Write a single dense paragraph that an AI image generator can render directly into a compelling character portrait. This is NOT a data dump — it is a scene description. A human artist should be able to paint from it.
 
-The ancestry must be visually unmistakable, not just named. State the race's defining physical traits explicitly, drawn from this reference (apply to the chosen ancestry and any of its listed sub-races). Where a trait below conflicts with the chosen skin/body palette, the skin/body palette wins for coloring, but all structural traits (ears, horns, tails, builds, scales, etc.) still apply:
+COMPOSITION APPROACH:
+1. Open with the art style and a strong establishing shot — place the character in a specific moment, not a neutral pose. Describe what they are doing or about to do.
+2. Build the figure from their most striking visual feature outward. Lead with whatever makes this character visually unique — their ancestry's non-human traits, an unusual skin tone, a dramatic piece of equipment — then layer in supporting details naturally.
+3. Pick the 4–5 most visually impactful details from the selections and make them vivid. Weave lesser details in only where they serve the image — skip anything that adds words without adding visual information.
+4. Close with lighting, atmosphere, and mood — not a label list.
+
+WHAT TO SKIP:
+- Do not name game mechanics, class names, or rule terms ("standard class kit", "proficiency", "subclass"). Describe what is SEEN, not what is on the character sheet.
+- Do not state the aspect ratio as text in the description — it is a rendering parameter, not a visual detail.
+- Do not list every single selection. If a detail does not change what the image looks like, leave it out.
+
+ANCESTRY — the race must be visually unmistakable, not just named. Use these physical references (where a trait conflicts with the chosen skin/body palette, the palette wins for coloring, but all structural traits still apply):
 - Human, Variant Human: average human height and build, fully human facial structure, no nonhuman markers.
 - Elf, High Elf, Wood Elf: slender, graceful build, under 150 lbs, roughly human height or slightly shorter, with long pointed ears and sharply angular, fine-boned faces; no facial hair.
 - Drow (Dark Elf): same slender elven build and pointed ears as other elves, with charcoal-to-obsidian-black skin and stark white or pale-yellow hair, and very pale eyes (lilac, silver, pink, or red) unless the chosen skin palette specifies otherwise.
@@ -1630,9 +1642,11 @@ The ancestry must be visually unmistakable, not just named. State the race's def
 - Owlin: bipedal humanoid covered in feathers with an owl-like face — large forward-facing eyes, a small hooked beak, prominent feathered ear-tufts — and a pair of feathered wings on the back.
 Apply the equivalent defining traits for any other ancestry not listed here. Never default to a generic human appearance for a non-human ancestry.
 
-The exact skin/body palette selection must appear word-for-word somewhere in the prose — the art style cannot replace or dilute it. Incorporate: art style, composition, ancestry and gender, the skin/body palette (verbatim), physical details (age, build, distinguishing features), posture and expression, class and subclass visual elements, equipment theme and specific items, and personality reflected in pose and expression. Close with a clear sense of image aspect ratio.
+SKIN/BODY PALETTE: The exact skin/body palette text the player selected must appear word-for-word somewhere in the prose. The art style cannot replace or dilute it.
 
-Do not explain or comment — output only the descriptive paragraph itself, with no line breaks within it.`;
+QUALITY: End the paragraph with: "Cinematic physically plausible lighting, professional production-grade rendering."
+
+Output only the descriptive paragraph. No labels, no line breaks within it, no commentary.`;
 
   const requestedSections = [
     oo.stats ? SECTION_STATS   : null,
