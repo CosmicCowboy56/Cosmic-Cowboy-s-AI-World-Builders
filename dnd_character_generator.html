@@ -1,27 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>D&D Character Generator v2.0 - Cosmic Cowboy</title>
+<title>D&amp;D Character Generator v2.0 — Cosmic Cowboy</title>
 <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Exo+2:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
 <style>
+
 :root {
-  --deepest:    #010E1F;
-  --ocean-blue: #0077B6;
-  --soft-cyan:  #90E0EF;
-  --pale-blue:  #CAF0F8;
-  --accent:     #FFD166;
-  --surface:    rgba(0,119,182,0.09);
-  --surface2:   rgba(0,119,182,0.17);
-  --border:     rgba(144,224,239,0.22);
-  --border-hi:  rgba(144,224,239,0.50);
-  --dim:        rgba(202,240,248,0.45);
-  --green:      #4ade80;
-  --red:        #f87171;
-  --glow:       0 0 12px rgba(144,224,239,0.30);
+  --dark-blue:   #023E8A;
+  --ocean-blue:  #0077B6;
+  --soft-cyan:   #90E0EF;
+  --pale-blue:   #CAF0F8;
+  --deepest:     #010E1F;
+  --surface:     rgba(0,119,182,0.09);
+  --surface2:    rgba(0,119,182,0.17);
+  --border:      rgba(144,224,239,0.22);
+  --border-hi:   rgba(144,224,239,0.50);
+  --dim:         rgba(202,240,248,0.45);
+  --green:       #4ade80;
+  --red:         #f87171;
+  --glow:        0 0 12px rgba(144,224,239,0.30);
+  --accent:      #FFD166;
 }
+
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
 html, body {
   min-height: 100%;
   font-family: 'Exo 2', sans-serif;
@@ -30,22 +36,31 @@ html, body {
   background: var(--deepest);
   color: var(--pale-blue);
 }
+
+body {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: 40px;
+}
+
 ::-webkit-scrollbar              { width: 8px; height: 8px; }
-::-webkit-scrollbar-track        { background: rgba(0,0,0,0.15); }
+::-webkit-scrollbar-track        { background: rgba(0,0,0,0.15); border-radius: 4px; }
 ::-webkit-scrollbar-thumb        { background: rgba(144,224,239,0.3); border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover  { background: rgba(144,224,239,0.6); }
+
 .header {
+  flex-shrink: 0;
   height: 52px;
-  background: rgba(0,0,0,0.50);
+  background: rgba(0,0,0,0.40);
   border-bottom: 1px solid var(--border-hi);
-  padding: 0 24px;
+  padding: 0 20px;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  position: sticky;
-  top: 0;
-  z-index: 100;
+  position: relative;
+  z-index: 10;
 }
+
 .header::after {
   content: '';
   position: absolute;
@@ -54,768 +69,1085 @@ html, body {
   background: linear-gradient(90deg, transparent, var(--soft-cyan), transparent);
   opacity: 0.5;
 }
+
 .hdr-title {
   font-family: 'Cinzel', serif;
-  font-size: 1.05rem;
+  font-size: 1.10rem;
   font-weight: 900;
   letter-spacing: 0.12em;
   color: var(--pale-blue);
   text-shadow: 0 0 18px rgba(144,224,239,0.4);
 }
+
 .hdr-sub {
-  font-size: 0.62rem;
+  font-size: 0.60rem;
   color: var(--soft-cyan);
   letter-spacing: 0.2em;
-  text-transform: uppercase;
+  margin-top: 2px;
 }
-.page-title {
-  text-align: center;
-  padding: 32px 24px 20px;
-  border-bottom: 1px solid var(--border);
-}
-.page-title h1 {
-  font-family: 'Cinzel', serif;
-  font-size: 2rem;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  color: var(--pale-blue);
-  text-shadow: 0 0 24px rgba(144,224,239,0.35);
-  margin-bottom: 4px;
-}
-.page-title .v-tag {
-  font-size: 0.72rem;
-  color: var(--soft-cyan);
-  letter-spacing: 0.25em;
-  text-transform: uppercase;
-}
-.api-band {
-  background: rgba(0,0,0,0.35);
-  border-bottom: 1px solid var(--border);
-  padding: 10px 24px;
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  flex-wrap: wrap;
-}
-.api-band label {
-  font-size: 0.75rem;
-  color: var(--soft-cyan);
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-.api-band input {
-  flex: 1;
-  min-width: 260px;
-  background: rgba(0,0,0,0.40);
+
+input[type="text"],
+input[type="number"],
+textarea {
+  background: var(--surface2);
   border: 1px solid var(--border);
   color: var(--pale-blue);
   font-family: 'Exo 2', sans-serif;
-  font-size: 0.85rem;
-  padding: 6px 10px;
+  font-size: 0.88rem;
+  font-weight: 300;
   border-radius: 4px;
+  padding: 7px 10px;
   outline: none;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  width: 100%;
 }
-.api-band input:focus { border-color: var(--soft-cyan); }
-.api-status {
-  font-size: 0.72rem;
-  letter-spacing: 0.1em;
-  padding: 4px 10px;
-  border-radius: 3px;
+
+input:focus, textarea:focus, select:focus {
+  border-color: var(--soft-cyan);
+  box-shadow: var(--glow);
+}
+
+input::placeholder, textarea::placeholder { color: var(--dim); }
+
+.sel-input {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.88rem;
+  font-weight: 300;
+  border-radius: 4px;
+  padding: 7px 10px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+  -webkit-appearance: none;
+  width: 100%;
+  cursor: pointer;
+}
+.sel-input:focus {
+  border-color: var(--soft-cyan);
+  box-shadow: var(--glow);
+}
+.sel-input option {
+  background: var(--deepest);
+  color: var(--pale-blue);
+}
+
+.btn {
+  font-family: 'Exo 2', sans-serif;
   font-weight: 600;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  padding: 6px 15px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--soft-cyan);
+  cursor: pointer;
+  transition: all 0.15s;
   white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
 }
-.api-status.ok  { background: rgba(74,222,128,0.15); color: var(--green); border: 1px solid rgba(74,222,128,0.3); }
-.api-status.bad { background: rgba(248,113,113,0.15); color: var(--red);   border: 1px solid rgba(248,113,113,0.3); }
-.main-wrap {
-  display: grid;
-  grid-template-columns: 1fr 400px;
-  gap: 0;
-  min-height: calc(100vh - 52px);
-  align-items: start;
+
+.btn:hover:not(:disabled) { border-color: var(--soft-cyan); background: rgba(144,224,239,0.10); }
+.btn:disabled              { opacity: 0.30; cursor: not-allowed; }
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
 }
-.form-col {
-  padding: 24px;
-  border-right: 1px solid var(--border);
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: 0 3px 14px rgba(0,119,182,0.40);
 }
-.output-col {
-  padding: 24px;
-  position: sticky;
-  top: 52px;
-  max-height: calc(100vh - 52px);
+
+.btn-rand {
+  font-size: 0.68rem;
+  padding: 3px 10px;
+  color: var(--accent);
+  border-color: rgba(255,209,102,0.3);
+}
+.btn-rand:hover:not(:disabled) {
+  background: rgba(255,209,102,0.08);
+  border-color: var(--accent);
+}
+
+.btn-small { font-size: 0.66rem; padding: 5px 12px; }
+
+.page-body {
+  flex: 1;
   overflow-y: auto;
+  padding: 20px;
+  max-width: 1200px;
+  width: 100%;
+  margin: 0 auto;
 }
-.section {
+
+.section-head {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  color: var(--accent);
+  text-transform: uppercase;
+  margin-bottom: 12px;
+  padding-bottom: 7px;
+  border-bottom: 1px solid var(--border);
+}
+
+.presets-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 20px;
+  padding: 12px 14px;
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: 6px;
-  margin-bottom: 16px;
+}
+
+.preset-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  padding: 5px 14px;
+  border-radius: 20px;
+  cursor: pointer;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 400;
+  transition: all 0.15s;
+}
+.preset-btn:hover { border-color: var(--soft-cyan); background: rgba(0,119,182,0.18); }
+
+.main-layout {
+  display: grid;
+  grid-template-columns: 1fr 360px;
+  gap: 20px;
+  align-items: start;
+}
+
+.preview-col { position: sticky; top: 20px; }
+
+.accordion {
+  margin-bottom: 8px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
   overflow: hidden;
 }
-.section-title {
-  font-family: 'Cinzel', serif;
-  font-size: 0.78rem;
-  font-weight: 700;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
-  color: var(--soft-cyan);
-  padding: 10px 16px;
-  background: rgba(0,0,0,0.25);
-  border-bottom: 1px solid var(--border);
+
+.accordion-header {
+  background: rgba(0,0,0,0.20);
+  padding: 11px 14px;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  font-size: 0.84rem;
+  user-select: none;
+  gap: 10px;
+  color: var(--pale-blue);
 }
-.section-body { padding: 16px; }
-.field-label {
-  font-size: 0.72rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--soft-cyan);
-  margin-bottom: 8px;
+.accordion-header:hover { background: rgba(0,0,0,0.30); }
+
+.accordion-chevron {
+  font-size: 0.70rem;
+  color: var(--dim);
+  transition: transform 0.2s;
+  flex-shrink: 0;
+}
+.accordion-header.open .accordion-chevron { transform: rotate(180deg); }
+
+.accordion-body {
+  padding: 14px 16px;
+  background: var(--surface);
+  display: none;
+}
+.accordion-body.open { display: block; }
+
+.q-block { margin-bottom: 16px; }
+.q-block:last-child { margin-bottom: 0; }
+
+.q-title-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 8px;
 }
-.field-label .multi-note {
-  font-size: 0.65rem;
-  color: var(--dim);
-  text-transform: none;
-  letter-spacing: 0.05em;
+
+.q-title {
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--soft-cyan);
+  letter-spacing: 0.06em;
 }
-.field-wrap { margin-bottom: 14px; }
-.field-wrap.hidden, .section.hidden { display: none; }
-.out-opts {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
+
+.multi-note { font-size: 0.70rem; color: var(--dim); font-style: italic; margin-top: 4px; }
+
+.warn-note {
+  font-size: 0.70rem;
+  color: var(--red);
+  font-style: italic;
   margin-top: 4px;
 }
-.out-opt-item {
+
+.hair-notice {
+  font-size: 0.72rem;
+  color: rgba(255,209,102,0.7);
+  padding: 6px 10px;
+  border-left: 2px solid rgba(255,209,102,0.4);
+  margin-bottom: 12px;
+  line-height: 1.45;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 6px;
+}
+
+.option-btn {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--pale-blue);
+  padding: 7px 10px;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.78rem;
+  font-weight: 300;
+  transition: all 0.15s;
+  position: relative;
+  line-height: 1.35;
+}
+.option-btn:hover   { border-color: var(--soft-cyan); background: rgba(0,119,182,0.18); }
+.option-btn.selected {
+  background: rgba(0,119,182,0.28);
+  border-color: var(--soft-cyan);
+}
+.option-btn.selected::after {
+  content: '\2713';
+  position: absolute; right: 7px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--soft-cyan); font-weight: bold; font-size: 0.75rem;
+}
+
+.custom-row {
+  display: flex;
+  gap: 7px;
+  margin-top: 8px;
+}
+.custom-row input { flex: 1; min-width: 0; }
+
+.tags-wrap { margin-top: 6px; display: flex; flex-wrap: wrap; gap: 4px; }
+
+.custom-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(0,119,182,0.22);
+  border: 1px solid rgba(144,224,239,0.35);
+  padding: 2px 9px;
+  border-radius: 18px;
+  font-size: 0.75rem;
+  color: var(--pale-blue);
+}
+.custom-tag button {
+  background: none; border: none;
+  color: var(--dim); cursor: pointer;
+  padding: 0; font-size: 0.9rem; line-height: 1;
+}
+.custom-tag button:hover { color: var(--red); }
+
+.preview-panel {
+  background: rgba(0,0,0,0.25);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.preview-head {
+  padding: 8px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.20);
+}
+
+.prompt-display {
+  padding: 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.84rem;
+  font-weight: 300;
+  line-height: 1.65;
+  white-space: pre-wrap;
+  word-break: break-word;
+  min-height: 180px;
+  max-height: 460px;
+  overflow-y: auto;
+  color: var(--pale-blue);
+}
+.prompt-display.empty { color: var(--dim); font-style: italic; }
+
+.preview-actions {
+  padding: 10px 14px;
+  border-top: 1px solid var(--border);
+  display: flex;
+  gap: 8px;
+}
+.preview-actions .btn { flex: 1; }
+
+.action-bar {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--border);
+}
+
+.notice {
+  font-size: 0.78rem;
+  padding: 7px 11px;
+  border-radius: 4px;
+  margin-top: 8px;
+  display: none;
+}
+.notice.ok  { display: block; background: rgba(0,160,90,0.12);  border: 1px solid rgba(0,160,90,0.35);  color: var(--green); }
+.notice.err { display: block; background: rgba(200,30,30,0.15); border: 1px solid rgba(200,30,30,0.4);  color: var(--red); }
+
+.xai-panel {
+  margin-top: 16px;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.xai-head {
+  padding: 8px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--accent);
+  text-transform: uppercase;
+  border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.20);
   display: flex;
   align-items: center;
-  gap: 7px;
-  cursor: pointer;
-  font-size: 0.88rem;
-  color: var(--pale-blue);
-  user-select: none;
+  gap: 8px;
 }
-.out-opt-item input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
+
+.xai-body { padding: 14px; }
+
+.xai-row {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  align-items: center;
+}
+.xai-row label {
+  font-size: 0.74rem;
+  color: var(--soft-cyan);
+  white-space: nowrap;
+  min-width: 68px;
+  font-weight: 500;
+}
+
+.xai-key-wrap {
+  position: relative;
+  flex: 1;
+}
+.xai-key-wrap input { padding-right: 60px; }
+
+.xai-toggle {
+  position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+  background: none; border: none; cursor: pointer;
+  color: var(--dim); font-size: 0.70rem; font-family: 'Exo 2', sans-serif;
+  font-weight: 600; letter-spacing: 0.05em; padding: 2px 4px;
+}
+.xai-toggle:hover { color: var(--soft-cyan); }
+
+.xai-status {
+  font-size: 0.74rem;
+  color: var(--dim);
+  margin-top: 8px;
+  min-height: 1.2em;
+}
+.xai-status.ok  { color: var(--green); }
+.xai-status.err { color: var(--red); }
+.xai-status.run { color: var(--soft-cyan); }
+
+.btn-xai {
+  background: linear-gradient(135deg, var(--ocean-blue), var(--dark-blue));
+  border-color: var(--soft-cyan);
+  color: #fff;
+  font-size: 0.80rem;
+  padding: 9px 20px;
+}
+.btn-xai:hover:not(:disabled) {
+  background: linear-gradient(135deg, #0096CC, var(--ocean-blue));
+  box-shadow: var(--glow);
+}
+.btn-xai:disabled { opacity: 0.4; }
+
+.out-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+.out-toggle input[type="checkbox"] {
+  width: auto;
   accent-color: var(--soft-cyan);
   cursor: pointer;
 }
-.options-grid {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-.opt-btn {
-  background: rgba(0,0,0,0.30);
-  border: 1px solid var(--border);
-  color: var(--pale-blue);
-  font-family: 'Exo 2', sans-serif;
-  font-size: 0.80rem;
-  font-weight: 400;
-  padding: 5px 11px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background 0.15s, border-color 0.15s, color 0.15s;
-  text-align: left;
-}
-.opt-btn:hover { background: var(--surface2); border-color: var(--soft-cyan); }
-.opt-btn.selected {
-  background: rgba(0,119,182,0.35);
-  border-color: var(--soft-cyan);
-  color: var(--pale-blue);
-  box-shadow: 0 0 6px rgba(144,224,239,0.2);
-}
-.text-input {
-  width: 100%;
-  background: rgba(0,0,0,0.35);
-  border: 1px solid var(--border);
-  color: var(--pale-blue);
-  font-family: 'Exo 2', sans-serif;
-  font-size: 0.85rem;
-  padding: 7px 10px;
-  border-radius: 4px;
-  outline: none;
-  transition: border-color 0.2s;
-}
-.text-input:focus { border-color: var(--soft-cyan); }
-textarea.text-input { resize: vertical; min-height: 72px; }
-.custom-row { display: flex; gap: 6px; margin-top: 6px; }
-.custom-row .text-input { flex: 1; }
-.tags-wrap { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
-.tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  background: rgba(0,119,182,0.25);
-  border: 1px solid rgba(144,224,239,0.35);
-  color: var(--soft-cyan);
-  font-size: 0.75rem;
-  padding: 2px 8px;
-  border-radius: 10px;
-}
-.tag button {
-  background: none; border: none; color: var(--dim);
-  cursor: pointer; font-size: 0.85rem; padding: 0; line-height: 1;
-}
-.tag button:hover { color: var(--red); }
-.dice-btn {
-  background: none;
-  border: 1px solid var(--border);
-  color: var(--soft-cyan);
-  font-size: 0.75rem;
-  padding: 3px 8px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-.dice-btn:hover { background: var(--surface2); }
-.presets-row { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
-.preset-btn {
-  background: rgba(255,209,102,0.08);
-  border: 1px solid rgba(255,209,102,0.30);
-  color: var(--accent);
-  font-family: 'Exo 2', sans-serif;
+.out-toggle label {
   font-size: 0.78rem;
-  padding: 5px 12px;
-  border-radius: 3px;
+  color: var(--pale-blue);
   cursor: pointer;
-  transition: background 0.15s;
+  font-weight: 400;
 }
-.preset-btn:hover { background: rgba(255,209,102,0.18); }
-.save-row { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 10px; }
-.sec-btn {
-  background: rgba(0,0,0,0.30);
+
+.out-section {
+  margin-top: 12px;
   border: 1px solid var(--border);
-  color: var(--dim);
+  border-radius: 5px;
+  overflow: hidden;
+  background: rgba(0,0,0,0.25);
+}
+
+.out-section-head {
+  padding: 8px 14px;
   font-family: 'Exo 2', sans-serif;
-  font-size: 0.75rem;
-  padding: 4px 10px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: background 0.15s, color 0.15s;
-}
-.sec-btn:hover { background: var(--surface2); color: var(--pale-blue); }
-.out-label {
-  font-family: 'Cinzel', serif;
   font-size: 0.72rem;
-  letter-spacing: 0.20em;
-  text-transform: uppercase;
-  color: var(--soft-cyan);
-  margin-bottom: 8px;
-}
-.live-preview {
-  background: rgba(0,0,0,0.40);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 14px;
-  font-size: 0.82rem;
-  line-height: 1.65;
-  white-space: pre-wrap;
-  min-height: 120px;
-  color: var(--pale-blue);
-  margin-bottom: 14px;
-}
-.gen-btn {
-  width: 100%;
-  background: linear-gradient(135deg, var(--ocean-blue), rgba(0,119,182,0.7));
-  border: 1px solid var(--soft-cyan);
-  color: var(--pale-blue);
-  font-family: 'Cinzel', serif;
-  font-size: 0.85rem;
   font-weight: 700;
   letter-spacing: 0.12em;
-  padding: 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: all 0.2s;
-  text-transform: uppercase;
-  box-shadow: var(--glow);
-}
-.gen-btn:hover { background: linear-gradient(135deg, rgba(0,119,182,0.9), var(--ocean-blue)); box-shadow: 0 0 20px rgba(144,224,239,0.4); }
-.gen-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.action-row { display: flex; gap: 6px; margin-top: 8px; }
-.copy-btn, .reset-btn {
-  flex: 1;
-  background: rgba(0,0,0,0.30);
-  border: 1px solid var(--border);
-  color: var(--dim);
-  font-family: 'Exo 2', sans-serif;
-  font-size: 0.75rem;
-  padding: 6px;
-  border-radius: 3px;
-  cursor: pointer;
-  transition: all 0.15s;
-}
-.copy-btn:hover, .reset-btn:hover { background: var(--surface2); color: var(--pale-blue); }
-.out-section {
-  margin-top: 14px;
-  background: rgba(0,0,0,0.35);
-  border: 1px solid var(--border);
-  border-radius: 4px;
-  overflow: hidden;
-}
-.out-section-title {
-  font-family: 'Cinzel', serif;
-  font-size: 0.68rem;
-  letter-spacing: 0.18em;
-  text-transform: uppercase;
   color: var(--accent);
-  padding: 7px 12px;
-  background: rgba(0,0,0,0.30);
+  text-transform: uppercase;
   border-bottom: 1px solid var(--border);
+  background: rgba(0,0,0,0.20);
   display: flex;
   align-items: center;
   justify-content: space-between;
 }
-.out-section-body {
-  padding: 12px;
-  font-size: 0.82rem;
-  line-height: 1.70;
-  white-space: pre-wrap;
-  color: var(--pale-blue);
-}
+
 .copy-sec-btn {
   background: none;
   border: 1px solid var(--border);
   color: var(--dim);
-  font-size: 0.65rem;
-  padding: 2px 7px;
-  border-radius: 2px;
-  cursor: pointer;
   font-family: 'Exo 2', sans-serif;
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  padding: 2px 8px;
+  border-radius: 3px;
+  cursor: pointer;
+  transition: all 0.15s;
 }
-.copy-sec-btn:hover { color: var(--pale-blue); border-color: var(--soft-cyan); }
-.spinner { display: inline-block; width: 14px; height: 14px; border: 2px solid rgba(144,224,239,0.2); border-top-color: var(--soft-cyan); border-radius: 50%; animation: spin 0.7s linear infinite; vertical-align: middle; margin-right: 6px; }
+.copy-sec-btn:hover {
+  border-color: var(--soft-cyan);
+  color: var(--soft-cyan);
+  background: rgba(144,224,239,0.08);
+}
+
+.out-section-body {
+  padding: 12px 14px;
+  font-family: 'Exo 2', sans-serif;
+  font-size: 0.82rem;
+  font-weight: 300;
+  line-height: 1.65;
+  color: var(--pale-blue);
+  white-space: pre-wrap;
+  word-break: break-word;
+  max-height: 300px;
+  overflow-y: auto;
+}
+
+.spinner {
+  display: inline-block;
+  width: 12px; height: 12px;
+  border: 2px solid rgba(144,224,239,0.20);
+  border-top-color: var(--soft-cyan);
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+  vertical-align: middle;
+  margin-right: 5px;
+}
 @keyframes spin { to { transform: rotate(360deg); } }
-.notice {
-  background: rgba(0,119,182,0.12);
-  border-left: 2px solid var(--soft-cyan);
-  padding: 8px 12px;
-  border-radius: 0 4px 4px 0;
-  font-size: 0.78rem;
-  color: var(--dim);
-  margin-bottom: 12px;
-  line-height: 1.5;
+
+@media (max-width: 860px) {
+  .main-layout { grid-template-columns: 1fr; }
+  .preview-col  { position: static; }
+  .options-grid { grid-template-columns: 1fr; }
 }
-.notice strong { color: var(--soft-cyan); font-weight: 600; }
-.err-msg { font-size: 0.75rem; color: var(--red); padding: 6px 10px; background: rgba(248,113,113,0.1); border: 1px solid rgba(248,113,113,0.25); border-radius: 3px; margin-top: 8px; display: none; }
-footer {
-  text-align: center;
-  padding: 18px;
-  font-size: 0.72rem;
-  color: var(--dim);
-  border-top: 1px solid var(--border);
-  letter-spacing: 0.08em;
-}
-@media (max-width: 920px) {
-  .main-wrap { grid-template-columns: 1fr; }
-  .form-col { border-right: none; border-bottom: 1px solid var(--border); }
-  .output-col { position: static; max-height: none; }
-}
+
 </style>
 </head>
 <body>
 
 <header class="header">
-  <span class="hdr-title">COSMIC COWBOY'S AI WORLDBUILDERS</span>
-  <span class="hdr-sub">D&amp;D Character Generator v2.0</span>
+  <div>
+    <div class="hdr-title">&#9876; D&amp;D CHARACTER GENERATOR</div>
+    <div class="hdr-sub">v2.0 &mdash; COSMIC COWBOY'S AI WORLDBUILDERS</div>
+  </div>
+  <button class="btn" onclick="resetApp()">&#10022; RESET</button>
 </header>
 
-<div class="page-title">
-  <h1>D&amp;D CHARACTER GENERATOR</h1>
-  <div class="v-tag">v2.0 - xAI Powered - Stats, Lore &amp; Portrait Prompt</div>
-</div>
+<div class="page-body">
 
-<div class="api-band">
-  <label>xAI API Key</label>
-  <input type="password" id="api-key" placeholder="xai-..." autocomplete="off">
-  <span class="api-status" id="api-status" style="display:none"></span>
-</div>
-
-<div class="main-wrap">
-<div class="form-col">
-
-<!-- QUICK START PRESETS -->
-<div class="section">
-  <div class="section-title">Quick Start Presets</div>
-  <div class="section-body">
-    <p style="font-size:0.78rem;color:var(--dim);margin-bottom:10px">Click any preset to auto-fill. Modify freely, then generate.</p>
-    <div class="presets-row">
-      <button class="preset-btn" onclick="applyPreset('classicFighter')">Classic Fighter</button>
-      <button class="preset-btn" onclick="applyPreset('elvenMage')">Elven Mage</button>
-      <button class="preset-btn" onclick="applyPreset('holyPaladin')">Holy Paladin</button>
-      <button class="preset-btn" onclick="applyPreset('shadowRogue')">Shadow Rogue</button>
-      <button class="preset-btn" onclick="applyPreset('wildSorcerer')">Wild Sorcerer</button>
-      <button class="preset-btn" onclick="applyPreset('random')">Randomize All</button>
-    </div>
-    <div class="save-row">
-      <button class="sec-btn" onclick="saveCurrent()">Save</button>
-      <button class="sec-btn" onclick="loadSaved()">Load</button>
-      <button class="sec-btn" onclick="clearSaved()">Clear Saved</button>
-    </div>
-  </div>
-</div>
-
-<!-- CORE SETUP -->
-<div class="section">
-  <div class="section-title">Core Setup</div>
-  <div class="section-body">
-    <div class="field-wrap">
-      <div class="field-label">Output Sections</div>
-      <div class="out-opts">
-        <label class="out-opt-item"><input type="checkbox" id="oo-stats" checked onchange="onOutputChange()"> Stats Sheet</label>
-        <label class="out-opt-item"><input type="checkbox" id="oo-lore"  checked onchange="onOutputChange()"> Character Lore</label>
-        <label class="out-opt-item"><input type="checkbox" id="oo-image" checked onchange="onOutputChange()"> Portrait Prompt</label>
-      </div>
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Edition <button class="dice-btn" onclick="randField('edition')">Randomize</button></div>
-      <div class="options-grid" id="edition-opts"></div>
-      <div class="notice" style="margin-top:10px;margin-bottom:0">
-        <strong>Edition</strong> determines available classes, subclasses, feats, and mechanical rules.
-      </div>
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Character Level <button class="dice-btn" onclick="randLevel()">Randomize</button></div>
-      <input type="number" class="text-input" id="level-input" min="1" max="20" placeholder="1–20" oninput="onLevelChange()">
-    </div>
-  </div>
-</div>
-
-<!-- IDENTITY -->
-<div class="section">
-  <div class="section-title">Identity</div>
-  <div class="section-body">
-    <div class="field-wrap">
-      <div class="field-label">Ancestry / Race <button class="dice-btn" onclick="randField('ancestry')">Randomize</button></div>
-      <div class="options-grid" id="ancestry-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="ancestry-custom" placeholder="Subrace or custom detail...">
-        <button class="sec-btn" onclick="addCustom('ancestry')">Add</button>
-      </div>
-      <div class="tags-wrap" id="ancestry-tags"></div>
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Gender <button class="dice-btn" onclick="randField('gender')">Randomize</button></div>
-      <div class="options-grid" id="gender-opts"></div>
-    </div>
-    <div class="field-wrap" id="skin-wrap">
-      <div class="field-label">Skin / Body Covering Palette <button class="dice-btn" onclick="randField('skin')">Randomize</button></div>
-      <div class="options-grid" id="skin-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="skin-custom" placeholder="Custom palette detail...">
-        <button class="sec-btn" onclick="addCustom('skin')">Add</button>
-      </div>
-      <div class="tags-wrap" id="skin-tags"></div>
-    </div>
-  </div>
-</div>
-
-<!-- CLASS -->
-<div class="section">
-  <div class="section-title">Class</div>
-  <div class="section-body">
-    <div class="field-wrap">
-      <div class="field-label">Class <button class="dice-btn" onclick="randField('charClass')">Randomize</button></div>
-      <div class="options-grid" id="charClass-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="charClass-custom" placeholder="Multiclass or custom detail...">
-        <button class="sec-btn" onclick="addCustom('charClass')">Add</button>
-      </div>
-      <div class="tags-wrap" id="charClass-tags"></div>
-    </div>
-    <div class="field-wrap hidden" id="subclass-wrap">
-      <div class="field-label">Subclass / Archetype <button class="dice-btn" onclick="randField('subclass')">Randomize</button></div>
-      <div class="options-grid" id="subclass-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="subclass-custom" placeholder="Homebrew subclass...">
-        <button class="sec-btn" onclick="addCustom('subclass')">Add</button>
-      </div>
-      <div class="tags-wrap" id="subclass-tags"></div>
-    </div>
-  </div>
-</div>
-
-<!-- BACKGROUND AND ALIGNMENT -->
-<div class="section">
-  <div class="section-title">Background and Alignment</div>
-  <div class="section-body">
-    <div class="field-wrap">
-      <div class="field-label">Background <button class="dice-btn" onclick="randField('background')">Randomize</button></div>
-      <div class="options-grid" id="background-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="background-custom" placeholder="Custom background detail...">
-        <button class="sec-btn" onclick="addCustom('background')">Add</button>
-      </div>
-      <div class="tags-wrap" id="background-tags"></div>
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Alignment <button class="dice-btn" onclick="randField('alignment')">Randomize</button></div>
-      <div class="options-grid" id="alignment-opts"></div>
-    </div>
-  </div>
-</div>
-
-<!-- MECHANICS -->
-<div class="section" id="section-mechanics">
-  <div class="section-title">Mechanics</div>
-  <div class="section-body">
-    <div class="field-wrap">
-      <div class="field-label">Ability Score Method</div>
-      <div class="options-grid" id="abilityMethod-opts"></div>
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Skill Proficiencies <button class="dice-btn" onclick="randField('skills')">Randomize</button></div>
-      <div class="options-grid" id="skills-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="skills-custom" placeholder="Custom skills...">
-        <button class="sec-btn" onclick="addCustom('skills')">Add</button>
-      </div>
-      <div class="tags-wrap" id="skills-tags"></div>
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Languages Known <button class="dice-btn" onclick="randField('languages')">Randomize</button></div>
-      <div class="options-grid" id="languages-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="languages-custom" placeholder="Custom languages...">
-        <button class="sec-btn" onclick="addCustom('languages')">Add</button>
-      </div>
-      <div class="tags-wrap" id="languages-tags"></div>
-    </div>
-    <div class="field-wrap hidden" id="feats-wrap">
-      <div class="field-label">Feats <button class="dice-btn" onclick="randField('feats')">Randomize</button></div>
-      <div class="options-grid" id="feats-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="feats-custom" placeholder="Custom or homebrew feat...">
-        <button class="sec-btn" onclick="addCustom('feats')">Add</button>
-      </div>
-      <div class="tags-wrap" id="feats-tags"></div>
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Hit Points</div>
-      <div class="options-grid" id="hp-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="hp-custom" placeholder="Specific HP total...">
-        <button class="sec-btn" onclick="addCustom('hp')">Add</button>
-      </div>
-      <div class="tags-wrap" id="hp-tags"></div>
-    </div>
-  </div>
-</div>
-
-<!-- PERSONALITY -->
-<div class="section" id="section-personality">
-  <div class="section-title">Personality</div>
-  <div class="section-body">
-    <div class="field-wrap">
-      <div class="field-label">Personality Traits <span class="multi-note">up to 2</span> <button class="dice-btn" onclick="randField('traits')">Randomize</button></div>
-      <div class="options-grid" id="traits-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="traits-custom" placeholder="Custom trait...">
-        <button class="sec-btn" onclick="addCustom('traits')">Add</button>
-      </div>
-      <div class="tags-wrap" id="traits-tags"></div>
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Ideal <button class="dice-btn" onclick="randField('ideal')">Randomize</button></div>
-      <div class="options-grid" id="ideal-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="ideal-custom" placeholder="Custom ideal...">
-        <button class="sec-btn" onclick="addCustom('ideal')">Add</button>
-      </div>
-      <div class="tags-wrap" id="ideal-tags"></div>
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Bond <button class="dice-btn" onclick="randField('bond')">Randomize</button></div>
-      <div class="options-grid" id="bond-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="bond-custom" placeholder="Custom bond...">
-        <button class="sec-btn" onclick="addCustom('bond')">Add</button>
-      </div>
-      <div class="tags-wrap" id="bond-tags"></div>
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Flaws <span class="multi-note">up to 2</span> <button class="dice-btn" onclick="randField('flaws')">Randomize</button></div>
-      <div class="options-grid" id="flaws-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="flaws-custom" placeholder="Custom flaw...">
-        <button class="sec-btn" onclick="addCustom('flaws')">Add</button>
-      </div>
-      <div class="tags-wrap" id="flaws-tags"></div>
-    </div>
-  </div>
-</div>
-
-<!-- PHYSICAL -->
-<div class="section" id="section-physical">
-  <div class="section-title">Physical</div>
-  <div class="section-body">
-    <div class="field-wrap" id="physical-wrap">
-      <div class="field-label">Physical Details <button class="dice-btn" onclick="randField('physical')">Randomize</button></div>
-      <div class="options-grid" id="physical-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="physical-custom" placeholder="Custom physical detail...">
-        <button class="sec-btn" onclick="addCustom('physical')">Add</button>
-      </div>
-      <div class="tags-wrap" id="physical-tags"></div>
-    </div>
-    <div class="field-wrap" id="voice-wrap">
-      <div class="field-label">Voice and Mannerisms <button class="dice-btn" onclick="randField('voice')">Randomize</button></div>
-      <div class="options-grid" id="voice-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="voice-custom" placeholder="Custom voice detail...">
-        <button class="sec-btn" onclick="addCustom('voice')">Add</button>
-      </div>
-      <div class="tags-wrap" id="voice-tags"></div>
-    </div>
-    <div class="field-wrap" id="motivations-wrap">
-      <div class="field-label">Deeper Motivations <button class="dice-btn" onclick="randField('motivations')">Randomize</button></div>
-      <div class="options-grid" id="motivations-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="motivations-custom" placeholder="Custom motivations...">
-        <button class="sec-btn" onclick="addCustom('motivations')">Add</button>
-      </div>
-      <div class="tags-wrap" id="motivations-tags"></div>
-    </div>
-  </div>
-</div>
-
-<!-- APPEARANCE AND EQUIPMENT -->
-<div class="section" id="section-appearance">
-  <div class="section-title">Appearance and Equipment</div>
-  <div class="section-body">
-    <div class="field-wrap" id="appearance-wrap">
-      <div class="field-label">Appearance Profile <span class="multi-note">up to 2</span> <button class="dice-btn" onclick="randField('appearance')">Randomize</button></div>
-      <div class="options-grid" id="appearance-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="appearance-custom" placeholder="Custom appearance...">
-        <button class="sec-btn" onclick="addCustom('appearance')">Add</button>
-      </div>
-      <div class="tags-wrap" id="appearance-tags"></div>
-    </div>
-    <div class="field-wrap" id="equipTheme-wrap">
-      <div class="field-label">Equipment Theme <span class="multi-note">up to 2</span> <button class="dice-btn" onclick="randField('equipTheme')">Randomize</button></div>
-      <div class="options-grid" id="equipTheme-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="equipTheme-custom" placeholder="Custom equipment...">
-        <button class="sec-btn" onclick="addCustom('equipTheme')">Add</button>
-      </div>
-      <div class="tags-wrap" id="equipTheme-tags"></div>
-    </div>
-    <div class="field-wrap" id="equipMethod-wrap">
-      <div class="field-label">Starting Equipment Method</div>
-      <div class="options-grid" id="equipMethod-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="equipMethod-custom" placeholder="Specific items or gold total...">
-        <button class="sec-btn" onclick="addCustom('equipMethod')">Add</button>
-      </div>
-      <div class="tags-wrap" id="equipMethod-tags"></div>
-    </div>
-    <div class="field-wrap hidden" id="spells-wrap">
-      <div class="field-label">Spellcasting Details</div>
-      <div class="options-grid" id="spells-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="spells-custom" placeholder="Specific spells...">
-        <button class="sec-btn" onclick="addCustom('spells')">Add</button>
-      </div>
-      <div class="tags-wrap" id="spells-tags"></div>
-    </div>
-  </div>
-</div>
-
-<!-- PORTRAIT SETTINGS -->
-<div class="section" id="section-portrait">
-  <div class="section-title">Portrait Settings</div>
-  <div class="section-body">
-    <div class="field-wrap">
-      <div class="field-label">Portrait Art Style <button class="dice-btn" onclick="randField('artStyle')">Randomize</button></div>
-      <div class="options-grid" id="artStyle-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="artStyle-custom" placeholder="Custom style detail...">
-        <button class="sec-btn" onclick="addCustom('artStyle')">Add</button>
-      </div>
-      <div class="tags-wrap" id="artStyle-tags"></div>
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Portrait Composition <button class="dice-btn" onclick="randField('composition')">Randomize</button></div>
-      <div class="options-grid" id="composition-opts"></div>
-      <div class="custom-row">
-        <input type="text" class="text-input" id="composition-custom" placeholder="Custom staging detail...">
-        <button class="sec-btn" onclick="addCustom('composition')">Add</button>
-      </div>
-      <div class="tags-wrap" id="composition-tags"></div>
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Image Aspect Ratio</div>
-      <div class="options-grid" id="imageSize-opts"></div>
-    </div>
-  </div>
-</div>
-
-<!-- CLARIFICATIONS AND NAME -->
-<div class="section">
-  <div class="section-title">Clarifications and Name</div>
-  <div class="section-body">
-    <div class="field-wrap">
-      <div class="field-label">Clarifications and Overrides</div>
-      <div class="notice" style="margin-bottom:8px">Anything typed here overrides earlier answers. Use this to specify exact ability scores, rename equipment, correct conflicts, or add detail the buttons could not capture.</div>
-      <textarea class="text-input" id="revisions-input" rows="4" placeholder="Leave blank if none."></textarea>
-    </div>
-    <div class="field-wrap">
-      <div class="field-label">Character Name</div>
-      <input type="text" class="text-input" id="name-input" placeholder="Character name...">
-    </div>
-  </div>
-</div>
-
-</div>
-
-<!-- OUTPUT COLUMN -->
-<div class="output-col">
-  <div class="out-label">Live Preview</div>
-  <div class="live-preview" id="live-preview">Fill in the form to see a live summary...</div>
-
-  <button class="gen-btn" id="gen-btn" onclick="generateCharacter()">Generate Character</button>
-  <div class="err-msg" id="err-msg"></div>
-
-  <div class="action-row">
-    <button class="copy-btn" onclick="copySection('visual')">Copy Portrait Prompt</button>
-    <button class="reset-btn" onclick="resetApp()">Reset All</button>
+  <div class="section-head">Quick Start Presets</div>
+  <div class="presets-bar">
+    <button class="preset-btn" onclick="applyPreset('classicFighter')">Classic Fighter</button>
+    <button class="preset-btn" onclick="applyPreset('elvenMage')">Elven Mage</button>
+    <button class="preset-btn" onclick="applyPreset('holyPaladin')">Holy Paladin</button>
+    <button class="preset-btn" onclick="applyPreset('shadowRogue')">Shadow Rogue</button>
+    <button class="preset-btn" onclick="applyPreset('wildSorcerer')">Wild Sorcerer</button>
+    <button class="preset-btn" onclick="randomizeAll()">&#9861; Random All</button>
   </div>
 
-  <div id="out-stats" class="out-section" style="display:none">
-    <div class="out-section-title">
-      Character Stats
-      <button class="copy-sec-btn" onclick="copySection('stats')">Copy</button>
+  <div class="main-layout">
+
+    <div>
+
+      <!-- 1. Core Setup -->
+      <div class="accordion">
+        <div class="accordion-header open" onclick="toggleAccordion(this)">
+          Core Setup
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body open">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Output Sections</span>
+            </div>
+            <div class="out-toggle">
+              <input type="checkbox" id="oo-stats" checked onchange="onOutputChange()">
+              <label for="oo-stats">Stats Sheet</label>
+            </div>
+            <div class="out-toggle">
+              <input type="checkbox" id="oo-lore" checked onchange="onOutputChange()">
+              <label for="oo-lore">Character Lore</label>
+            </div>
+            <div class="out-toggle">
+              <input type="checkbox" id="oo-image" checked onchange="onOutputChange()">
+              <label for="oo-image">Portrait Prompt</label>
+            </div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Edition</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('edition')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="edition-opts"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Character Level</span>
+            </div>
+            <input type="number" id="level-input" min="1" max="20" value="1" oninput="onLevelChange()" style="max-width:120px;">
+          </div>
+
+          <p class="hair-notice">Some options (subclass, feats, spellcasting) appear only when the selected edition and level support them.</p>
+
+        </div>
+      </div>
+
+      <!-- 2. Identity -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Identity
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Ancestry / Race</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('ancestry')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="ancestry-opts"></div>
+            <div class="custom-row"><input type="text" id="ancestry-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('ancestry')">Add</button></div>
+            <div class="tags-wrap" id="ancestry-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Gender</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('gender')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="gender-opts"></div>
+          </div>
+
+          <div class="q-block" id="skin-wrap">
+            <div class="q-title-row">
+              <span class="q-title">Skin / Body Covering Palette</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('skin')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="skin-opts"></div>
+            <div class="custom-row"><input type="text" id="skin-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('skin')">Add</button></div>
+            <div class="tags-wrap" id="skin-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 3. Class -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Class
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Class</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('charClass')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="charClass-opts"></div>
+            <div class="custom-row"><input type="text" id="charClass-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('charClass')">Add</button></div>
+            <div class="tags-wrap" id="charClass-tags"></div>
+          </div>
+
+          <div class="q-block" id="subclass-wrap" style="display:none">
+            <div class="q-title-row">
+              <span class="q-title">Subclass</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('subclass')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="subclass-opts"></div>
+            <div class="custom-row"><input type="text" id="subclass-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('subclass')">Add</button></div>
+            <div class="tags-wrap" id="subclass-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 4. Background and Alignment -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Background and Alignment
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Background</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('background')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="background-opts"></div>
+            <div class="custom-row"><input type="text" id="background-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('background')">Add</button></div>
+            <div class="tags-wrap" id="background-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Alignment</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('alignment')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="alignment-opts"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 5. Mechanics -->
+      <div class="accordion" id="section-mechanics">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Mechanics
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Ability Score Method</span>
+            </div>
+            <select class="sel-input" id="abilityMethod-sel" onchange="onSelectChange('abilityMethod')">
+              <option value="">-- Select --</option>
+            </select>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Skill Proficiencies</span>
+            </div>
+            <select class="sel-input" id="skills-sel" onchange="onSelectChange('skills')">
+              <option value="">-- Select --</option>
+            </select>
+            <div class="custom-row"><input type="text" id="skills-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('skills')">Add</button></div>
+            <div class="tags-wrap" id="skills-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Languages Known</span>
+            </div>
+            <select class="sel-input" id="languages-sel" onchange="onSelectChange('languages')">
+              <option value="">-- Select --</option>
+            </select>
+            <div class="custom-row"><input type="text" id="languages-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('languages')">Add</button></div>
+            <div class="tags-wrap" id="languages-tags"></div>
+          </div>
+
+          <div class="q-block" id="feats-wrap" style="display:none">
+            <div class="q-title-row">
+              <span class="q-title">Feats</span>
+            </div>
+            <select class="sel-input" id="feats-sel" onchange="onSelectChange('feats')">
+              <option value="">-- Select --</option>
+            </select>
+            <div class="custom-row"><input type="text" id="feats-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('feats')">Add</button></div>
+            <div class="tags-wrap" id="feats-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Hit Points</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('hp')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="hp-opts"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 6. Personality -->
+      <div class="accordion" id="section-personality">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Personality
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Personality Traits (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('traits')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="traits-opts"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="traits-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('traits')">Add</button></div>
+            <div class="tags-wrap" id="traits-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Ideal</span>
+            </div>
+            <select class="sel-input" id="ideal-sel" onchange="onSelectChange('ideal')">
+              <option value="">-- Select --</option>
+            </select>
+            <div class="custom-row"><input type="text" id="ideal-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('ideal')">Add</button></div>
+            <div class="tags-wrap" id="ideal-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Bond</span>
+            </div>
+            <select class="sel-input" id="bond-sel" onchange="onSelectChange('bond')">
+              <option value="">-- Select --</option>
+            </select>
+            <div class="custom-row"><input type="text" id="bond-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('bond')">Add</button></div>
+            <div class="tags-wrap" id="bond-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Flaws (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('flaws')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="flaws-opts"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="flaws-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('flaws')">Add</button></div>
+            <div class="tags-wrap" id="flaws-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 7. Physical -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Physical
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block" id="physical-wrap">
+            <div class="q-title-row">
+              <span class="q-title">Physical Details</span>
+            </div>
+            <select class="sel-input" id="physical-sel" onchange="onSelectChange('physical')">
+              <option value="">-- Select --</option>
+            </select>
+            <div class="custom-row"><input type="text" id="physical-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('physical')">Add</button></div>
+            <div class="tags-wrap" id="physical-tags"></div>
+          </div>
+
+          <div class="q-block" id="voice-wrap">
+            <div class="q-title-row">
+              <span class="q-title">Voice and Mannerisms</span>
+            </div>
+            <select class="sel-input" id="voice-sel" onchange="onSelectChange('voice')">
+              <option value="">-- Select --</option>
+            </select>
+            <div class="custom-row"><input type="text" id="voice-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('voice')">Add</button></div>
+            <div class="tags-wrap" id="voice-tags"></div>
+          </div>
+
+          <div class="q-block" id="motivations-wrap">
+            <div class="q-title-row">
+              <span class="q-title">Deeper Motivations</span>
+            </div>
+            <select class="sel-input" id="motivations-sel" onchange="onSelectChange('motivations')">
+              <option value="">-- Select --</option>
+            </select>
+            <div class="custom-row"><input type="text" id="motivations-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('motivations')">Add</button></div>
+            <div class="tags-wrap" id="motivations-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 8. Appearance and Equipment -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Appearance and Equipment
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block" id="appearance-wrap">
+            <div class="q-title-row">
+              <span class="q-title">Appearance Profile (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('appearance')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="appearance-opts"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="appearance-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('appearance')">Add</button></div>
+            <div class="tags-wrap" id="appearance-tags"></div>
+          </div>
+
+          <div class="q-block" id="equipTheme-wrap">
+            <div class="q-title-row">
+              <span class="q-title">Equipment Theme (up to 2)</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('equipTheme')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="equipTheme-opts"></div>
+            <p class="multi-note">Select up to 2</p>
+            <div class="custom-row"><input type="text" id="equipTheme-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('equipTheme')">Add</button></div>
+            <div class="tags-wrap" id="equipTheme-tags"></div>
+          </div>
+
+          <div class="q-block" id="equipMethod-wrap">
+            <div class="q-title-row">
+              <span class="q-title">Starting Equipment Method</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('equipMethod')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="equipMethod-opts"></div>
+            <div class="custom-row"><input type="text" id="equipMethod-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('equipMethod')">Add</button></div>
+            <div class="tags-wrap" id="equipMethod-tags"></div>
+          </div>
+
+          <div class="q-block" id="spells-wrap" style="display:none">
+            <div class="q-title-row">
+              <span class="q-title">Spellcasting Details</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('spells')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="spells-opts"></div>
+            <div class="custom-row"><input type="text" id="spells-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('spells')">Add</button></div>
+            <div class="tags-wrap" id="spells-tags"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 9. Portrait Settings -->
+      <div class="accordion" id="section-portrait">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Portrait Settings
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Portrait Art Style</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('artStyle')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="artStyle-opts"></div>
+            <div class="custom-row"><input type="text" id="artStyle-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('artStyle')">Add</button></div>
+            <div class="tags-wrap" id="artStyle-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Portrait Composition</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('composition')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="composition-opts"></div>
+            <div class="custom-row"><input type="text" id="composition-custom" placeholder="Or type custom..."><button class="btn btn-small" onclick="addCustom('composition')">Add</button></div>
+            <div class="tags-wrap" id="composition-tags"></div>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Image Aspect Ratio</span>
+              <button class="btn btn-rand btn-small" onclick="randomizeField('imageSize')">&#9861;</button>
+            </div>
+            <div class="options-grid" id="imageSize-opts"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- 10. Clarification and Name -->
+      <div class="accordion">
+        <div class="accordion-header" onclick="toggleAccordion(this)">
+          Clarification and Name
+          <span class="accordion-chevron">&#9660;</span>
+        </div>
+        <div class="accordion-body">
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Clarifications</span>
+            </div>
+            <p style="font-size:0.76rem;color:var(--dim);margin-bottom:8px;">
+              All text entered here supersedes earlier selections. Use this to reinforce critical details, override defaults, or add narrative context.
+            </p>
+            <textarea id="revisions-input" rows="4" placeholder="Clarifications, additions, removals, or overrides. Leave blank to skip."></textarea>
+          </div>
+
+          <div class="q-block">
+            <div class="q-title-row">
+              <span class="q-title">Character Name</span>
+            </div>
+            <input type="text" id="name-input" placeholder="Enter character name (optional)">
+          </div>
+
+        </div>
+      </div>
+
+      <div class="action-bar">
+        <button class="btn btn-small" onclick="saveCurrent()">&#128190; Save</button>
+        <button class="btn btn-small" onclick="loadSaved()">&#128194; Load</button>
+        <button class="btn btn-small" onclick="clearSaved()">&#128465; Clear Saved</button>
+      </div>
+
+      <div class="notice" id="actionNotice"></div>
+
     </div>
-    <div class="out-section-body" id="stats-body"></div>
+
+    <!-- RIGHT: Preview column -->
+    <div class="preview-col">
+      <div class="preview-panel">
+        <div class="preview-head">Live Prompt Preview</div>
+        <div class="prompt-display empty" id="livePreview">
+          Fill in the form to see a live preview.
+        </div>
+        <div class="preview-actions">
+          <button class="btn btn-small" onclick="copyPreview()">&#128203; Copy Preview</button>
+        </div>
+        <div class="notice" id="copyNotice" style="margin:0 14px 10px;"></div>
+      </div>
+
+      <!-- xAI Generation panel -->
+      <div class="xai-panel">
+        <div class="xai-head">
+          &#9889; AI Character Generation
+        </div>
+        <div class="xai-body">
+
+          <div class="xai-row">
+            <label>API Key</label>
+            <div class="xai-key-wrap">
+              <input type="password" id="xaiApiKey" autocomplete="off" placeholder="Enter your xAI API key">
+              <button class="xai-toggle" onclick="toggleKeyVis()">SHOW</button>
+            </div>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin-top:4px;">
+            <input type="checkbox" id="xaiSaveKey" style="width:auto;accent-color:var(--soft-cyan);">
+            <label for="xaiSaveKey" style="font-size:0.74rem;color:var(--dim);margin:0;cursor:pointer;">
+              Save key to browser
+            </label>
+          </div>
+
+          <div style="margin-top:12px;">
+            <button class="btn btn-xai" id="xaiGenBtn" onclick="generateCharacter()" disabled>
+              &#9889; Generate Character
+            </button>
+          </div>
+
+          <div class="xai-status" id="xaiStatus">Enter an API key above to enable generation.</div>
+
+          <div class="notice" id="xaiNotice"></div>
+
+        </div>
+      </div>
+
+      <!-- Output Sections -->
+      <div class="out-section" id="out-stats" style="display:none">
+        <div class="out-section-head">
+          <span>Stats Sheet</span>
+          <button class="copy-sec-btn" onclick="copySectionText('stats-body')">COPY</button>
+        </div>
+        <div class="out-section-body" id="stats-body"></div>
+      </div>
+
+      <div class="out-section" id="out-lore" style="display:none">
+        <div class="out-section-head">
+          <span>Character Lore</span>
+          <button class="copy-sec-btn" onclick="copySectionText('lore-body')">COPY</button>
+        </div>
+        <div class="out-section-body" id="lore-body"></div>
+      </div>
+
+      <div class="out-section" id="out-visual" style="display:none">
+        <div class="out-section-head">
+          <span>Portrait Prompt</span>
+          <button class="copy-sec-btn" onclick="copySectionText('visual-body')">COPY</button>
+        </div>
+        <div class="out-section-body" id="visual-body"></div>
+      </div>
+
+      <div class="action-bar" id="output-actions" style="display:none">
+        <button class="btn btn-small" onclick="copyAllOutput()">&#128203; Copy All</button>
+        <button class="btn btn-small" onclick="resetOutput()">&#10022; Reset Output</button>
+      </div>
+
+    </div>
+
   </div>
 
-  <div id="out-lore" class="out-section" style="display:none">
-    <div class="out-section-title">
-      Character Lore
-      <button class="copy-sec-btn" onclick="copySection('lore')">Copy</button>
-    </div>
-    <div class="out-section-body" id="lore-body"></div>
-  </div>
-
-  <div id="out-visual" class="out-section" style="display:none">
-    <div class="out-section-title">
-      Portrait Prompt
-      <button class="copy-sec-btn" onclick="copySection('visual')">Copy</button>
-    </div>
-    <div class="out-section-body" id="visual-body"></div>
-  </div>
 </div>
-</div>
-
-<footer>r/CCsAIWorldBuilders - Cosmic Cowboy's AI Worldbuilders</footer>
 
 <script>
+
+/* ============================================================
+   DATA CONSTANTS
+   ============================================================ */
 const SUBCLASSES = {
   'Barbarian':['Path of the Berserker','Path of the Totem Warrior','Path of the Ancestral Guardian','Path of the Storm Herald','Path of the Zealot','Path of the Beast','Path of Wild Magic'],
   'Bard':['College of Lore','College of Valor','College of Glamour','College of Swords','College of Whispers','College of Eloquence','College of Creation'],
@@ -832,7 +1164,9 @@ const SUBCLASSES = {
   'Artificer':['Alchemist','Armorer','Artillerist','Battle Smith'],
   'Blood Hunter':['Order of the Profane Soul','Order of the Ghostslayer','Order of the Mutant','Order of the Lycan'],
 };
+
 const SUBCLASS_LEVEL = {'Barbarian':3,'Bard':3,'Cleric':1,'Druid':2,'Fighter':3,'Monk':3,'Paladin':3,'Ranger':3,'Rogue':3,'Sorcerer':1,'Warlock':1,'Wizard':2,'Artificer':3,'Blood Hunter':3};
+
 const SPELLCASTING_CLASSES = new Set(['Bard','Cleric','Druid','Sorcerer','Warlock','Wizard','Artificer']);
 
 const Q = {
@@ -850,14 +1184,14 @@ const Q = {
   feats: { type:'single', opts:['None','Alert — cannot be surprised; +5 initiative','Great Weapon Master — heavy weapon bonus damage; -5/+10 attack option','Sharpshooter — ranged bonus damage; -5/+10 attack option; ignore cover','War Caster — advantage on concentration saves; cast as opportunity attack','Polearm Master — bonus attack with polearm butt; opportunity attack on approach','Sentinel — freeze attackers on hit; opportunity attacks ignore Disengage','Lucky — 3 luck points per day to reroll attack, ability check, or saving throw','Tough — +2 HP per level, retroactive','Mobile — +10 ft speed; no opportunity attacks after Dash; ignore difficult terrain on attack target','Resilient (Constitution) — proficiency in CON saving throws','Heavy Armor Master — damage reduction 3 vs non-magical attacks while in heavy armor','Crossbow Expert — ignore loading; no disadvantage at close range; bonus hand crossbow attack','Magic Initiate — learn 2 cantrips and 1 first-level spell from one class list','Ritual Caster — cast ritual spells from a ritual book','Spell Sniper — double spell range; ignore half and three-quarters cover','Dual Wielder — +1 AC with two weapons; use non-light weapons for two-weapon fighting','Observant — +5 passive Perception and Investigation; read lips','Inspiring Leader — grant temporary HP equal to level + CHA modifier to up to 6 allies','Crusher — push target 5 ft on bludgeoning hit; advantage on next attack after crit','Piercer — reroll one damage die on piercing hit; additional damage die on crit','Slasher — reduce speed 10 ft on slashing hit; disadvantage on attacks after crit','Actor — advantage on Deception and Performance disguise checks; mimic voices','Athlete — improve movement after going prone; climb speed equals walk speed','Charger — bonus action charge attack or shove after Dash','Dungeon Delver — advantage on Perception/Investigation for secret doors; advantage vs traps','Elemental Adept — ignore resistance of chosen element; treat 1s as 2s on damage dice','Grappler — advantage on attacks vs grappled creatures; pin with contested grapple','Keen Mind — +1 INT; know direction, hours since sunrise, things memorized in last 30 days','Linguist — +1 INT; learn 3 languages; create ciphers','Mage Slayer — reaction attack when creature casts nearby; impose disadvantage on concentration','Mounted Combatant — advantage on attacks vs unmounted creatures; redirect attacks to mount','Shield Master — bonus shove after Attack; add shield bonus to DEX saves; no damage on successful DEX save','Skulker — hide when lightly obscured; no reveal on missed ranged attack','Tavern Brawler — proficiency with improvised weapons; bonus action grapple on hit'] },
   hp: { type:'single', opts:['Auto-calculate — average HP per level (most common)','Auto-calculate — maximum HP per level','Roll for HP — roll hit dice for each level after first'] },
   traits: { type:'multi', max:2, opts:['Brave and fearless','Cautious and calculated','Reckless and impulsive','Scholarly and bookish','Charismatic and silver-tongued','Stoic and unreadable','Curious and inquisitive','Compassionate and selfless','Ambitious and driven','Cynical and world-weary','Optimistic and upbeat','Pragmatic and no-nonsense','Idealistic and principled','Sardonic and dry-witted','Energetic and enthusiastic','Methodical and precise','Darkly humorous','Serious and mission-focused','Warm and outgoing','Quiet and introspective','Fiercely loyal to companions','Intensely competitive','Deeply superstitious','Surprisingly gentle despite fierce appearance'] },
-  ideal: { type:'single', opts:['Honor — I keep my word and stand by my principles','Freedom — Everyone deserves liberty and self-determination','Power — Strength and influence are what matter','Knowledge — Understanding the world is the highest calling','Compassion — Ease suffering wherever it is found','Revenge — Old wrongs must be righted, whatever the cost','Balance — Order and chaos must be kept in equilibrium','Creativity — Expression and inspiration are the point of living','Justice — The law must be upheld and wrongdoers punished','Tradition — The old ways have value and must be preserved','Independence — I answer to no one but myself','Faith — My deity’s will guides everything I do','Greed — Wealth and possessions are the measure of success','Redemption — Everyone deserves a second chance, including me','Glory — Legendary deeds are what a life is for','Survival — I will do what I must to see another day','Community — The group matters more than the individual','Truth — Lies corrode everything; I speak plainly','Change — Stagnation is death; things must always move forward'] },
+  ideal: { type:'single', opts:['Honor — I keep my word and stand by my principles','Freedom — Everyone deserves liberty and self-determination','Power — Strength and influence are what matter','Knowledge — Understanding the world is the highest calling','Compassion — Ease suffering wherever it is found','Revenge — Old wrongs must be righted, whatever the cost','Balance — Order and chaos must be kept in equilibrium','Creativity — Expression and inspiration are the point of living','Justice — The law must be upheld and wrongdoers punished','Tradition — The old ways have value and must be preserved','Independence — I answer to no one but myself','Faith — My deity\'s will guides everything I do','Greed — Wealth and possessions are the measure of success','Redemption — Everyone deserves a second chance, including me','Glory — Legendary deeds are what a life is for','Survival — I will do what I must to see another day','Community — The group matters more than the individual','Truth — Lies corrode everything; I speak plainly','Change — Stagnation is death; things must always move forward'] },
   bond: { type:'single', opts:['Family — devoted to protecting or reuniting with family','Mentor — seeking to honor or avenge a teacher or patron','Lost homeland — driven to reclaim or preserve ancestral lands','Sacred vow — bound by an oath that cannot be broken','Companion or animal — inseparable from a trusted friend or creature','Organization or guild — loyal to a faction above all else','Protected person — must keep a specific individual safe at all costs','Meaningful place — emotionally anchored to a location','Significant item — possesses an object of deep personal importance','Debt — owes someone a life, service, or great sum','Nemesis — consumed by the need to destroy a specific enemy','Dangerous secret — guards information that could change everything','Fallen comrade — carrying the memory and mission of someone lost','Innocent life — responsible for someone who cannot protect themselves'] },
-  flaws: { type:'multi', max:2, opts:['Impulsive — acts before thinking','Arrogant — cannot admit mistakes or accept criticism','Distrustful — suspicious of everyone’s motives','Secretive — withholds information even from allies','Hot-tempered — quick to anger, slow to forgive','Overconfident — consistently underestimates danger','Cowardly — avoids confrontation whenever possible','Greedy — values wealth over people','Stubborn — refuses to change course once decided','Naive — always assumes the best in others','Vengeful — cannot let a slight go unanswered','Jealous — envious of others’ success or possessions','Addicted — dependent on a substance, habit, or vice','Reckless — courts danger for the thrill of it','Dishonest — lies easily and often','Self-sacrificing — cannot accept help; must shoulder every burden','Condescending — cannot hide contempt for those less capable','Obsessive — becomes fixated on problems or enemies to an unhealthy degree'] },
+  flaws: { type:'multi', max:2, opts:['Impulsive — acts before thinking','Arrogant — cannot admit mistakes or accept criticism','Distrustful — suspicious of everyone\'s motives','Secretive — withholds information even from allies','Hot-tempered — quick to anger, slow to forgive','Overconfident — consistently underestimates danger','Cowardly — avoids confrontation whenever possible','Greedy — values wealth over people','Stubborn — refuses to change course once decided','Naive — always assumes the best in others','Vengeful — cannot let a slight go unanswered','Jealous — envious of others\' success or possessions','Addicted — dependent on a substance, habit, or vice','Reckless — courts danger for the thrill of it','Dishonest — lies easily and often','Self-sacrificing — cannot accept help; must shoulder every burden','Condescending — cannot hide contempt for those less capable','Obsessive — becomes fixated on problems or enemies to an unhealthy degree'] },
   physical: { type:'single', opts:['Young adult (18–25), average height and build, clean appearance, no notable scars','Young adult (18–25), tall and athletic, single prominent facial scar','Young adult (18–25), short and wiry, multiple small scars, restless energy','Young adult (18–25), lean and angular, close-cropped hair, sharp eyes','Young adult (18–25), powerfully built, imposing frame, intense gaze','Prime adult (26–35), average height, muscular build, no distinguishing marks','Prime adult (26–35), tall and imposing, broad shoulders, broken nose','Prime adult (26–35), short and stocky, heavily tattooed arms and neck','Prime adult (26–35), lean and quick, long facial scar from temple to jaw','Prime adult (26–35), average build, missing a finger or ear from old injury','Prime adult (26–35), commanding posture, multiple healed battle wounds','Middle-aged (36–50), average height and build, greying hair, weathered face','Middle-aged (36–50), tall and still powerful, multiple old battle scars','Middle-aged (36–50), compact build, ritual tattoos on forearms and hands','Middle-aged (36–50), lean and sharp-featured, streaked grey hair, measuring gaze','Middle-aged (36–50), slight stoop from years of study, ink-stained fingers','Mature (51–65), average build, slight stoop, wise eyes, silver hair','Mature (51–65), still robust, network of old scars, deliberate movements','Mature (51–65), slight frame, long braided or knotted hair, unhurried manner','Elderly (66+), frail build, long white hair or beard, deeply lined face','Elderly (66+), still vigorous and wiry, weathered skin, commanding presence'] },
   voice: { type:'single', opts:['Deep, resonant voice — speaks slowly and deliberately; stands with arms crossed','High, clear voice — speaks quickly and enthusiastically; gestures expressively','Gravelly, rough voice — short clipped sentences; constantly checking weapons or gear','Soft, gentle voice — thoughtful pauses before speaking; holds steady eye contact','Loud, booming voice — laughs often; greets people with a clap on the shoulder','Quiet, measured voice — precise word choice; goes still when listening carefully','Melodious voice — flowing speech; uses hands to emphasize points','Hoarse, damaged voice — minimal speech; nods and gestures instead of talking','Accented Common — friendly and warm; smiles and nods to compensate for words','Flat, monotone voice — literal and direct; avoids eye contact','Rapid-fire speech — talks over people; fidgets constantly with hands or equipment','Cultured, refined speech — complex vocabulary; sips from a flask when thinking','Military cadence — clipped and efficient; stands at near-attention habitually','Scholarly tone — explains everything at length; strokes chin when pondering','Dry, sardonic delivery — smirks more than smiles; leans on walls whenever possible','Warm, parental tone — pats shoulders; always has food or drink to offer','Nervous and stammering — adjusts clothing or wrings hands under pressure','Commanding and direct — sustained eye contact; uses titles and ranks with everyone','Conspiratorial whisper — leans in close; glances around before speaking','Singsong, lyrical cadence — hums between sentences; moves with theatrical flair'] },
   motivations: { type:'single', opts:['Fear: failure and letting others down. Desire: prove worth to family. Conflict: duty vs personal wants.','Fear: losing loved ones. Desire: protect home and community. Conflict: peaceful nature vs violent world.','Fear: being forgotten. Desire: achieve legendary status. Conflict: glory vs wisdom and restraint.','Fear: powerlessness. Desire: accumulate power and influence. Conflict: ambition vs morality.','Fear: confinement and loss of freedom. Desire: break all chains. Conflict: chaos vs order.','Fear: the unknown. Desire: uncover every secret. Conflict: ethics vs insatiable curiosity.','Fear: poverty and deprivation. Desire: security and comfort for those I love. Conflict: idealism vs pragmatism.','Fear: being truly alone. Desire: find people worth trusting. Conflict: openness vs self-protection.','Fear: death and oblivion. Desire: achieve some form of immortality. Conflict: life vs the lure of undeath.','Fear: disorder and chaos. Desire: impose structure and law. Conflict: control vs individual freedom.','Fear: betrayal by trusted allies. Desire: find people truly worthy of loyalty. Conflict: trust vs self-interest.','Fear: past mistakes catching up. Desire: earn genuine redemption. Conflict: guilt vs the need to move forward.','Fear: being ordinary. Desire: master something rare and extraordinary. Conflict: uniqueness vs belonging.','Fear: losing cultural identity. Desire: preserve traditions and heritage. Conflict: old ways vs a changing world.','Fear: losing control of a power or curse. Desire: master or remove the affliction. Conflict: power vs safety.','Fear: causing harm to innocents. Desire: use strength only in service of good. Conflict: mercy vs justice.','Fear: being manipulated. Desire: expose hidden truths. Conflict: justified paranoia vs reality.','Fear: wasting a rare talent or destiny. Desire: fulfill a perceived purpose. Conflict: free will vs fate.','Fear: being judged for past crimes. Desire: build a new identity and life. Conflict: honesty vs necessary secrecy.','Fear: failing to understand the world. Desire: learn everything before time runs out. Conflict: scholarship vs action.'] },
   appearance: { type:'multi', max:2, opts:['Rugged','Regal','Scholarly','Mysterious','Battle-worn','Elegant','Minimalist','Cultural or traditional','Weathered and road-worn','Youthful','Physically imposing','Unassuming and easy to overlook','Eccentric and unusual','Quietly menacing','Approachably friendly'] },
-  equipTheme: { type:'multi', max:2, opts:['Standard class kit','Heavy military plate and arms','Arcane focus, robes, and component pouch','Hunter’s gear — practical, weathered, utilitarian','Stealth kit — dark clothing, minimal noise, hidden blades','Holy regalia — symbol, vestments, sacred weapon','Artisan or crafter tools alongside weapons','Tribal or primitive — bone, hide, natural materials','Noble courtly attire with concealed or ceremonial weapons','Scavenged and improvised — mismatched but functional','Sea-worn — rope, oilskin, boarding weapons','Wizard’s laboratory aesthetic — pouches, scrolls, strange devices','Monastic — simple robes, minimal gear, exceptional quality weapons','Druidic — living materials, carved wood, feathers, vine-work','Military campaign kit — travel-worn armor, spare rations, field gear'] },
+  equipTheme: { type:'multi', max:2, opts:['Standard class kit','Heavy military plate and arms','Arcane focus, robes, and component pouch','Hunter\'s gear — practical, weathered, utilitarian','Stealth kit — dark clothing, minimal noise, hidden blades','Holy regalia — symbol, vestments, sacred weapon','Artisan or crafter tools alongside weapons','Tribal or primitive — bone, hide, natural materials','Noble courtly attire with concealed or ceremonial weapons','Scavenged and improvised — mismatched but functional','Sea-worn — rope, oilskin, boarding weapons','Wizard\'s laboratory aesthetic — pouches, scrolls, strange devices','Monastic — simple robes, minimal gear, exceptional quality weapons','Druidic — living materials, carved wood, feathers, vine-work','Military campaign kit — travel-worn armor, spare rations, field gear'] },
   equipMethod: { type:'single', opts:['Standard starting equipment for class and background','Starting gold to purchase equipment'] },
   spells: { type:'single', opts:['Auto-generate appropriate spells for class and level','Random spell selection'] },
   artStyle: { type:'single', opts:['Fantasy realism — realistic, heroic, detailed illustration','Cinematic concept art — dramatic lighting, painterly, character-focused','Classic ink and parchment — old-school fantasy line art, crosshatching','Anime inspired — stylized, clean lines, bold expression and colour','Painterly oil style — traditional fantasy painting texture','Photorealistic — near-photographic quality rendering','Digital art — clean, vibrant, modern digital painting','Watercolor style — soft edges, translucent washes, delicate detail','Dark fantasy — grim, desaturated, heavy shadows, gritty detail','Storybook illustration — warm, inviting, slightly stylized'] },
@@ -865,13 +1199,11 @@ const Q = {
   imageSize: { type:'single', opts:['Square (1:1)','Portrait — tall (2:3)','Landscape — wide (3:2)'] },
 };
 
-let state = { ans:{}, custom:{}, oo:{ stats:true, lore:true, image:true } };
-
 const PRESETS = {
   classicFighter: { edition:'D&D 5e', _level:5, ancestry:'Human', gender:'Male', charClass:'Fighter', background:'Soldier', alignment:'Lawful Good', abilityMethod:'Standard array (15, 14, 13, 12, 10, 8)', hp:'Auto-calculate — average HP per level (most common)', traits:['Brave and fearless','Pragmatic and no-nonsense'], ideal:'Honor — I keep my word and stand by my principles', bond:'Fallen comrade — carrying the memory and mission of someone lost', flaws:['Stubborn — refuses to change course once decided'], physical:'Prime adult (26–35), tall and imposing, broad shoulders, broken nose', appearance:['Battle-worn','Physically imposing'], equipTheme:['Heavy military plate and arms'], equipMethod:'Standard starting equipment for class and background', artStyle:'Fantasy realism — realistic, heroic, detailed illustration', composition:'Half-body — waist up, environment suggested', imageSize:'Portrait — tall (2:3)', skin:'European' },
   elvenMage: { edition:'D&D 5e', _level:7, ancestry:'High Elf', gender:'Female', charClass:'Wizard', background:'Sage', alignment:'Neutral Good', abilityMethod:'Standard array (15, 14, 13, 12, 10, 8)', hp:'Auto-calculate — average HP per level (most common)', traits:['Scholarly and bookish','Curious and inquisitive'], ideal:'Knowledge — Understanding the world is the highest calling', bond:'Mentor — seeking to honor or avenge a teacher or patron', flaws:['Obsessive — becomes fixated on problems or enemies to an unhealthy degree'], physical:'Young adult (18–25), lean and angular, close-cropped hair, sharp eyes', appearance:['Elegant','Scholarly'], equipTheme:['Arcane focus, robes, and component pouch'], equipMethod:'Standard starting equipment for class and background', spells:'Auto-generate appropriate spells for class and level', artStyle:'Digital art — clean, vibrant, modern digital painting', composition:'Casting or channeling — spell or power visually active', imageSize:'Portrait — tall (2:3)', skin:'Light, fair complexion' },
-  holyPaladin: { edition:'D&D 5e', _level:6, ancestry:'Aasimar', gender:'Male', charClass:'Paladin', background:'Acolyte', alignment:'Lawful Good', abilityMethod:'Pre-assigned by class optimization', hp:'Auto-calculate — average HP per level (most common)', traits:['Idealistic and principled','Warm and outgoing'], ideal:'Faith — My deity’s will guides everything I do', bond:'Sacred vow — bound by an oath that cannot be broken', flaws:['Self-sacrificing — cannot accept help; must shoulder every burden'], physical:'Prime adult (26–35), commanding posture, multiple healed battle wounds', appearance:['Regal','Physically imposing'], equipTheme:['Holy regalia — symbol, vestments, sacred weapon'], equipMethod:'Standard starting equipment for class and background', artStyle:'Cinematic concept art — dramatic lighting, painterly, character-focused', composition:'Dramatic low angle — heroic framing, looking upward', imageSize:'Portrait — tall (2:3)', skin:'Celestial (radiant gold, luminous white, soft halo)' },
-  shadowRogue: { edition:'D&D 5e', _level:5, ancestry:'Half-Elf', gender:'Female', charClass:'Rogue', background:'Criminal', alignment:'Chaotic Neutral', abilityMethod:'Standard array (15, 14, 13, 12, 10, 8)', hp:'Auto-calculate — average HP per level (most common)', traits:['Cautious and calculated','Sardonic and dry-witted'], ideal:'Freedom — Everyone deserves liberty and self-determination', bond:'Dangerous secret — guards information that could change everything', flaws:['Distrustful — suspicious of everyone’s motives'], physical:'Young adult (18–25), short and wiry, multiple small scars, restless energy', appearance:['Mysterious','Minimalist'], equipTheme:['Stealth kit — dark clothing, minimal noise, hidden blades'], equipMethod:'Standard starting equipment for class and background', artStyle:'Dark fantasy — grim, desaturated, heavy shadows, gritty detail', composition:'On watch — alert, scanning surroundings', imageSize:'Portrait — tall (2:3)', skin:'Olive, sun-weathered complexion' },
+  holyPaladin: { edition:'D&D 5e', _level:6, ancestry:'Aasimar', gender:'Male', charClass:'Paladin', background:'Acolyte', alignment:'Lawful Good', abilityMethod:'Pre-assigned by class optimization', hp:'Auto-calculate — average HP per level (most common)', traits:['Idealistic and principled','Warm and outgoing'], ideal:'Faith — My deity\'s will guides everything I do', bond:'Sacred vow — bound by an oath that cannot be broken', flaws:['Self-sacrificing — cannot accept help; must shoulder every burden'], physical:'Prime adult (26–35), commanding posture, multiple healed battle wounds', appearance:['Regal','Physically imposing'], equipTheme:['Holy regalia — symbol, vestments, sacred weapon'], equipMethod:'Standard starting equipment for class and background', artStyle:'Cinematic concept art — dramatic lighting, painterly, character-focused', composition:'Dramatic low angle — heroic framing, looking upward', imageSize:'Portrait — tall (2:3)', skin:'Celestial (radiant gold, luminous white, soft halo)' },
+  shadowRogue: { edition:'D&D 5e', _level:5, ancestry:'Half-Elf', gender:'Female', charClass:'Rogue', background:'Criminal', alignment:'Chaotic Neutral', abilityMethod:'Standard array (15, 14, 13, 12, 10, 8)', hp:'Auto-calculate — average HP per level (most common)', traits:['Cautious and calculated','Sardonic and dry-witted'], ideal:'Freedom — Everyone deserves liberty and self-determination', bond:'Dangerous secret — guards information that could change everything', flaws:['Distrustful — suspicious of everyone\'s motives'], physical:'Young adult (18–25), short and wiry, multiple small scars, restless energy', appearance:['Mysterious','Minimalist'], equipTheme:['Stealth kit — dark clothing, minimal noise, hidden blades'], equipMethod:'Standard starting equipment for class and background', artStyle:'Dark fantasy — grim, desaturated, heavy shadows, gritty detail', composition:'On watch — alert, scanning surroundings', imageSize:'Portrait — tall (2:3)', skin:'Olive, sun-weathered complexion' },
   wildSorcerer: { edition:'D&D 5e', _level:8, ancestry:'Tiefling', gender:'Nonbinary', charClass:'Sorcerer', background:'Hermit', alignment:'Chaotic Good', abilityMethod:'Rolled — 4d6 drop lowest', hp:'Auto-calculate — average HP per level (most common)', traits:['Energetic and enthusiastic','Reckless and impulsive'], ideal:'Change — Stagnation is death; things must always move forward', bond:'Family — devoted to protecting or reuniting with family', flaws:['Reckless — courts danger for the thrill of it'], physical:'Young adult (18–25), powerfully built, imposing frame, intense gaze', appearance:['Eccentric and unusual','Youthful'], equipTheme:['Arcane focus, robes, and component pouch'], equipMethod:'Standard starting equipment for class and background', spells:'Auto-generate appropriate spells for class and level', artStyle:'Fantasy realism — realistic, heroic, detailed illustration', composition:'Action pose — mid-movement, dynamic angle', imageSize:'Portrait — tall (2:3)', skin:'Infernal (deep red, charcoal, ember glow)' },
 };
 
@@ -1042,6 +1374,20 @@ HIT POINTS — calculate correctly:
 - Subsequent levels: average (or max or rolled, per selection) + CON modifier per level
 - Hit die by class: d12 Barbarian, d10 Fighter/Paladin/Ranger/Blood Hunter, d8 Bard/Cleric/Druid/Monk/Rogue/Warlock/Artificer, d6 Sorcerer/Wizard`;
 
+
+/* ============================================================
+   APP STATE
+   ============================================================ */
+let ST = {
+  answers: {},
+  customInputs: {},
+  oo: { stats: true, lore: true, image: true }
+};
+
+
+/* ============================================================
+   RENDERING
+   ============================================================ */
 function renderAll() {
   Object.keys(Q).forEach(qid => renderField(qid));
 }
@@ -1049,367 +1395,471 @@ function renderAll() {
 function renderField(qid) {
   const q = Q[qid];
   if (!q) return;
-  const cont = document.getElementById(qid + '-opts');
-  if (!cont) return;
-  cont.innerHTML = '';
-  q.opts.forEach(opt => {
-    const btn = document.createElement('button');
-    btn.className = 'opt-btn';
-    btn.textContent = opt;
-    const sel = state.ans[qid];
-    if (sel) {
+
+  const gridEl = document.getElementById(`${qid}-opts`);
+  const selEl = document.getElementById(`${qid}-sel`);
+
+  if (gridEl) {
+    gridEl.innerHTML = '';
+    const sel = ST.answers[qid];
+    q.opts.forEach(opt => {
+      const btn = document.createElement('button');
+      btn.className = 'option-btn';
+      btn.textContent = opt;
       if (Array.isArray(sel) && sel.includes(opt)) btn.classList.add('selected');
       else if (sel === opt) btn.classList.add('selected');
-    }
-    btn.onclick = () => handleClick(qid, opt);
-    cont.appendChild(btn);
-  });
+      btn.onclick = () => handleClick(qid, opt);
+      gridEl.appendChild(btn);
+    });
+  } else if (selEl) {
+    const curVal = ST.answers[qid] || '';
+    selEl.innerHTML = '<option value="">-- Select --</option>';
+    q.opts.forEach(opt => {
+      const o = document.createElement('option');
+      o.value = opt;
+      o.textContent = opt;
+      if (opt === curVal) o.selected = true;
+      selEl.appendChild(o);
+    });
+  }
+
   renderTags(qid);
 }
 
 function handleClick(qid, opt) {
   const q = Q[qid];
+  if (!q) return;
+
   if (q.type === 'single') {
-    state.ans[qid] = opt;
+    ST.answers[qid] = opt;
   } else {
-    let cur = state.ans[qid] || [];
+    let cur = ST.answers[qid] || [];
     if (!Array.isArray(cur)) cur = [];
     if (cur.includes(opt)) {
-      state.ans[qid] = cur.filter(v => v !== opt);
-    } else if (cur.length < q.max) {
-      state.ans[qid] = [...cur, opt];
+      cur = cur.filter(v => v !== opt);
     } else {
-      return;
+      if (cur.length >= q.max) {
+        showNotice(`Max ${q.max} selections for this field.`, 'err', 'actionNotice');
+        return;
+      }
+      cur = [...cur, opt];
     }
+    ST.answers[qid] = cur;
   }
+
   renderField(qid);
+
   if (qid === 'charClass') updateSubclass();
-  if (qid === 'charClass' || qid === 'edition') updateConditionals();
+  updateConditionals();
   updatePreview();
 }
 
+function onSelectChange(qid) {
+  const selEl = document.getElementById(`${qid}-sel`);
+  if (!selEl) return;
+  ST.answers[qid] = selEl.value;
+  updatePreview();
+}
+
+
+/* ============================================================
+   CUSTOM TAGS
+   ============================================================ */
 function addCustom(qid) {
-  const inp = document.getElementById(qid + '-custom');
+  const inp = document.getElementById(`${qid}-custom`);
   if (!inp) return;
   const val = inp.value.trim();
   if (!val) return;
-  if (!state.custom[qid]) state.custom[qid] = [];
-  state.custom[qid].push(val);
+  if (!ST.customInputs[qid]) ST.customInputs[qid] = [];
+  ST.customInputs[qid].push(val);
   inp.value = '';
   renderTags(qid);
   updatePreview();
 }
 
 function removeCustom(qid, idx) {
-  state.custom[qid].splice(idx, 1);
+  if (!ST.customInputs[qid]) return;
+  ST.customInputs[qid].splice(idx, 1);
   renderTags(qid);
   updatePreview();
 }
 
 function renderTags(qid) {
-  const wrap = document.getElementById(qid + '-tags');
+  const wrap = document.getElementById(`${qid}-tags`);
   if (!wrap) return;
-  const tags = state.custom[qid] || [];
-  wrap.innerHTML = tags.map((t, i) =>
-    '<span class="tag">' + t + '<button onclick="removeCustom(\'' + qid + '\',' + i + ')">x</button></span>'
+  const items = ST.customInputs[qid] || [];
+  wrap.innerHTML = items.map((t, i) =>
+    `<span class="custom-tag">${t}<button onclick="removeCustom('${qid}',${i})">&#215;</button></span>`
   ).join('');
 }
 
-function getAns(qid) {
-  const a = state.ans[qid];
-  const customs = state.custom[qid] || [];
-  if (!a && customs.length === 0) return '';
-  const base = Array.isArray(a) ? a.join(', ') : (a || '');
-  return [base, ...customs].filter(Boolean).join(', ');
+
+/* ============================================================
+   ACCORDION
+   ============================================================ */
+function toggleAccordion(header) {
+  header.classList.toggle('open');
+  header.nextElementSibling.classList.toggle('open');
 }
 
-function getLevel() {
-  return parseInt(document.getElementById('level-input').value) || 0;
-}
 
-function getName() {
-  return document.getElementById('name-input').value.trim();
-}
-
-function getRevisions() {
-  return document.getElementById('revisions-input').value.trim();
-}
-
-function randField(qid) {
+/* ============================================================
+   RANDOMIZE
+   ============================================================ */
+function randomizeField(qid) {
   const q = Q[qid];
-  if (!q) return;
+  if (!q || !q.opts || q.opts.length === 0) return;
+
   if (q.type === 'single') {
-    state.ans[qid] = q.opts[Math.floor(Math.random() * q.opts.length)];
+    const pick = q.opts[Math.floor(Math.random() * q.opts.length)];
+    ST.answers[qid] = pick;
   } else {
     const count = Math.floor(Math.random() * q.max) + 1;
-    state.ans[qid] = [...q.opts].sort(() => 0.5 - Math.random()).slice(0, count);
+    const picks = [...q.opts].sort(() => Math.random() - 0.5).slice(0, count);
+    ST.answers[qid] = picks;
   }
+
   renderField(qid);
+
   if (qid === 'charClass') updateSubclass();
-  if (qid === 'charClass' || qid === 'edition') updateConditionals();
+  updateConditionals();
   updatePreview();
 }
 
-function randLevel() {
-  const val = Math.floor(Math.random() * 20) + 1;
-  document.getElementById('level-input').value = val;
-  onLevelChange();
+function randomizeAll() {
+  const skipFields = new Set(['abilityMethod','equipMethod','imageSize','hp','subclass']);
+  const dropdownFields = new Set(['abilityMethod','skills','languages','feats','ideal','bond','physical','voice','motivations']);
+
+  Object.keys(Q).forEach(qid => {
+    if (skipFields.has(qid)) return;
+    if (dropdownFields.has(qid)) return;
+    const q = Q[qid];
+    if (!q || !q.opts || q.opts.length === 0) return;
+    if (q.type === 'single') {
+      ST.answers[qid] = q.opts[Math.floor(Math.random() * q.opts.length)];
+    } else {
+      const count = Math.floor(Math.random() * q.max) + 1;
+      ST.answers[qid] = [...q.opts].sort(() => Math.random() - 0.5).slice(0, count);
+    }
+  });
+
+  // Random level 1-20
+  const lvl = Math.floor(Math.random() * 20) + 1;
+  document.getElementById('level-input').value = lvl;
+
+  // Randomize dropdown fields (but not custom inputs)
+  ['ideal','bond','physical','voice','motivations','skills','languages'].forEach(qid => {
+    const q = Q[qid];
+    if (!q || !q.opts || q.opts.length === 0) return;
+    ST.answers[qid] = q.opts[Math.floor(Math.random() * q.opts.length)];
+  });
+
+  // Handle subclass after class is set
+  updateSubclass();
+  if (Q.subclass.opts.length > 0) {
+    ST.answers.subclass = Q.subclass.opts[Math.floor(Math.random() * Q.subclass.opts.length)];
+  }
+
+  renderAll();
+  updateConditionals();
+  updatePreview();
 }
 
+
+/* ============================================================
+   CONDITIONALS
+   ============================================================ */
 function onLevelChange() {
   updateConditionals();
   updatePreview();
 }
 
 function updateSubclass() {
-  const cls = (state.ans.charClass || '').split('(')[0].split(',')[0].trim();
-  const opts = SUBCLASSES[cls] || [];
-  Q.subclass.opts = opts;
-  state.ans.subclass = undefined;
+  const cls = ST.answers.charClass || '';
+  const baseName = cls.replace(/\s*\(.*\)/, '');
+  const subs = SUBCLASSES[baseName] || [];
+  Q.subclass.opts = subs;
+  ST.answers.subclass = undefined;
   renderField('subclass');
-  updateConditionals();
+
+  const wrap = document.getElementById('subclass-wrap');
+  if (wrap) {
+    const lvl = parseInt(document.getElementById('level-input').value) || 1;
+    const reqLvl = SUBCLASS_LEVEL[baseName] || 99;
+    wrap.style.display = (subs.length > 0 && lvl >= reqLvl) ? '' : 'none';
+  }
 }
 
 function updateConditionals() {
-  const lvl = getLevel();
-  const cls = (state.ans.charClass || '').split('(')[0].split(',')[0].trim();
-  const ed = state.ans.edition || '';
-  const sub = state.ans.subclass || '';
+  const lvl = parseInt(document.getElementById('level-input').value) || 1;
+  const edition = ST.answers.edition || '';
+  const cls = ST.answers.charClass || '';
+  const baseName = cls.replace(/\s*\(.*\)/, '');
+  const subclass = ST.answers.subclass || '';
 
-  // Subclass: show when class set AND level >= unlock level
+  // Subclass visibility
   const subWrap = document.getElementById('subclass-wrap');
-  const unlockLvl = SUBCLASS_LEVEL[cls];
-  const showSub = cls && unlockLvl !== undefined && lvl >= unlockLvl;
-  if (subWrap) subWrap.classList.toggle('hidden', !showSub);
+  if (subWrap) {
+    const subs = SUBCLASSES[baseName] || [];
+    const reqLvl = SUBCLASS_LEVEL[baseName] || 99;
+    subWrap.style.display = (subs.length > 0 && lvl >= reqLvl) ? '' : 'none';
+  }
 
-  // Feats: level >= 4 AND not OSR/System neutral
+  // Feats visibility
   const featsWrap = document.getElementById('feats-wrap');
-  const showFeats = lvl >= 4 && ed !== 'OSR style generic fantasy' && ed !== 'System neutral';
-  if (featsWrap) featsWrap.classList.toggle('hidden', !showFeats);
+  if (featsWrap) {
+    const isOSR = edition === 'OSR style generic fantasy' || edition === 'System neutral';
+    featsWrap.style.display = (lvl >= 4 && !isOSR) ? '' : 'none';
+  }
 
-  // Spells: spellcasting classes, or Paladin/Ranger at lvl 2+, or EK/AT at lvl 3+
+  // Spells visibility
   const spellsWrap = document.getElementById('spells-wrap');
-  let showSpells = SPELLCASTING_CLASSES.has(cls);
-  if ((cls === 'Paladin' || cls === 'Ranger') && lvl >= 2) showSpells = true;
-  if (lvl >= 3 && (sub.includes('Eldritch Knight') || sub.includes('Arcane Trickster'))) showSpells = true;
-  if (spellsWrap) spellsWrap.classList.toggle('hidden', !showSpells);
+  if (spellsWrap) {
+    let showSpells = false;
+    if (SPELLCASTING_CLASSES.has(baseName)) {
+      showSpells = true;
+    } else if ((baseName === 'Paladin' || baseName === 'Ranger') && lvl >= 2) {
+      showSpells = true;
+    } else if ((subclass === 'Eldritch Knight' || subclass === 'Arcane Trickster') && lvl >= 3) {
+      showSpells = true;
+    }
+    // Only show if stats output is on
+    if (!ST.oo.stats) showSpells = false;
+    spellsWrap.style.display = showSpells ? '' : 'none';
+  }
+
+  updateOutputConditionals();
 }
 
 function onOutputChange() {
-  state.oo = {
-    stats: document.getElementById('oo-stats').checked,
-    lore:  document.getElementById('oo-lore').checked,
-    image: document.getElementById('oo-image').checked
-  };
+  ST.oo.stats = document.getElementById('oo-stats').checked;
+  ST.oo.lore = document.getElementById('oo-lore').checked;
+  ST.oo.image = document.getElementById('oo-image').checked;
   updateOutputConditionals();
 }
 
 function updateOutputConditionals() {
-  const oo = state.oo;
+  const { stats, lore, image } = ST.oo;
 
-  // Stats off → hide Mechanics section, equipMethod, spells
-  document.getElementById('section-mechanics').classList.toggle('hidden', !oo.stats);
-  document.getElementById('equipMethod-wrap').classList.toggle('hidden', !oo.stats);
-  // spells-wrap has its own conditional too, only show if stats on AND spell class
-  if (!oo.stats) document.getElementById('spells-wrap').classList.add('hidden');
+  // Section visibility
+  const secMech = document.getElementById('section-mechanics');
+  if (secMech) secMech.style.display = stats ? '' : 'none';
 
-  // Lore off → hide Personality section, voice, motivations
-  document.getElementById('section-personality').classList.toggle('hidden', !oo.lore);
-  document.getElementById('voice-wrap').classList.toggle('hidden', !oo.lore);
-  document.getElementById('motivations-wrap').classList.toggle('hidden', !oo.lore);
+  const eqWrap = document.getElementById('equipMethod-wrap');
+  if (eqWrap) eqWrap.style.display = stats ? '' : 'none';
 
-  // Image off → hide Portrait Settings section, skin palette
-  document.getElementById('section-portrait').classList.toggle('hidden', !oo.image);
-  document.getElementById('skin-wrap').classList.toggle('hidden', !oo.image);
+  // Spells wrap also depends on stats
+  if (!stats) {
+    const sw = document.getElementById('spells-wrap');
+    if (sw) sw.style.display = 'none';
+  }
 
-  // Both lore AND image off → hide physical, appearance, equipTheme
-  const bothOff = !oo.lore && !oo.image;
-  document.getElementById('physical-wrap').classList.toggle('hidden', bothOff);
-  document.getElementById('appearance-wrap').classList.toggle('hidden', bothOff);
-  document.getElementById('equipTheme-wrap').classList.toggle('hidden', bothOff);
+  const secPers = document.getElementById('section-personality');
+  if (secPers) secPers.style.display = lore ? '' : 'none';
 
-  // Output panels
-  document.getElementById('out-stats').style.display =
-    oo.stats && document.getElementById('stats-body').textContent ? 'block' : 'none';
-  document.getElementById('out-lore').style.display =
-    oo.lore && document.getElementById('lore-body').textContent ? 'block' : 'none';
-  document.getElementById('out-visual').style.display =
-    oo.image && document.getElementById('visual-body').textContent ? 'block' : 'none';
+  const voiceWrap = document.getElementById('voice-wrap');
+  if (voiceWrap) voiceWrap.style.display = lore ? '' : 'none';
 
-  // Generate button
-  const btn = document.getElementById('gen-btn');
-  const any = oo.stats || oo.lore || oo.image;
-  btn.disabled = !any;
+  const motWrap = document.getElementById('motivations-wrap');
+  if (motWrap) motWrap.style.display = lore ? '' : 'none';
+
+  const secPort = document.getElementById('section-portrait');
+  if (secPort) secPort.style.display = image ? '' : 'none';
+
+  const skinWrap = document.getElementById('skin-wrap');
+  if (skinWrap) skinWrap.style.display = image ? '' : 'none';
+
+  // Both lore AND image off: hide physical, appearance, equipTheme
+  const bothOff = !lore && !image;
+  const physWrap = document.getElementById('physical-wrap');
+  if (physWrap) physWrap.style.display = bothOff ? 'none' : '';
+
+  const appWrap = document.getElementById('appearance-wrap');
+  if (appWrap) appWrap.style.display = bothOff ? 'none' : '';
+
+  const eqtWrap = document.getElementById('equipTheme-wrap');
+  if (eqtWrap) eqtWrap.style.display = bothOff ? 'none' : '';
+
+  // Output section display
+  const outStats = document.getElementById('out-stats');
+  if (outStats) {
+    if (!stats) outStats.style.display = 'none';
+  }
+  const outLore = document.getElementById('out-lore');
+  if (outLore) {
+    if (!lore) outLore.style.display = 'none';
+  }
+  const outVisual = document.getElementById('out-visual');
+  if (outVisual) {
+    if (!image) outVisual.style.display = 'none';
+  }
+
+  // Re-run conditionals for spells if stats just came back on
+  if (stats) updateConditionals_spellsOnly();
+}
+
+function updateConditionals_spellsOnly() {
+  const lvl = parseInt(document.getElementById('level-input').value) || 1;
+  const cls = ST.answers.charClass || '';
+  const baseName = cls.replace(/\s*\(.*\)/, '');
+  const subclass = ST.answers.subclass || '';
+  const spellsWrap = document.getElementById('spells-wrap');
+  if (!spellsWrap) return;
+  let showSpells = false;
+  if (SPELLCASTING_CLASSES.has(baseName)) showSpells = true;
+  else if ((baseName === 'Paladin' || baseName === 'Ranger') && lvl >= 2) showSpells = true;
+  else if ((subclass === 'Eldritch Knight' || subclass === 'Arcane Trickster') && lvl >= 3) showSpells = true;
+  spellsWrap.style.display = showSpells ? '' : 'none';
+}
+
+
+/* ============================================================
+   PREVIEW
+   ============================================================ */
+function getAns(qid) {
+  const q = Q[qid];
+  const ans = ST.answers[qid];
+  if (!q) return '';
+
+  let base = '';
+  if (ans !== undefined && ans !== null && ans !== '') {
+    if (Array.isArray(ans)) {
+      base = ans.filter(Boolean).join(', ');
+    } else {
+      base = ans;
+    }
+  }
+
+  const customs = ST.customInputs[qid] || [];
+  return [base, ...customs].filter(Boolean).join(', ');
 }
 
 function updatePreview() {
+  const el = document.getElementById('livePreview');
   const parts = [];
-  const name = getName(); if (name) parts.push('Name: ' + name);
-  const anc = getAns('ancestry'); if (anc) parts.push('Ancestry: ' + anc);
-  const cls = getAns('charClass'); if (cls) parts.push('Class: ' + cls);
-  const sub = getAns('subclass'); if (sub) parts.push('Subclass: ' + sub);
-  const lvl = getLevel(); if (lvl) parts.push('Level: ' + lvl);
-  const ed = getAns('edition'); if (ed) parts.push('Edition: ' + ed);
-  const bg = getAns('background'); if (bg) parts.push('Background: ' + bg);
-  const al = getAns('alignment'); if (al) parts.push('Alignment: ' + al);
-  const gen = getAns('gender'); if (gen) parts.push('Gender: ' + gen);
-  const style = getAns('artStyle'); if (style) parts.push('Art Style: ' + style);
-  document.getElementById('live-preview').textContent =
-    parts.length ? parts.join('\n') : 'Fill in the form to see a live summary...';
+
+  const edition = getAns('edition');
+  const lvl = document.getElementById('level-input').value || '1';
+  const ancestry = getAns('ancestry');
+  const gender = getAns('gender');
+  const skin = getAns('skin');
+  const charClass = getAns('charClass');
+  const subclass = getAns('subclass');
+  const background = getAns('background');
+  const alignment = getAns('alignment');
+  const abilityMethod = getAns('abilityMethod');
+  const skills = getAns('skills');
+  const languages = getAns('languages');
+  const feats = getAns('feats');
+  const hp = getAns('hp');
+  const traits = getAns('traits');
+  const ideal = getAns('ideal');
+  const bond = getAns('bond');
+  const flaws = getAns('flaws');
+  const physical = getAns('physical');
+  const voice = getAns('voice');
+  const motivations = getAns('motivations');
+  const appearance = getAns('appearance');
+  const equipTheme = getAns('equipTheme');
+  const equipMethod = getAns('equipMethod');
+  const spells = getAns('spells');
+  const artStyle = getAns('artStyle');
+  const composition = getAns('composition');
+  const imageSize = getAns('imageSize');
+  const revisions = (document.getElementById('revisions-input').value || '').trim();
+  const charName = (document.getElementById('name-input').value || '').trim();
+
+  if (edition) parts.push(`Edition: ${edition}`);
+  parts.push(`Level: ${lvl}`);
+  if (ancestry) parts.push(`Ancestry: ${ancestry}`);
+  if (gender) parts.push(`Gender: ${gender}`);
+  if (skin) parts.push(`Skin/Body: ${skin}`);
+  if (charClass) parts.push(`Class: ${charClass}`);
+  if (subclass) parts.push(`Subclass: ${subclass}`);
+  if (background) parts.push(`Background: ${background}`);
+  if (alignment) parts.push(`Alignment: ${alignment}`);
+  if (abilityMethod) parts.push(`Ability Scores: ${abilityMethod}`);
+  if (skills) parts.push(`Skills: ${skills}`);
+  if (languages) parts.push(`Languages: ${languages}`);
+  if (feats) parts.push(`Feats: ${feats}`);
+  if (hp) parts.push(`HP: ${hp}`);
+  if (traits) parts.push(`Traits: ${traits}`);
+  if (ideal) parts.push(`Ideal: ${ideal}`);
+  if (bond) parts.push(`Bond: ${bond}`);
+  if (flaws) parts.push(`Flaws: ${flaws}`);
+  if (physical) parts.push(`Physical: ${physical}`);
+  if (voice) parts.push(`Voice: ${voice}`);
+  if (motivations) parts.push(`Motivations: ${motivations}`);
+  if (appearance) parts.push(`Appearance: ${appearance}`);
+  if (equipTheme) parts.push(`Equipment Theme: ${equipTheme}`);
+  if (equipMethod) parts.push(`Equipment Method: ${equipMethod}`);
+  if (spells) parts.push(`Spells: ${spells}`);
+  if (artStyle) parts.push(`Art Style: ${artStyle}`);
+  if (composition) parts.push(`Composition: ${composition}`);
+  if (imageSize) parts.push(`Image Size: ${imageSize}`);
+  if (revisions) parts.push(`Clarifications: ${revisions}`);
+  if (charName) parts.push(`Name: ${charName}`);
+
+  if (parts.length <= 1) {
+    el.textContent = 'Fill in the form to see a live preview.';
+    el.className = 'prompt-display empty';
+    return;
+  }
+  el.textContent = parts.join('\n');
+  el.className = 'prompt-display';
 }
 
+
+/* ============================================================
+   PRESETS
+   ============================================================ */
 function applyPreset(name) {
   if (name === 'random') { randomizeAll(); return; }
-  const p = PRESETS[name];
-  if (!p) return;
-  state.ans = {};
-  state.custom = {};
-  Object.keys(p).forEach(k => {
-    if (k === '_level') {
-      document.getElementById('level-input').value = p[k];
-    } else if (Q[k]) {
-      state.ans[k] = p[k];
-    }
-  });
-  if (state.ans.charClass) updateSubclass();
-  renderAll();
-  updateConditionals();
-  updateOutputConditionals();
-  updatePreview();
-}
+  const preset = PRESETS[name];
+  if (!preset) return;
 
-function randomizeAll() {
-  state.ans = {};
-  state.custom = {};
-  const skip = new Set(['abilityMethod','equipMethod','imageSize','hp']);
-  document.getElementById('level-input').value = Math.floor(Math.random() * 20) + 1;
-  Object.keys(Q).forEach(qid => {
-    if (skip.has(qid)) return;
-    if (qid === 'subclass') return;
-    const q = Q[qid];
-    if (q.type === 'single') {
-      state.ans[qid] = q.opts[Math.floor(Math.random() * q.opts.length)];
+  ST.answers = {};
+  ST.customInputs = {};
+
+  Object.keys(preset).forEach(key => {
+    if (key === '_level') {
+      document.getElementById('level-input').value = preset[key];
     } else {
-      const count = Math.floor(Math.random() * q.max) + 1;
-      state.ans[qid] = [...q.opts].sort(() => 0.5 - Math.random()).slice(0, count);
+      ST.answers[key] = Array.isArray(preset[key]) ? [...preset[key]] : preset[key];
     }
   });
+
+  // Handle subclass after class is set
   updateSubclass();
-  const subOpts = Q.subclass.opts;
-  if (subOpts.length) state.ans.subclass = subOpts[Math.floor(Math.random() * subOpts.length)];
+
   renderAll();
   updateConditionals();
-  updateOutputConditionals();
   updatePreview();
 }
 
-function saveCurrent() {
-  const snapshot = {
-    ans: state.ans,
-    custom: state.custom,
-    level: document.getElementById('level-input').value,
-    name: getName(),
-    revisions: getRevisions(),
-    oo: state.oo
-  };
-  localStorage.setItem('cc_dnd_char_v2', JSON.stringify(snapshot));
-  alert('Saved.');
-}
 
-function loadSaved() {
-  const raw = localStorage.getItem('cc_dnd_char_v2');
-  if (!raw) { alert('No saved data.'); return; }
-  const d = JSON.parse(raw);
-  state.ans = d.ans || {};
-  state.custom = d.custom || {};
-  if (d.level) document.getElementById('level-input').value = d.level;
-  if (d.name) document.getElementById('name-input').value = d.name;
-  if (d.revisions) document.getElementById('revisions-input').value = d.revisions;
-  if (d.oo) {
-    state.oo = d.oo;
-    document.getElementById('oo-stats').checked = state.oo.stats;
-    document.getElementById('oo-lore').checked = state.oo.lore;
-    document.getElementById('oo-image').checked = state.oo.image;
-  }
-  if (state.ans.charClass) {
-    const cls = state.ans.charClass.split('(')[0].split(',')[0].trim();
-    Q.subclass.opts = SUBCLASSES[cls] || [];
-  }
-  renderAll();
-  updateConditionals();
-  updateOutputConditionals();
-  updatePreview();
-  alert('Loaded.');
-}
-
-function clearSaved() {
-  localStorage.removeItem('cc_dnd_char_v2');
-  alert('Cleared.');
-}
-
-function resetApp() {
-  state = { ans:{}, custom:{}, oo:{ stats:true, lore:true, image:true } };
-  document.getElementById('oo-stats').checked = true;
-  document.getElementById('oo-lore').checked = true;
-  document.getElementById('oo-image').checked = true;
-  document.getElementById('level-input').value = '';
-  document.getElementById('name-input').value = '';
-  document.getElementById('revisions-input').value = '';
-  document.getElementById('live-preview').textContent = 'Fill in the form to see a live summary...';
-  ['out-stats','out-lore','out-visual'].forEach(id => document.getElementById(id).style.display = 'none');
-  document.getElementById('stats-body').textContent = '';
-  document.getElementById('lore-body').textContent = '';
-  document.getElementById('visual-body').textContent = '';
-  Q.subclass.opts = [];
-  hideErr();
-  renderAll();
-  updateConditionals();
-  updateOutputConditionals();
-}
-
-function showErr(msg) {
-  const el = document.getElementById('err-msg');
-  el.textContent = msg;
-  el.style.display = 'block';
-}
-function hideErr() {
-  document.getElementById('err-msg').style.display = 'none';
-}
-
-function copySection(which) {
-  let text = '';
-  if (which === 'stats') text = document.getElementById('stats-body').textContent;
-  else if (which === 'lore') text = document.getElementById('lore-body').textContent;
-  else text = document.getElementById('visual-body').textContent ||
-               document.getElementById('live-preview').textContent;
-  if (!text || text === 'Fill in the form to see a live summary...') return;
-  navigator.clipboard.writeText(text).catch(() => {});
-}
-
-function confirmConnect() {
-  const key = document.getElementById('api-key').value.trim();
-  if (key) localStorage.setItem('xaiKey_dndChar', key);
-}
-
-function restoreApiKey() {
-  const saved = localStorage.getItem('xaiKey_dndChar');
-  if (saved) document.getElementById('api-key').value = saved;
-}
-
-
+/* ============================================================
+   GENERATE CHARACTER
+   ============================================================ */
 async function generateCharacter() {
-  const apiKey = document.getElementById('api-key').value.trim();
-  if (!apiKey) { showErr('Enter your xAI API key above.'); return; }
-  if (!state.oo.stats && !state.oo.lore && !state.oo.image) {
-    showErr('Select at least one output section.'); return;
-  }
+  const key = document.getElementById('xaiApiKey').value.trim();
+  const save = document.getElementById('xaiSaveKey').checked;
 
-  const oo = state.oo;
+  if (!key) { showNotice('Enter your xAI API key.', 'err', 'xaiNotice'); return; }
+
+  if (save) localStorage.setItem('xaiKey_dnd', key);
+  else localStorage.removeItem('xaiKey_dnd');
+
+  // Build answer block
+  const oo = ST.oo;
   const lines = [];
+  const lvl = document.getElementById('level-input').value || '1';
+  const charName = (document.getElementById('name-input').value || '').trim();
+  const revisions = (document.getElementById('revisions-input').value || '').trim();
   function add(label, val) { if (val) lines.push(label + ': ' + val); }
 
   add('Edition', getAns('edition'));
-  add('Character Level', getLevel() || '');
+  add('Character Level', lvl);
   add('Ancestry / Race', getAns('ancestry'));
   add('Gender', getAns('gender'));
   if (oo.image) add('Skin / Body Covering Palette', getAns('skin'));
@@ -1444,9 +1894,8 @@ async function generateCharacter() {
     add('Portrait Composition', getAns('composition'));
     add('Image Aspect Ratio', getAns('imageSize'));
   }
-  add('Character Name', getName());
-  const rev = getRevisions();
-  if (rev) add('Clarifications and Overrides', rev);
+  add('Character Name', charName);
+  if (revisions) add('Clarifications and Overrides', revisions);
 
   const answerBlock = lines.join('\n');
 
@@ -1456,114 +1905,329 @@ async function generateCharacter() {
     oo.image ? SECTION_PORTRAIT : null,
   ].filter(Boolean);
 
+  if (requestedSections.length === 0) {
+    showNotice('Enable at least one output section.', 'err', 'xaiNotice');
+    return;
+  }
+
   const sectionCount = requestedSections.length;
   const outputInstruction = 'Output exactly ' + (sectionCount === 1 ? 'one section' : sectionCount === 2 ? 'two sections' : 'three sections') + ' using ' + (sectionCount === 1 ? 'this header' : 'these headers') + ' on their own lines:\n\n' + requestedSections.join('\n\n');
 
   const paletteRule = oo.image ? '\n3. Skin palette enforcement — the portrait prompt must faithfully render every color and texture described in the Skin / Body Covering Palette selection, but as natural visual description, never by pasting the selection text verbatim.' : '';
-
   const ruleNum1 = oo.image ? '4' : '3';
   const ruleNum2 = oo.image ? '5' : '4';
 
   const userPrompt = 'Using the player\'s selections below, produce a complete, mechanically correct D&D character package.\n\nCRITICAL RULES:\n1. Edition compliance — strictly use only classes, ancestries, subclasses, spells, feats, and mechanics that exist in the selected edition. Flag any selection that does not exist in the chosen edition and substitute the closest valid equivalent.\n2. Pipe character handling — any answer containing ( | ) means the player chose a list option AND added custom detail. Honour both parts.' + paletteRule + '\n' + ruleNum1 + '. Clarifications override — if the Clarifications and Overrides field is filled, it takes precedence over all other answers.\n' + ruleNum2 + '. Mechanical viability — see the VIABILITY RULES section below before assigning any numbers.\n\n' + VIABILITY_RULES + '\n\nPLAYER\'S ANSWERS:\n' + answerBlock + '\n\n---\n\n' + outputInstruction + '\n\nFormatting rules: plain text only, no markdown asterisks or hash symbols, use ALL CAPS for sub-headings within sections.';
 
-  const btn = document.getElementById('gen-btn');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span>Generating...';
-  hideErr();
-  ['out-stats','out-lore','out-visual'].forEach(id => document.getElementById(id).style.display = 'none');
+  const genBtn = document.getElementById('xaiGenBtn');
+  genBtn.disabled = true;
+  genBtn.innerHTML = '<span class="spinner"></span>Generating…';
+
+  hideNotice('xaiNotice');
+  document.getElementById('xaiStatus').innerHTML =
+    '<span class="spinner"></span>Sending request to xAI…';
+  document.getElementById('xaiStatus').className = 'xai-status run';
+
+  // Hide previous output
+  ['out-stats','out-lore','out-visual'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  document.getElementById('output-actions').style.display = 'none';
 
   try {
-    const resp = await fetch('https://api.x.ai/v1/chat/completions', {
+    const res = await fetch('https://api.x.ai/v1/chat/completions', {
       method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + apiKey },
+      headers: {
+        'Authorization': `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
       body: JSON.stringify({
         model: 'grok-4.3',
         max_tokens: 4096,
         reasoning_effort: 'high',
         messages: [
           { role: 'system', content: SYSTEM_PROMPT },
-          { role: 'user', content: userPrompt }
-        ]
-      })
+          { role: 'user', content: userPrompt },
+        ],
+      }),
     });
 
-    if (!resp.ok) {
-      const e = await resp.json().catch(() => ({}));
-      throw new Error(e.error?.message || 'API error ' + resp.status);
+    const data = await res.json();
+
+    if (!res.ok) {
+      const msg = data?.error?.message || `HTTP ${res.status}`;
+      setXaiStatus('', '');
+      showNotice(`Error: ${msg}`, 'err', 'xaiNotice');
+      return;
     }
 
-    const data = await resp.json();
-    const text = data.choices?.[0]?.message?.content || '';
+    const text = data?.choices?.[0]?.message?.content?.trim() || '';
+    if (!text) {
+      setXaiStatus('', '');
+      showNotice('No response returned.', 'err', 'xaiNotice');
+      return;
+    }
+
     parseAndDisplay(text);
+    setXaiStatus('Character generated successfully.', 'ok');
 
-    const statusEl = document.getElementById('api-status');
-    statusEl.textContent = 'API OK';
-    statusEl.className = 'api-status ok';
-    statusEl.style.display = 'inline-block';
-
-  } catch(err) {
-    showErr(err.message);
-    const statusEl = document.getElementById('api-status');
-    statusEl.textContent = 'API Error';
-    statusEl.className = 'api-status bad';
-    statusEl.style.display = 'inline-block';
+  } catch (err) {
+    setXaiStatus('', '');
+    showNotice(`Network error: ${err.message}`, 'err', 'xaiNotice');
   } finally {
-    btn.disabled = false;
-    btn.textContent = 'Generate Character';
+    genBtn.disabled = false;
+    genBtn.innerHTML = '&#9889; Generate Character';
+    updateGenBtn();
   }
 }
 
 function parseAndDisplay(text) {
-  const markers = ['SECTION: CHARACTER STATS','SECTION: CHARACTER LORE','SECTION: PORTRAIT PROMPT'];
-  const bodyIds = ['stats-body','lore-body','visual-body'];
-  const panelIds = ['out-stats','out-lore','out-visual'];
+  const statsMarker = 'SECTION: CHARACTER STATS';
+  const loreMarker = 'SECTION: CHARACTER LORE';
+  const portraitMarker = 'SECTION: PORTRAIT PROMPT';
 
-  const positions = markers
-    .map((m,i) => ({ m, i, idx: text.indexOf(m) }))
-    .filter(x => x.idx !== -1)
-    .sort((a, b) => a.idx - b.idx);
+  const markers = [
+    { marker: statsMarker, bodyId: 'stats-body', outId: 'out-stats', enabled: ST.oo.stats },
+    { marker: loreMarker, bodyId: 'lore-body', outId: 'out-lore', enabled: ST.oo.lore },
+    { marker: portraitMarker, bodyId: 'visual-body', outId: 'out-visual', enabled: ST.oo.image },
+  ];
 
+  // Find positions of each marker
+  const positions = markers.map(m => ({
+    ...m,
+    pos: text.indexOf(m.marker),
+  })).filter(m => m.pos !== -1).sort((a, b) => a.pos - b.pos);
+
+  let anyShown = false;
+
+  positions.forEach((m, i) => {
+    const start = m.pos + m.marker.length;
+    const end = (i + 1 < positions.length) ? positions[i + 1].pos : text.length;
+    const content = text.substring(start, end).trim();
+
+    const bodyEl = document.getElementById(m.bodyId);
+    const outEl = document.getElementById(m.outId);
+    if (bodyEl && outEl && m.enabled) {
+      bodyEl.textContent = content;
+      outEl.style.display = '';
+      anyShown = true;
+    }
+  });
+
+  // If no markers found, put everything in the first enabled section
   if (positions.length === 0) {
-    document.getElementById('stats-body').textContent = text;
-    document.getElementById('out-stats').style.display = 'block';
-    return;
+    for (const m of markers) {
+      if (m.enabled) {
+        const bodyEl = document.getElementById(m.bodyId);
+        const outEl = document.getElementById(m.outId);
+        if (bodyEl && outEl) {
+          bodyEl.textContent = text;
+          outEl.style.display = '';
+          anyShown = true;
+          break;
+        }
+      }
+    }
   }
 
-  positions.forEach((pos, pi) => {
-    const start = pos.idx + pos.m.length;
-    const end = positions[pi + 1] ? positions[pi + 1].idx : text.length;
-    const content = text.slice(start, end).trim();
-    document.getElementById(bodyIds[pos.i]).textContent = content;
-    document.getElementById(panelIds[pos.i]).style.display = 'block';
+  if (anyShown) {
+    document.getElementById('output-actions').style.display = '';
+  }
+}
+
+
+/* ============================================================
+   SAVE / LOAD / RESET
+   ============================================================ */
+function saveCurrent() {
+  const rev = document.getElementById('revisions-input').value.trim();
+  const name = document.getElementById('name-input').value.trim();
+  const lvl = document.getElementById('level-input').value;
+  const payload = {
+    answers: ST.answers,
+    customInputs: ST.customInputs,
+    oo: ST.oo,
+    revisions: rev,
+    charName: name,
+    level: lvl,
+  };
+  localStorage.setItem('cc_dnd_char_v2', JSON.stringify(payload));
+  showNotice('Saved.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function loadSaved() {
+  const data = JSON.parse(localStorage.getItem('cc_dnd_char_v2') || 'null');
+  if (!data) { showNotice('No saved data found.', 'err', 'actionNotice'); return; }
+  ST.answers = data.answers || {};
+  ST.customInputs = data.customInputs || {};
+  ST.oo = data.oo || { stats: true, lore: true, image: true };
+  if (data.revisions) document.getElementById('revisions-input').value = data.revisions;
+  if (data.charName) document.getElementById('name-input').value = data.charName;
+  if (data.level) document.getElementById('level-input').value = data.level;
+
+  document.getElementById('oo-stats').checked = ST.oo.stats;
+  document.getElementById('oo-lore').checked = ST.oo.lore;
+  document.getElementById('oo-image').checked = ST.oo.image;
+
+  // Restore subclass options based on loaded class
+  const cls = ST.answers.charClass || '';
+  const baseName = cls.replace(/\s*\(.*\)/, '');
+  Q.subclass.opts = SUBCLASSES[baseName] || [];
+
+  renderAll();
+  updateConditionals();
+  updatePreview();
+  showNotice('Loaded.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function clearSaved() {
+  localStorage.removeItem('cc_dnd_char_v2');
+  showNotice('Cleared.', 'ok', 'actionNotice');
+  setTimeout(() => hideNotice('actionNotice'), 1800);
+}
+
+function resetApp() {
+  ST = { answers: {}, customInputs: {}, oo: { stats: true, lore: true, image: true } };
+  document.getElementById('revisions-input').value = '';
+  document.getElementById('name-input').value = '';
+  document.getElementById('level-input').value = 1;
+  document.getElementById('oo-stats').checked = true;
+  document.getElementById('oo-lore').checked = true;
+  document.getElementById('oo-image').checked = true;
+
+  Q.subclass.opts = [];
+
+  renderAll();
+  updateConditionals();
+  updatePreview();
+
+  // Hide outputs
+  ['out-stats','out-lore','out-visual'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  document.getElementById('output-actions').style.display = 'none';
+  document.getElementById('stats-body').textContent = '';
+  document.getElementById('lore-body').textContent = '';
+  document.getElementById('visual-body').textContent = '';
+
+  setXaiStatus('Enter an API key above to enable generation.', '');
+  hideNotice('xaiNotice');
+  hideNotice('actionNotice');
+}
+
+
+/* ============================================================
+   xAI PANEL HELPERS
+   ============================================================ */
+function toggleKeyVis() {
+  const inp = document.getElementById('xaiApiKey');
+  const btn = document.querySelector('.xai-toggle');
+  if (inp.type === 'password') { inp.type = 'text'; btn.textContent = 'HIDE'; }
+  else { inp.type = 'password'; btn.textContent = 'SHOW'; }
+}
+
+function updateGenBtn() {
+  const key = document.getElementById('xaiApiKey').value.trim();
+  document.getElementById('xaiGenBtn').disabled = !key;
+  if (!key) setXaiStatus('Enter an API key above to enable generation.', '');
+  else setXaiStatus('Ready — build your character above, then click Generate.', 'ok');
+}
+
+function setXaiStatus(msg, type) {
+  const el = document.getElementById('xaiStatus');
+  el.textContent = msg;
+  el.className = 'xai-status' + (type ? ' ' + type : '');
+}
+
+
+/* ============================================================
+   COPY HELPERS
+   ============================================================ */
+function copyPreview() {
+  const text = document.getElementById('livePreview').textContent;
+  if (!text || text.includes('Fill in the form')) return;
+  navigator.clipboard.writeText(text).then(() => {
+    showNotice('Preview copied to clipboard.', 'ok', 'copyNotice');
+    setTimeout(() => hideNotice('copyNotice'), 2000);
   });
 }
 
-// API key persistence
-(function() {
-  const saved = localStorage.getItem('xaiKey_dndChar');
-  if (saved) document.getElementById('api-key').value = saved;
-})();
-document.getElementById('api-key').addEventListener('input', function() {
-  if (this.value.trim()) localStorage.setItem('xaiKey_dndChar', this.value.trim());
-  else localStorage.removeItem('xaiKey_dndChar');
-});
-document.getElementById('api-key').addEventListener('blur', function() {
-  if (this.value.trim()) localStorage.setItem('xaiKey_dndChar', this.value.trim());
-});
+function copySectionText(bodyId) {
+  const el = document.getElementById(bodyId);
+  if (!el) return;
+  const text = el.textContent;
+  if (!text) return;
+  navigator.clipboard.writeText(text).then(() => {
+    showNotice('Section copied to clipboard.', 'ok', 'actionNotice');
+    setTimeout(() => hideNotice('actionNotice'), 2000);
+  });
+}
 
-// Input listeners
-document.getElementById('level-input').addEventListener('input', function() {
-  updateConditionals();
+function copyAllOutput() {
+  const parts = [];
+  ['stats-body','lore-body','visual-body'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el && el.textContent && el.closest('.out-section').style.display !== 'none') {
+      parts.push(el.textContent);
+    }
+  });
+  if (parts.length === 0) return;
+  navigator.clipboard.writeText(parts.join('\n\n')).then(() => {
+    showNotice('All output copied to clipboard.', 'ok', 'actionNotice');
+    setTimeout(() => hideNotice('actionNotice'), 2000);
+  });
+}
+
+function resetOutput() {
+  ['out-stats','out-lore','out-visual'].forEach(id => {
+    document.getElementById(id).style.display = 'none';
+  });
+  document.getElementById('output-actions').style.display = 'none';
+  document.getElementById('stats-body').textContent = '';
+  document.getElementById('lore-body').textContent = '';
+  document.getElementById('visual-body').textContent = '';
+}
+
+
+/* ============================================================
+   NOTICE HELPERS
+   ============================================================ */
+function showNotice(msg, type, id) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.textContent = msg;
+  el.className = 'notice ' + type;
+}
+
+function hideNotice(id) {
+  const el = document.getElementById(id);
+  if (el) el.className = 'notice';
+}
+
+
+/* ============================================================
+   INIT
+   ============================================================ */
+function init() {
+  Object.keys(Q).forEach(qid => renderField(qid));
   updatePreview();
-});
-document.getElementById('revisions-input').addEventListener('input', updatePreview);
-document.getElementById('name-input').addEventListener('input', updatePreview);
 
-// Init
-renderAll();
-updateConditionals();
-updateOutputConditionals();
-updatePreview();
+  // Restore saved xAI key
+  const savedKey = localStorage.getItem('xaiKey_dnd');
+  if (savedKey) {
+    document.getElementById('xaiApiKey').value = savedKey;
+    document.getElementById('xaiSaveKey').checked = true;
+    updateGenBtn();
+  }
+  document.getElementById('xaiApiKey').addEventListener('input', updateGenBtn);
+  document.getElementById('revisions-input').addEventListener('input', updatePreview);
+  document.getElementById('name-input').addEventListener('input', updatePreview);
+}
+
+window.onload = init;
+
 </script>
 </body>
 </html>
